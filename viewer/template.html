@@ -11,6 +11,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#313338">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none';">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%235865f2'/%3E%3Cpath d='M9 9h14v4h-9v3h7v4h-7v3H9z' fill='%23f2f3f5'/%3E%3C/svg%3E">
   <title>{{ARCHIVE_TITLE}} · Archive Ledger</title>
   <style>
@@ -547,7 +548,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .header-icon-button:hover { background: var(--hover); color: var(--ink); }
 
     .reader { display: flex; min-height: 0; flex: 1; flex-direction: column; padding: 0; }
-    .archive-bar { display: flex; align-items: center; justify-content: space-between; min-height: 54px; gap: 18px; padding: 9px 18px; border-bottom: 1px solid var(--line); background: var(--main-raised); }
+    .archive-bar { display: flex; align-items: center; justify-content: space-between; min-height: 48px; gap: 18px; padding: 7px 18px; border-bottom: 1px solid var(--line); background: var(--main-raised); }
     .archive-bar-copy { min-width: 0; }
     .eyebrow, .control-label { color: var(--muted); font-family: var(--mono); font-size: 9px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
     .archive-bar-meta { display: flex; min-width: 0; gap: 5px; overflow: hidden; margin-top: 3px; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
@@ -557,6 +558,9 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .coverage-banner { display: flex; align-items: flex-start; gap: 10px; padding: 10px 18px; border-bottom: 1px solid rgba(240, 178, 50, .28); background: rgba(240, 178, 50, .08); color: var(--ink-soft); }
     .coverage-banner[hidden] { display: none; }
     .coverage-banner.is-verified { border-bottom-color: rgba(35, 165, 89, .28); background: rgba(35, 165, 89, .08); }
+    .coverage-banner.is-verified { align-items: center; min-height: 44px; padding-top: 6px; padding-bottom: 6px; }
+    .coverage-banner.is-verified .coverage-banner-copy { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 10px; }
+    .coverage-banner.is-verified .coverage-banner-action { display: none; }
     .coverage-banner-mark { display: grid; width: 22px; height: 22px; flex: 0 0 22px; place-items: center; border-radius: 50%; background: rgba(240, 178, 50, .18); color: #f0c674; font-family: var(--mono); font-size: 12px; font-weight: 800; }
     .coverage-banner.is-verified .coverage-banner-mark { background: rgba(35, 165, 89, .18); color: #8edcae; }
     .coverage-banner-copy { display: grid; min-width: 0; gap: 2px; font-size: 11px; line-height: 1.4; }
@@ -580,8 +584,8 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .select-control:hover { border-color: rgba(255, 255, 255, .24); }
     .print-button { height: 30px; padding: 0 10px; border: 0; border-radius: 4px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; }
     .print-button:hover { background: var(--accent-bright); }
-    .participant-strip { display: flex; min-height: 0; align-items: center; gap: 6px; padding: 7px 18px; overflow-x: auto; border-bottom: 1px solid var(--line); background: var(--main); }
-    .participant-chip { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; padding: 3px 7px 3px 4px; border-radius: 12px; background: rgba(255, 255, 255, .05); color: var(--ink-soft); font-size: 10px; }
+    .participant-strip { display: flex; min-height: 0; align-items: center; gap: 6px; padding: 4px 18px; overflow-x: auto; border-bottom: 1px solid var(--line); background: var(--main); }
+    .participant-chip { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; padding: 2px 7px 2px 4px; border-radius: 12px; background: rgba(255, 255, 255, .05); color: var(--ink-soft); font-size: 10px; }
     .participant-chip img, .participant-chip .mini-avatar { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
     .participant-strip .mini-avatar-frame { display: inline-flex; position: relative; width: 22px; height: 22px; flex: 0 0 22px; align-items: center; justify-content: center; }
     .mini-avatar-frame .mini-avatar { width: 100%; height: 100%; }
@@ -983,6 +987,25 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         return new Intl.DateTimeFormat("en-US", { timeZone: selectedTimeZone(), dateStyle: "medium", timeStyle: "short" }).format(date);
       };
       const formatRawTime = (value) => dateObject(value)?.toISOString() || "Unknown timestamp";
+      const sourceDisplay = (message) => message?.source_display && typeof message.source_display === "object" ? message.source_display : null;
+      const displayDate = (message) => {
+        const display = sourceDisplay(message);
+        if (state.timezone === "archive" && display) {
+          if (typeof display.date === "string" && display.date.trim()) return display.date.trim();
+          if (typeof display.label === "string" && display.label.includes(" at ")) return display.label.split(/\s+at\s+/i)[0].trim();
+        }
+        return formatDate(message?.timestamp);
+      };
+      const displayTime = (message) => {
+        const display = sourceDisplay(message);
+        if (state.timezone === "archive" && typeof display?.time === "string" && display.time.trim()) return display.time.trim();
+        return formatTime(message?.timestamp);
+      };
+      const displayFullTime = (message) => {
+        const display = sourceDisplay(message);
+        if (state.timezone === "archive" && typeof display?.label === "string" && display.label.trim()) return display.label.trim();
+        return formatFullTime(message?.timestamp);
+      };
       const safeTextWithLinks = (value) => {
         const escaped = escapeHtml(value);
         return escaped.replace(/(https?:\/\/[^\s<]+)/g, (match) => {
@@ -1076,7 +1099,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const footer = `${edited ? `<div class="message-footer">${edited}</div>` : ""}${reactions}`;
         const avatar = grouped ? `<span class="grouped-avatar-spacer" aria-hidden="true"></span>` : avatarMarkup(person);
         const author = grouped ? "" : `<span class="author-name">${escapeHtml(displayName(person))}</span>${handleName(person) ? `<span class="author-handle">${escapeHtml(handleName(person))}</span>` : ""}`;
-        return `<article class="message${groupingClass}${selected}" id="message-${escapeHtml(message.id)}" data-message-id="${escapeHtml(message.id)}" tabindex="-1"><div>${avatar}</div><div class="message-main"><div class="message-header">${author}<button class="message-timestamp" type="button" data-select="${escapeHtml(message.id)}" title="${escapeHtml(formatRawTime(message.timestamp))}">${escapeHtml(formatTime(message.timestamp))}</button></div>${replyMarkup(message)}<div class="message-content">${safeTextWithLinks(message.content || "")}</div>${attachments}${embeds}${footer}</div></article>`;
+        return `<article class="message${groupingClass}${selected}" id="message-${escapeHtml(message.id)}" data-message-id="${escapeHtml(message.id)}" tabindex="-1"><div>${avatar}</div><div class="message-main"><div class="message-header">${author}<button class="message-timestamp" type="button" data-select="${escapeHtml(message.id)}" title="${escapeHtml(`${displayFullTime(message)} · raw ${formatRawTime(message.timestamp)}`)}">${escapeHtml(displayTime(message))}</button></div>${replyMarkup(message)}<div class="message-content">${safeTextWithLinks(message.content || "")}</div>${attachments}${embeds}${footer}</div></article>`;
       };
       const renderMessages = () => {
         const list = $("#message-list");
@@ -1102,7 +1125,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const older = !state.printing && start > 0 ? `<div class="message-window-controls"><button class="message-window-button" type="button" data-action="load-older">↑ Load earlier messages</button></div>` : "";
         const newer = !state.printing && end < visible.length ? `<div class="message-window-controls"><button class="message-window-button" type="button" data-action="load-newer">Load more messages ↓</button></div>` : "";
         list.innerHTML = older + windowMessages.map((message) => {
-          const date = formatDate(message.timestamp);
+          const date = displayDate(message);
           const divider = date !== previousDate ? `<div class="date-divider"><span>${escapeHtml(date)}</span></div>` : "";
           previousDate = date;
           return divider + messageMarkup(message);
@@ -1125,7 +1148,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const provenance = message.provenance && typeof message.provenance === "object" ? message.provenance : {};
         const attachmentRow = attachments.length ? `<div class="detail-row"><dt>attachments</dt><dd><ul class="detail-assets">${attachments.map(attachmentReferenceMarkup).join("")}</ul></dd></div>` : `<div class="detail-row"><dt>attachments</dt><dd>none</dd></div>`;
         const provenanceRows = `${provenance.source_file ? `<div class="detail-row"><dt>source file</dt><dd class="mono">${escapeHtml(provenance.source_file)}</dd></div>` : ""}${Number.isInteger(provenance.record_index) ? `<div class="detail-row"><dt>source record</dt><dd class="mono">${escapeHtml(provenance.record_index)}</dd></div>` : ""}${provenance.id_generated ? `<div class="detail-row"><dt>message ID note</dt><dd>Generated locally because the source did not provide an ID.</dd></div>` : ""}`;
-        panel.innerHTML = `<div class="eyebrow">message detail</div><div class="detail-title">${escapeHtml(displayName(person))}</div><dl class="detail-list"><div class="detail-row"><dt>displayed</dt><dd>${escapeHtml(formatFullTime(message.timestamp))}</dd></div><div class="detail-row"><dt>raw UTC</dt><dd class="mono">${escapeHtml(formatRawTime(message.timestamp))}</dd></div><div class="detail-row"><dt>message ID</dt><dd class="mono">${escapeHtml(message.id)}</dd></div>${attachmentRow}${message.edited_at ? `<div class="detail-row"><dt>edited</dt><dd>${escapeHtml(formatFullTime(message.edited_at))}</dd></div>` : ""}${provenanceRows}</dl>${link ? `<p><a href="${escapeHtml(link)}" target="_blank" rel="noreferrer noopener">Open source message link ↗</a></p>` : ""}<button class="copy-button" type="button" data-copy="${escapeHtml(message.id)}">Copy message ID</button>`;
+        panel.innerHTML = `<div class="eyebrow">message detail</div><div class="detail-title">${escapeHtml(displayName(person))}</div><dl class="detail-list"><div class="detail-row"><dt>displayed</dt><dd>${escapeHtml(displayFullTime(message))}</dd></div><div class="detail-row"><dt>raw UTC</dt><dd class="mono">${escapeHtml(formatRawTime(message.timestamp))}</dd></div><div class="detail-row"><dt>message ID</dt><dd class="mono">${escapeHtml(message.id)}</dd></div>${attachmentRow}${message.edited_at ? `<div class="detail-row"><dt>edited</dt><dd>${escapeHtml(formatFullTime(message.edited_at))}</dd></div>` : ""}${provenanceRows}</dl>${link ? `<p><a href="${escapeHtml(link)}" target="_blank" rel="noreferrer noopener">Open source message link ↗</a></p>` : ""}<button class="copy-button" type="button" data-copy="${escapeHtml(message.id)}">Copy message ID</button>`;
       };
       const renderMetadata = () => {
         const kind = String(metadata.kind || "conversation").replaceAll("_", " ");
@@ -1155,7 +1178,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         $("#transcript-captured").textContent = metadata.captured_at ? `captured ${formatFullTime(metadata.captured_at)}` : "captured date unavailable";
         $("#rail-message-count").textContent = String(messages.length);
         $("#rail-participant-count").textContent = String(participants.length);
-        $("#rail-date-range").textContent = sorted.length ? `${formatDate(sorted[0].timestamp)} → ${formatDate(sorted[sorted.length - 1].timestamp)}` : "none";
+        $("#rail-date-range").textContent = sorted.length ? `${displayDate(sorted[0])} → ${displayDate(sorted[sorted.length - 1])}` : "none";
         const notes = Array.isArray(source.notes) ? [...source.notes] : [];
         const captureRange = metadata.capture_range && typeof metadata.capture_range === "object" ? metadata.capture_range : null;
         const coverage = metadata.coverage && typeof metadata.coverage === "object" ? metadata.coverage : null;
@@ -1187,6 +1210,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         $("#archive-notes").innerHTML = notes.length ? notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("") : "<li>No source notes were provided.</li>";
         const subtitle = metadata.synthetic ? "Synthetic fixture · all names and assets are fictional." : "A portable conversation record with local metadata and assets.";
         $("#reader-subtitle").textContent = subtitle;
+        $("#timezone-mode option[value=\"archive\"]").textContent = messages.some((message) => sourceDisplay(message)?.label) ? "Source display" : "Archive timezone";
         $("#author-filter").innerHTML = `<option value="all">Everyone</option>` + participants.map((person) => `<option value="${escapeHtml(person.id)}">${escapeHtml(displayName(person))}</option>`).join("");
         $("#timezone-mode").value = state.timezone;
         $("#participant-strip").innerHTML = participants.map((person) => `<span class="participant-chip">${miniAvatarMarkup(person)}<span>${escapeHtml(displayName(person))}</span></span>`).join("");
@@ -1230,8 +1254,8 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const status = complete ? "verified" : coverage?.status || "partial";
         const rangeCount = Number(coverage?.range_count || (captureRange ? 1 : 0));
         const messageCount = Number(coverage?.unique_message_count || captureRange?.message_count || messages.length);
-        const firstDate = sorted[0]?.timestamp ? formatDate(sorted[0].timestamp) : "unknown start";
-        const lastDate = sorted[sorted.length - 1]?.timestamp ? formatDate(sorted[sorted.length - 1].timestamp) : "unknown end";
+        const firstDate = sorted[0]?.timestamp ? displayDate(sorted[0]) : "unknown start";
+        const lastDate = sorted[sorted.length - 1]?.timestamp ? displayDate(sorted[sorted.length - 1]) : "unknown end";
         const atStart = Boolean(coverage?.start_confirmed || captureRange?.at_start);
         const atEnd = Boolean(coverage?.end_confirmed || captureRange?.at_end);
         const boundarySummary = atStart && atEnd ? "oldest and newest boundaries observed" : atStart ? "oldest boundary observed; newest boundary still missing" : atEnd ? "newest boundary observed; oldest boundary still missing" : "neither conversation boundary observed";
@@ -1260,6 +1284,8 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
                 message_count: captureRange.message_count || messages.length,
                 oldest_timestamp: captureRange.oldest_timestamp,
                 newest_timestamp: captureRange.newest_timestamp,
+                oldest_message_id: captureRange.oldest_message_id,
+                newest_message_id: captureRange.newest_message_id,
                 at_start: captureRange.at_start,
                 at_end: captureRange.at_end,
                 overlap_with_previous: 0,
@@ -1277,10 +1303,13 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
           const continuity = index === 0 ? "first captured range" : overlap > 0 ? `${overlap} shared message${overlap === 1 ? "" : "s"}` : "gap · no shared messages";
           const boundary = [range.at_start ? "oldest boundary" : "", range.at_end ? "newest boundary" : ""].filter(Boolean).join(" · ") || "interior range";
           const stateClass = index > 0 && overlap === 0 ? " is-gap" : "";
-          const start = range.oldest_timestamp ? formatDate(range.oldest_timestamp) : "unknown start";
-          const end = range.newest_timestamp ? formatDate(range.newest_timestamp) : "unknown end";
+          const oldestMessage = range.oldest_message_id ? messageById.get(range.oldest_message_id) : null;
+          const newestMessage = range.newest_message_id ? messageById.get(range.newest_message_id) : null;
+          const start = range.oldest_timestamp ? (oldestMessage ? displayDate(oldestMessage) : formatDate(range.oldest_timestamp)) : "unknown start";
+          const end = range.newest_timestamp ? (newestMessage ? displayDate(newestMessage) : formatDate(range.newest_timestamp)) : "unknown end";
           const count = Number(range.message_count || 0);
-          return `<li class="coverage-range"><div class="coverage-range-head"><strong>Range ${index + 1}</strong><span class="coverage-range-file" title="${escapeHtml(range.source_file || "capture")}">${escapeHtml(range.source_file || "capture")}</span></div><div class="coverage-range-dates">${escapeHtml(start)} → ${escapeHtml(end)}</div><div class="coverage-range-meta"><span>${count} message${count === 1 ? "" : "s"}</span><span class="coverage-range-state${stateClass}">${escapeHtml(continuity)}</span></div><div class="coverage-range-meta"><span>${escapeHtml(boundary)}</span></div></li>`;
+          const accessibleLabel = `Range ${index + 1}: ${start} to ${end}; ${count} message${count === 1 ? "" : "s"}; ${continuity}; ${boundary}.`;
+          return `<li class="coverage-range" aria-label="${escapeHtml(accessibleLabel)}"><div class="coverage-range-head"><strong>Range ${index + 1}</strong><span class="coverage-range-file" title="${escapeHtml(range.source_file || "capture")}">${escapeHtml(range.source_file || "capture")}</span></div><div class="coverage-range-dates">${escapeHtml(start)} → ${escapeHtml(end)}</div><div class="coverage-range-meta"><span>${count} message${count === 1 ? "" : "s"}</span><span class="coverage-range-state${stateClass}">${escapeHtml(continuity)}</span></div><div class="coverage-range-meta"><span>${escapeHtml(boundary)}</span></div></li>`;
         }).join("");
         note.textContent = coverage?.complete
           ? "Overlap chain and both conversation boundaries are verified for the rendered range."
@@ -1288,7 +1317,13 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       };
       const initializeHash = () => {
         const match = window.location.hash.match(/^#message=(.+)$/);
-        if (match) state.selected = decodeURIComponent(match[1]);
+        if (!match) return;
+        try {
+          const messageId = decodeURIComponent(match[1]);
+          if (messageById.has(messageId)) state.selected = messageId;
+        } catch {
+          // Ignore malformed user-edited deep links and keep the archive readable.
+        }
       };
       const resetMessageWindow = () => { state.windowStart = 0; };
 

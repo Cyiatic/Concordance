@@ -57,6 +57,10 @@ overlapping DOM windows, and runs `merge-transcripts`. The merge may report
 observed or explicitly attested; it must never become an unattended scroller or
 background crawler. Coverage reports must include a concrete next action when
 they are incomplete, and the viewer must make partial capture state prominent.
+When Discord exposes a localized visible timestamp label, captures may preserve
+it under `message.source_display` alongside the canonical UTC timestamp. The
+viewer may use that source label for its default display mode, but must keep raw
+UTC and explicit local/UTC rendering available.
 
 Remote image materialization is a separate explicit command, not part of
 capture. It requires `--allow-remote`, follows only URLs already present in the

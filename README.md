@@ -128,11 +128,14 @@ users, automate login, inspect cookies or tokens, send messages, call Discord's
 private API, or download media.
 
 The adapter returns transcript JSON accepted by `import-transcript`. It keeps
-both rendered authors, message IDs, UTC timestamps, replies, reactions, embeds,
-attachments, source links, and remote avatar/media references. Because Discord
-virtualizes long histories, a capture is explicitly scoped to the currently
-rendered range; the user can load another range and capture it separately for a
-later merge. Keep the resulting JSON under `private-data/`.
+both rendered authors, message IDs, canonical UTC timestamps, the source UI's
+visible date/time label when Discord exposes it, replies, reactions, embeds,
+attachments, source links, and remote avatar/media references. The viewer uses
+that source display label in its default mode while retaining Local and UTC
+switches. Because Discord virtualizes long histories, a capture is explicitly
+scoped to the currently rendered range; the user can load another range and
+capture it separately for a later merge. Keep the resulting JSON under
+`private-data/`.
 
 The first live smoke run in this checkout used the open DM with channel ID
 `1224842431787307097`, produced a private 20-message transcript with two

@@ -81,8 +81,22 @@ async () => {
 
   for (const article of messageNodes) {
     const id = messageId(article);
-    const timestamp = article.querySelector('time[datetime]')?.getAttribute("datetime");
+    const timeElement = article.querySelector('time[datetime]');
+    const timestamp = timeElement?.getAttribute("datetime");
     if (!id || !timestamp) continue;
+    const sourceTimestampLabel = clean(
+      timeElement?.parentElement?.parentElement?.querySelector('[class*="hiddenVisually"]')?.innerText
+      || timeElement?.parentElement?.parentElement?.querySelector('[class*="hiddenVisually"]')?.textContent,
+    );
+    const sourceDisplay = {};
+    if (sourceTimestampLabel) {
+      sourceDisplay.label = sourceTimestampLabel;
+      const separator = sourceTimestampLabel.match(/^(.*)\s+at\s+(.+)$/i);
+      if (separator) {
+        sourceDisplay.date = separator[1].trim();
+        sourceDisplay.time = separator[2].trim();
+      }
+    }
 
     const usernameContainer = article.querySelector('[id^="message-username-"]');
     const usernameElement = usernameContainer?.querySelector('[class*="username"]') || usernameContainer;
@@ -125,6 +139,7 @@ async () => {
       embeds: [],
       message_link: `${location.origin}/channels/@me/${channelId}/${id}`,
     };
+    if (Object.keys(sourceDisplay).length) message.source_display = sourceDisplay;
 
     const accessories = article.querySelector('[id^="message-accessories-"]');
     const attachments = new Map();

@@ -50,6 +50,8 @@ class ArchiveTests(unittest.TestCase):
             html = (output / "index.html").read_text(encoding="utf-8")
             self.assertIn("Archive Ledger", html)
             self.assertIn('src="app.js"', html)
+            self.assertIn("Content-Security-Policy", html)
+            self.assertIn("script-src 'self'", html)
             app = (output / "app.js").read_text(encoding="utf-8")
             self.assertIn("Good one", app)
             self.assertIn("window.__ARCHIVE_DATA__", app)
@@ -65,6 +67,9 @@ class ArchiveTests(unittest.TestCase):
             self.assertIn("coverage-banner", app)
             self.assertIn("This is not yet the whole conversation", app)
             self.assertIn("coverage-ledger", app)
+            self.assertIn("Ignore malformed user-edited deep links", app)
+            self.assertIn("Source display", app)
+            self.assertIn("source_display", app)
             manifest = load_json(output / "manifest.json")
             self.assertEqual(manifest["manifest_version"], 1)
             self.assertEqual(
@@ -237,6 +242,11 @@ class ArchiveTests(unittest.TestCase):
                                 "id": "m2",
                                 "author_id": "user-eli",
                                 "timestamp": "2020-01-02T03:05:00Z",
+                                "source_display": {
+                                    "label": "Thursday, January 2, 2020 at 8:05 PM",
+                                    "date": "Thursday, January 2, 2020",
+                                    "time": "8:05 PM",
+                                },
                                 "content": "Reply with a file",
                                 "grouped": True,
                                 "reply_to": "m1",
@@ -272,6 +282,7 @@ class ArchiveTests(unittest.TestCase):
             self.assertTrue(archive["messages"][1]["grouped"])
             self.assertEqual(archive["messages"][1]["provenance"]["source_file"], "transcript.json")
             self.assertEqual(archive["messages"][1]["provenance"]["record_index"], 0)
+            self.assertEqual(archive["messages"][1]["source_display"]["time"], "8:05 PM")
             self.assertEqual(archive["metadata"]["source"]["source_name"], "transcript.json")
             self.assertEqual(archive["metadata"]["channel_handle"], "mara-eli")
             self.assertIn("Provided by the archive owner.", archive["metadata"]["source"]["notes"])
@@ -318,6 +329,8 @@ class ArchiveTests(unittest.TestCase):
         self.assertIn("channel_handle", capture_source)
         self.assertIn("capture_range", capture_source)
         self.assertIn("scroll_height", capture_source)
+        self.assertIn("source_display", capture_source)
+        self.assertIn("hiddenVisually", capture_source)
         self.assertNotIn("document.cookie", capture_source)
         self.assertNotIn("localStorage", capture_source)
         self.assertNotIn("fetch(", capture_source)
@@ -377,33 +390,65 @@ class ArchiveTests(unittest.TestCase):
                 "range-001.json",
                 [
                     {"id": "m1", "author_id": "user-1", "timestamp": "2024-01-01T00:00:00Z", "content": "one"},
-                    {"id": "m2", "author_id": "user-1", "timestamp": "2024-01-01T00:01:00Z", "content": "two"},
+                    {
+                        "id": "m2",
+                        "author_id": "user-1",
+                        "timestamp": "2024-01-01T00:01:00Z",
+                        "content": "two",
+                        "attachments": [{"name": "image.png", "mime": "image/png", "url": "https://cdn.discordapp.com/attachments/1/2/image.png?old-signature"}],
+                    },
                 ],
                 True,
+                False,
+            )
+            repeat = capture(
+                "range-001-repeat.json",
+                [
+                    {"id": "m1", "author_id": "user-1", "timestamp": "2024-01-01T00:00:00Z", "content": "one"},
+                    {
+                        "id": "m2",
+                        "author_id": "user-1",
+                        "timestamp": "2024-01-01T00:01:00Z",
+                        "content": "two",
+                        "attachments": [{"name": "image.png", "mime": "image/png", "url": "https://cdn.discordapp.com/attachments/1/2/image.png?old-signature"}],
+                    },
+                ],
+                False,
                 False,
             )
             second = capture(
                 "range-002.json",
                 [
-                    {"id": "m2", "author_id": "user-1", "timestamp": "2024-01-01T00:01:00Z", "content": "two"},
+                    {
+                        "id": "m2",
+                        "author_id": "user-1",
+                        "timestamp": "2024-01-01T00:01:00Z",
+                        "content": "two",
+                        "source_display": {"label": "Monday, January 1, 2024 at 5:01 PM", "time": "5:01 PM"},
+                        "attachments": [{"name": "image.png", "mime": "image/png", "url": "https://cdn.discordapp.com/attachments/1/2/image.png?new-signature"}],
+                    },
                     {"id": "m3", "author_id": "user-1", "timestamp": "2024-01-01T00:02:00Z", "content": "three"},
                 ],
                 False,
                 True,
             )
             merged_path = root / "merged.json"
-            summary = merge_transcripts([first, second], merged_path)
+            summary = merge_transcripts([first, repeat, second], merged_path)
             self.assertEqual(summary["messages"], 3)
-            self.assertEqual(summary["duplicates"], 1)
+            self.assertEqual(summary["duplicates"], 3)
+            self.assertEqual(summary["conflicts"], 0)
             self.assertEqual(summary["coverage"]["status"], "verified")
             self.assertTrue(summary["coverage"]["complete"])
             self.assertIn("No further capture step", summary["coverage"]["next_action"])
-            self.assertEqual([message["id"] for message in load_json(merged_path)["messages"]], ["m1", "m2", "m3"])
+            merged_messages = load_json(merged_path)["messages"]
+            self.assertEqual([message["id"] for message in merged_messages], ["m1", "m2", "m3"])
+            self.assertEqual(merged_messages[1]["source_display"]["time"], "5:01 PM")
+            self.assertIn("new-signature", merged_messages[1]["attachments"][0]["url"])
             self.assertEqual(verify_transcript_coverage(merged_path)["status"], "verified")
 
             archive = import_transcript(merged_path, root / "archive.json")
             self.assertEqual(validate_archive(archive), [])
-            self.assertEqual(archive["metadata"]["coverage"]["range_count"], 2)
+            self.assertEqual(archive["metadata"]["coverage"]["range_count"], 3)
 
     def test_partial_coverage_report_explains_next_action(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

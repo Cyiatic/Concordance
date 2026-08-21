@@ -73,6 +73,13 @@ def _remote_media_allowed(value: Any) -> bool:
     return hostname in _ALLOWED_REMOTE_MEDIA_HOSTS
 
 
+def _canonical_remote_reference(value: Any) -> Any:
+    if not _remote_media_allowed(value):
+        return value
+    parsed = urlparse(str(value).strip())
+    return parsed._replace(query="", fragment="").geturl()
+
+
 def _safe_media_filename(value: Any, fallback: str) -> str:
     candidate = Path(urlparse(str(value).strip()).path).name if value else ""
     candidate = candidate or fallback
@@ -201,6 +208,15 @@ def _validate_provenance(value: Any, field: str, errors: list[str]) -> None:
         index = value["record_index"]
         if isinstance(index, bool) or not isinstance(index, int) or index < 0:
             errors.append(f"{field}.record_index must be a non-negative integer")
+
+
+def _validate_source_display(value: Any, field: str, errors: list[str]) -> None:
+    if not isinstance(value, dict):
+        errors.append(f"{field} must be an object")
+        return
+    for key in ("label", "date", "time"):
+        if key in value and value[key] is not None and not isinstance(value[key], str):
+            errors.append(f"{field}.{key} must be a string or null")
 
 
 def validate_archive(archive: Any) -> list[str]:
@@ -346,6 +362,8 @@ def validate_archive(archive: Any) -> list[str]:
             _validate_timestamp(message.get("timestamp"), f"messages[{index}].timestamp", errors)
         if not isinstance(message.get("content", ""), str):
             errors.append(f"messages[{index}].content must be a string")
+        if "source_display" in message and message["source_display"] is not None:
+            _validate_source_display(message["source_display"], f"messages[{index}].source_display", errors)
         if "grouped" in message and not isinstance(message["grouped"], bool):
             errors.append(f"messages[{index}].grouped must be a boolean")
         if "attachments" in message and not isinstance(message["attachments"], list):
@@ -658,7 +676,11 @@ def _coverage_report(
 ) -> dict[str, Any]:
     ordered = sorted(
         ranges,
-        key=lambda item: (str(item.get("oldest_timestamp") or ""), str(item.get("source_file") or "")),
+        key=lambda item: (
+            str(item.get("oldest_timestamp") or ""),
+            0 if item.get("at_start") else 1,
+            str(item.get("source_file") or ""),
+        ),
     )
     unlinked_ranges: list[str] = []
     public_ranges: list[dict[str, Any]] = []
@@ -686,8 +708,22 @@ def _coverage_report(
 
     first = ordered[0] if ordered else {}
     last = ordered[-1] if ordered else {}
-    start_confirmed = bool(reached_start or first.get("at_start"))
-    end_confirmed = bool(reached_end or last.get("at_end"))
+    earliest_timestamp = str(first.get("oldest_timestamp") or "")
+    latest_timestamp = max((str(item.get("newest_timestamp") or "") for item in ordered), default="")
+    start_confirmed = bool(
+        reached_start
+        or any(
+            item.get("at_start") and str(item.get("oldest_timestamp") or "") == earliest_timestamp
+            for item in ordered
+        )
+    )
+    end_confirmed = bool(
+        reached_end
+        or any(
+            item.get("at_end") and str(item.get("newest_timestamp") or "") == latest_timestamp
+            for item in ordered
+        )
+    )
     all_ranges_tagged = bool(ordered) and all(item.get("has_capture_range") for item in ordered)
     linked = all_ranges_tagged and not unlinked_ranges
     if start_confirmed and end_confirmed and linked and conflict_count == 0:
@@ -783,8 +819,42 @@ def merge_transcripts(
     channel_ids: set[str] = set()
 
     def message_fingerprint(record: dict[str, Any]) -> str:
-        comparable = {key: value for key, value in record.items() if key != "grouped"}
+        comparable = {
+            key: value
+            for key, value in record.items()
+            if key not in {"grouped", "source_display"}
+        }
+        for collection, url_key in (("attachments", "url"), ("embeds", "image_url")):
+            values = comparable.get(collection)
+            if not isinstance(values, list):
+                continue
+            normalized_values = []
+            for value in values:
+                if isinstance(value, dict):
+                    normalized_value = dict(value)
+                    if url_key in normalized_value:
+                        normalized_value[url_key] = _canonical_remote_reference(normalized_value[url_key])
+                    normalized_values.append(normalized_value)
+                else:
+                    normalized_values.append(value)
+            comparable[collection] = normalized_values
         return json.dumps(comparable, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+    def refresh_signed_references(existing: dict[str, Any], incoming: dict[str, Any]) -> None:
+        for collection, url_key in (("attachments", "url"), ("embeds", "image_url")):
+            existing_values = existing.get(collection)
+            incoming_values = incoming.get(collection)
+            if not isinstance(existing_values, list) or not isinstance(incoming_values, list):
+                continue
+            for incoming_value in incoming_values:
+                if not isinstance(incoming_value, dict) or not _remote_media_allowed(incoming_value.get(url_key)):
+                    continue
+                incoming_identity = _canonical_remote_reference(incoming_value[url_key])
+                for existing_value in existing_values:
+                    if not isinstance(existing_value, dict):
+                        continue
+                    if _canonical_remote_reference(existing_value.get(url_key)) == incoming_identity:
+                        existing_value[url_key] = incoming_value[url_key]
 
     for capture_path in resolved_inputs:
         value = load_json(capture_path)
@@ -815,6 +885,16 @@ def merge_transcripts(
             duplicate_count += 1
             if message_fingerprint(existing) != message_fingerprint(record):
                 conflict_count += 1
+            refresh_signed_references(existing, record)
+            existing_display = existing.get("source_display")
+            incoming_display = record.get("source_display")
+            if isinstance(incoming_display, dict):
+                if not isinstance(existing_display, dict):
+                    existing["source_display"] = dict(incoming_display)
+                else:
+                    for key, value in incoming_display.items():
+                        if existing_display.get(key) in (None, "") and value not in (None, ""):
+                            existing_display[key] = value
             if existing.get("grouped") is True and record.get("grouped") is False:
                 existing["grouped"] = False
 
@@ -1007,6 +1087,17 @@ def _normalise_transcript_message(
             "record_index": index,
         },
     }
+    raw_source_display = _first(record, "source_display", "sourceDisplay", default=None)
+    if isinstance(raw_source_display, dict):
+        source_display = {
+            key: value.strip()
+            for key, value in raw_source_display.items()
+            if key in {"label", "date", "time"} and isinstance(value, str) and value.strip()
+        }
+        if source_display:
+            message["source_display"] = source_display
+    elif isinstance(raw_source_display, str) and raw_source_display.strip():
+        message["source_display"] = {"label": raw_source_display.strip()}
     if id_generated:
         message["provenance"]["id_generated"] = True
     reply_to = _first(record, "reply_to", "Reply To", "replyTo", "reply_to_id", "reference", "Reference", default=None)
