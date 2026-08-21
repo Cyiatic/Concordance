@@ -49,17 +49,29 @@ viewer depend on a live service, external assets, or a particular chat client.
 - All assets needed for offline viewing should be copied into the archive when
   the input provides them; external CDN URLs are provenance, not a runtime
   dependency.
+- Generated viewer directories include a local integrity manifest so a copied
+  archive can be verified without the source service or a network.
+- A user-supplied transcript adapter accepts an explicitly provided JSON
+  transcript and preserves per-message source filename and record index.
+- An attended browser adapter can read the currently rendered messages from one
+  user-opened Discord Web DM and hand them to the transcript importer, allowing
+  both authors to be preserved when the archive owner controls both ends.
+- Long histories are captured as user-scrolled, overlapping ranges. The merge
+  layer deduplicates message IDs and exposes an explicit coverage status instead
+  of implying that one virtualized DOM window is the entire DM.
 - The viewer must not require Discord, a network connection, a token, or a
   background service.
 - Capture is intentionally separated from the archive engine. The project
   will not depend on extracting account tokens or running an unattended
   user-account crawler. Full two-sided capture remains an open input-source
-  question.
+  question beyond the explicitly attended browser path; range verification is
+  limited to what Discord rendered in the attended session.
 
 ## Brand Commitments
 
-None established. The first viewer may establish a durable visual language,
-subject to later user review.
+The viewer uses the **Archive Ledger** brand: a Discord-like dark reading shell
+with a compact app rail, conversation sidebar, message timeline, and
+toggleable provenance drawer.
 
 ## Evidence on Hand
 

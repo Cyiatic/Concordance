@@ -14,3 +14,6 @@ discord-archive = "discord_archive.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.data-files]
+"viewer" = ["viewer/template.html"]

@@ -232,6 +232,9 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .transcript-intro strong { color: var(--ink); font-weight: 740; }
     .search-status { font-family: var(--mono); font-size: 10px; white-space: nowrap; }
     .message-list { padding: 0 21px 18px; }
+    .message-window-controls { display: flex; justify-content: center; padding: 12px 0 4px; }
+    .message-window-button { padding: 7px 11px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--surface); color: var(--teal); font-family: var(--mono); font-size: 10px; font-weight: 700; }
+    .message-window-button:hover { background: var(--panel); color: var(--accent-strong); }
     .date-divider { display: flex; align-items: center; gap: 13px; padding: 25px 0 10px; color: var(--muted); font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
     .date-divider::after { flex: 1; height: 1px; background: var(--line); content: ""; }
 
@@ -521,12 +524,14 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .main-view { display: flex; min-width: 0; min-height: 0; height: 100vh; flex-direction: column; background: var(--main); }
     .channel-header { display: flex; align-items: center; justify-content: space-between; min-height: 60px; gap: 16px; padding: 8px 16px; border-bottom: 1px solid var(--line); background: var(--main); box-shadow: 0 1px 0 rgba(0, 0, 0, .12); }
     .channel-leading { display: flex; min-width: 0; align-items: center; gap: 10px; }
-    .channel-icon { display: grid; width: 30px; height: 30px; place-items: center; flex: 0 0 30px; border-radius: 50%; background: #454851; color: var(--ink); font-family: var(--mono); font-size: 16px; font-weight: 800; }
+    .channel-icon { display: grid; width: 30px; height: 30px; place-items: center; flex: 0 0 30px; overflow: hidden; border-radius: 50%; background: #454851; color: var(--ink); font-family: var(--mono); font-size: 16px; font-weight: 800; }
+    .channel-icon-image { display: block; width: 100%; height: 100%; object-fit: cover; }
     .channel-heading { min-width: 0; }
     .channel-title-line { display: flex; min-width: 0; align-items: center; gap: 8px; }
     .channel-title-line h1 { min-width: 0; margin: 0; overflow: hidden; color: var(--ink); font-size: 16px; font-weight: 720; text-overflow: ellipsis; white-space: nowrap; }
     .archive-tag { padding: 2px 5px; border: 1px solid rgba(88, 101, 242, .55); border-radius: 3px; color: var(--accent-bright); font-family: var(--mono); font-size: 8px; font-weight: 800; letter-spacing: .08em; }
     .channel-subtitle { max-width: 56ch; overflow: hidden; margin-top: 2px; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .channel-handle { color: var(--subtle); font-family: var(--mono); font-size: 10px; }
     .channel-actions { display: flex; min-width: 0; align-items: center; justify-content: flex-end; gap: 8px; }
     .header-search { width: 210px; flex: 0 1 230px; max-width: 230px; margin: 0; }
     .search-wrap { position: relative; }
@@ -547,6 +552,29 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .eyebrow, .control-label { color: var(--muted); font-family: var(--mono); font-size: 9px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
     .archive-bar-meta { display: flex; min-width: 0; gap: 5px; overflow: hidden; margin-top: 3px; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
     .archive-bar-meta strong { overflow: hidden; color: var(--ink-soft); font-weight: 650; text-overflow: ellipsis; }
+    .coverage-status { flex: 0 0 auto; padding: 2px 5px; border-radius: 3px; background: rgba(240, 178, 50, .12); color: #f0c674; font-family: var(--mono); font-size: 9px; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; }
+    .coverage-status.is-verified { background: rgba(35, 165, 89, .12); color: #8edcae; }
+    .coverage-banner { display: flex; align-items: flex-start; gap: 10px; padding: 10px 18px; border-bottom: 1px solid rgba(240, 178, 50, .28); background: rgba(240, 178, 50, .08); color: var(--ink-soft); }
+    .coverage-banner[hidden] { display: none; }
+    .coverage-banner.is-verified { border-bottom-color: rgba(35, 165, 89, .28); background: rgba(35, 165, 89, .08); }
+    .coverage-banner-mark { display: grid; width: 22px; height: 22px; flex: 0 0 22px; place-items: center; border-radius: 50%; background: rgba(240, 178, 50, .18); color: #f0c674; font-family: var(--mono); font-size: 12px; font-weight: 800; }
+    .coverage-banner.is-verified .coverage-banner-mark { background: rgba(35, 165, 89, .18); color: #8edcae; }
+    .coverage-banner-copy { display: grid; min-width: 0; gap: 2px; font-size: 11px; line-height: 1.4; }
+    .coverage-banner-copy strong { color: var(--ink); font-size: 12px; font-weight: 750; }
+    .coverage-banner-action { color: var(--muted); }
+    .coverage-banner-button { margin-left: auto; flex: 0 0 auto; padding: 5px 8px; border: 1px solid var(--line-strong); border-radius: 4px; background: transparent; color: var(--ink-soft); font-family: var(--mono); font-size: 9px; font-weight: 700; white-space: nowrap; }
+    .coverage-banner-button:hover { background: var(--hover); color: var(--ink); }
+    .coverage-ledger { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+    .coverage-range { padding: 10px 0; border-top: 1px solid var(--line); }
+    .coverage-range:first-child { padding-top: 0; border-top: 0; }
+    .coverage-range-head, .coverage-range-meta { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .coverage-range-head strong { color: var(--ink); font-size: 11px; font-weight: 750; }
+    .coverage-range-file { min-width: 0; overflow: hidden; color: var(--muted); font-family: var(--mono); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+    .coverage-range-dates { margin-top: 3px; color: var(--ink-soft); font-size: 10px; line-height: 1.35; }
+    .coverage-range-meta { margin-top: 4px; color: var(--muted); font-family: var(--mono); font-size: 8px; }
+    .coverage-range-state { color: #8edcae; }
+    .coverage-range-state.is-gap { color: #f0c674; }
+    .coverage-ledger-note { margin: 11px 0 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
     .reader-controls { display: flex; align-items: center; justify-content: flex-end; gap: 7px; flex-wrap: wrap; }
     .select-control { height: 30px; padding: 4px 25px 4px 8px; border: 1px solid var(--line-strong); border-radius: 4px; background: var(--input); color: var(--ink-soft); font-size: 11px; }
     .select-control:hover { border-color: rgba(255, 255, 255, .24); }
@@ -567,9 +595,12 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .transcript-intro-note { color: var(--subtle); }
     .search-status { color: var(--muted); font-family: var(--mono); font-size: 9px; white-space: nowrap; }
     .message-list { min-height: 0; flex: 1; overflow-y: auto; padding: 12px 16px 28px 20px; scrollbar-color: #1e1f22 transparent; }
+    .message-window-controls { padding: 8px 0 12px; }
+    .message-window-button { border-color: var(--line-strong); border-radius: 4px; background: var(--sidebar); color: var(--link); }
+    .message-window-button:hover { background: var(--hover); color: var(--ink); }
     .date-divider { display: flex; align-items: center; gap: 10px; padding: 17px 0 9px; color: var(--muted); font-size: 10px; font-weight: 700; }
     .date-divider::before, .date-divider::after { height: 1px; flex: 1; background: var(--line-strong); content: ""; }
-    .message { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 16px; padding: 4px 8px 4px 0; border: 0; border-radius: 4px; scroll-margin-top: 16px; transition: background 160ms ease, box-shadow 160ms ease; }
+    .message { position: relative; display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 16px; padding: 4px 8px 4px 0; border: 0; border-radius: 4px; scroll-margin-top: 16px; transition: background 160ms ease, box-shadow 160ms ease; }
     .message:hover { background: var(--hover); }
     .message.is-selected { margin-left: -8px; padding-left: 8px; background: var(--accent-soft); box-shadow: inset 2px 0 0 var(--accent); }
     .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #454851; }
@@ -581,10 +612,16 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .message-header { display: flex; align-items: baseline; flex-wrap: wrap; gap: 7px; min-height: 21px; }
     .author-name { color: var(--ink); font-size: 14px; font-weight: 700; }
     .author-handle { color: var(--muted); font-family: var(--mono); font-size: 10px; }
-    .message-timestamp { margin-left: 1px; padding: 0; border: 0; background: transparent; color: var(--muted); font-family: var(--sans); font-size: 10px; }
+    .message-timestamp { margin-left: 1px; padding: 0; border: 0; background: transparent; color: var(--muted); font-family: var(--sans); font-size: 12px; line-height: 20px; }
     .message-timestamp:hover { color: var(--ink-soft); text-decoration: underline; text-underline-offset: 3px; }
-    .message-content { max-width: 78ch; margin-top: 1px; color: #dbdee1; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .message-content { max-width: 78ch; margin-top: 1px; color: #dbdee1; font-size: 16px; line-height: 1.375; white-space: pre-wrap; overflow-wrap: anywhere; }
     .message-content a { overflow-wrap: anywhere; }
+    .message.is-grouped { padding-top: 0; padding-bottom: 0; }
+    .message.is-grouped .grouped-avatar-spacer { width: 40px; height: 1px; }
+    .message.is-grouped .message-main { padding-top: 0; padding-bottom: 0; }
+    .message.is-grouped .message-header { min-height: 0; }
+    .message.is-grouped .message-timestamp { position: absolute; top: 50%; left: 0; width: 40px; margin: 0; opacity: 0; pointer-events: none; text-align: right; transform: translateY(-50%); }
+    .message.is-grouped:hover .message-timestamp, .message.is-grouped:focus-within .message-timestamp { opacity: 1; pointer-events: auto; }
     .reply-context { display: flex; align-items: center; gap: 6px; max-width: 75ch; margin: 0 0 4px; color: var(--muted); font-size: 11px; }
     .reply-context::before { width: 17px; height: 10px; border-top: 1px solid var(--subtle); border-left: 1px solid var(--subtle); border-top-left-radius: 5px; content: ""; }
     .reply-context button { overflow: hidden; padding: 0; border: 0; background: transparent; color: var(--link); font-size: 11px; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
@@ -594,12 +631,18 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .reaction.is-mine { border-color: rgba(88, 101, 242, .65); background: var(--accent-soft); color: #d9dcff; }
     .attachment { display: inline-flex; flex-direction: column; gap: 6px; max-width: min(100%, 430px); margin-top: 9px; padding: 8px; border: 1px solid var(--line-strong); border-radius: 5px; background: var(--sidebar-deep); }
     .attachment img { display: block; max-width: 100%; max-height: 260px; border-radius: 3px; }
+    .attachment audio, .attachment video { display: block; width: min(100%, 420px); }
+    .attachment video { max-height: 260px; }
     .attachment-caption { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; color: var(--ink-soft); font-size: 11px; }
     .attachment-caption strong { color: var(--ink); font-weight: 700; overflow-wrap: anywhere; }
     .attachment-caption span { color: var(--muted); font-family: var(--mono); font-size: 9px; white-space: nowrap; }
+    .attachment-actions { display: flex; align-items: center; gap: 8px; color: var(--muted); font-family: var(--mono); font-size: 9px; overflow-wrap: anywhere; }
+    .attachment-link { color: var(--link); }
     .remote-attachment { display: block; margin-top: 7px; color: var(--muted); font-family: var(--mono); font-size: 9px; }
     .embed { max-width: 75ch; margin-top: 9px; padding: 9px 11px; border: 1px solid var(--line-strong); border-radius: 3px; background: var(--sidebar-deep); box-shadow: inset 3px 0 0 var(--accent); }
     .embed-title { color: var(--ink); font-size: 12px; font-weight: 700; }
+    .embed-description { margin-top: 4px; color: var(--ink-soft); font-size: 11px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .embed-image { display: block; max-width: min(100%, 420px); max-height: 260px; margin-top: 8px; border-radius: 3px; }
     .embed-url { margin-top: 2px; color: var(--muted); font-family: var(--mono); font-size: 9px; overflow-wrap: anywhere; }
     .empty-state { padding: 55px 24px 65px; color: var(--muted); text-align: center; }
     .empty-state strong { display: block; color: var(--ink-soft); font-size: 15px; }
@@ -615,6 +658,10 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .detail-row dt { color: var(--muted); font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
     .detail-row dd { margin: 0; color: var(--ink-soft); font-size: 11px; overflow-wrap: anywhere; }
     .detail-row dd.mono { color: var(--ink); font-family: var(--mono); font-size: 9px; }
+    .detail-assets { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+    .detail-assets li { display: grid; gap: 2px; min-width: 0; }
+    .detail-assets strong { color: var(--ink-soft); font-size: 11px; font-weight: 650; overflow-wrap: anywhere; }
+    .detail-assets span { color: var(--muted); font-family: var(--mono); font-size: 9px; overflow-wrap: anywhere; }
     .detail-empty { color: var(--muted); font-size: 11px; }
     .detail-empty strong { display: block; margin-bottom: 5px; color: var(--ink-soft); font-size: 12px; }
     .detail-notes { margin: 0; padding-left: 16px; color: var(--muted); font-size: 10px; }
@@ -661,6 +708,8 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       .header-icon-button { order: 3; }
       .header-icon-button { width: 36px; height: 36px; }
       .archive-bar { align-items: flex-start; flex-direction: column; gap: 9px; padding: 10px 13px; }
+      .coverage-banner { flex-wrap: wrap; padding: 10px 13px; }
+      .coverage-banner-button { margin-left: 32px; }
       .reader-controls { width: 100%; justify-content: flex-start; }
       .select-control, .print-button { height: 36px; }
       .participant-strip { padding-left: 13px; padding-right: 13px; }
@@ -672,6 +721,8 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       .message { grid-template-columns: 38px minmax(0, 1fr); gap: 12px; padding-right: 4px; }
       .avatar { width: 38px; height: 38px; }
       .avatar-frame { width: 38px; height: 38px; }
+      .message.is-grouped .grouped-avatar-spacer { width: 38px; }
+      .message.is-grouped .message-timestamp { width: 38px; }
       .message.is-selected { margin-left: -5px; padding-left: 5px; }
     }
 
@@ -685,6 +736,8 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       .message { grid-template-columns: 32px minmax(0, 1fr); gap: 9px; }
       .avatar { width: 32px; height: 32px; border-radius: 50%; }
       .avatar-frame { width: 32px; height: 32px; }
+      .message.is-grouped .grouped-avatar-spacer { width: 32px; }
+      .message.is-grouped .message-timestamp { width: 32px; }
       .message-timestamp { width: auto; margin: 0 0 0 1px; text-align: left; }
       .message-header { gap: 4px 7px; }
       .transcript-intro { padding-left: 13px; padding-right: 13px; }
@@ -695,7 +748,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       :root { --main: #fff; --ink: #111; --ink-soft: #333; --muted: #555; --line: #bbb; }
       html, body { overflow: visible; background: #fff; color: #111; }
       body { font-size: 11pt; }
-      .server-rail, .dm-sidebar, .channel-header, .archive-bar, .participant-strip, .details, .transcript-intro .search-status { display: none !important; }
+      .server-rail, .dm-sidebar, .channel-header, .archive-bar, .coverage-banner, .participant-strip, .details, .transcript-intro .search-status { display: none !important; }
       .app-shell, .main-view, .reader, .reader-layout, .transcript { display: block; height: auto; min-height: 0; }
       .message-list { overflow: visible; padding: 0; }
       .message { break-inside: avoid; }
@@ -770,10 +823,10 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     <div class="main-view">
       <header class="channel-header">
         <div class="channel-leading">
-          <span class="channel-icon" aria-hidden="true">@</span>
+          <span class="channel-icon" id="channel-icon" aria-label="Conversation avatar">@</span>
           <div class="channel-heading">
             <div class="channel-title-line"><h1 id="reader-title">{{ARCHIVE_TITLE}}</h1><span class="archive-tag">ARCHIVE</span></div>
-            <div class="channel-subtitle"><span id="reader-kind">direct message</span><span aria-hidden="true"> · </span><span id="reader-subtitle">A portable conversation record with local metadata and assets.</span></div>
+            <div class="channel-subtitle"><span id="reader-kind">direct message</span><span class="channel-handle" id="reader-handle" hidden></span><span aria-hidden="true"> · </span><span id="reader-subtitle">A portable conversation record with local metadata and assets.</span></div>
           </div>
         </div>
         <div class="channel-actions">
@@ -793,7 +846,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         <div class="archive-bar">
           <div class="archive-bar-copy">
             <div class="eyebrow">archived conversation</div>
-            <div class="archive-bar-meta"><strong id="transcript-source">Source</strong><span aria-hidden="true"> · </span><span id="transcript-captured">captured date unavailable</span></div>
+            <div class="archive-bar-meta"><strong id="transcript-source">Source</strong><span aria-hidden="true"> · </span><span id="transcript-captured">captured date unavailable</span><span class="coverage-status" id="coverage-status" aria-live="polite">coverage unverified</span></div>
           </div>
           <div class="reader-controls">
             <label class="control-label" for="author-filter">show</label>
@@ -810,6 +863,16 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
           </div>
         </div>
 
+        <div class="coverage-banner" id="coverage-banner" role="status" aria-live="polite" hidden>
+          <span class="coverage-banner-mark" id="coverage-banner-mark" aria-hidden="true">!</span>
+          <div class="coverage-banner-copy">
+            <strong id="coverage-banner-title">Archive coverage needs review</strong>
+            <span id="coverage-banner-summary"></span>
+            <span class="coverage-banner-action" id="coverage-banner-action"></span>
+          </div>
+          <button class="coverage-banner-button" type="button" data-scroll="details">View capture notes</button>
+        </div>
+
         <div class="participant-strip" id="participant-strip" aria-label="Conversation participants"></div>
 
         <div class="reader-layout">
@@ -823,6 +886,12 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
 
           <aside class="details is-open" id="details" aria-label="Archive details">
             <section class="detail-panel" id="selection-panel" aria-live="polite"></section>
+            <section class="detail-panel" id="coverage-panel" hidden>
+              <div class="eyebrow">capture ledger</div>
+              <div class="detail-title">Coverage map</div>
+              <ol class="coverage-ledger" id="coverage-ledger"></ol>
+              <p class="coverage-ledger-note" id="coverage-ledger-note"></p>
+            </section>
             <section class="detail-panel">
               <div class="eyebrow">archive notes</div>
               <div class="detail-title">What survived the source</div>
@@ -849,7 +918,11 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         author: "all",
         timezone: "archive",
         selected: null,
-        detailsOpen: true
+        detailsOpen: true,
+        windowStart: 0,
+        windowSize: 240,
+        printing: false,
+        printWindowStart: null
       };
 
       const $ = (selector) => document.querySelector(selector);
@@ -861,8 +934,10 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         '"': "&quot;"
       }[character]));
       const safeAsset = (value) => {
-        if (typeof value !== "string" || !value || value.startsWith("/") || value.includes("..") || value.startsWith("data:")) return null;
-        return value;
+        if (typeof value !== "string") return null;
+        const normalized = value.trim().replaceAll("\\", "/");
+        if (!normalized || normalized.startsWith("/") || normalized.startsWith("//") || normalized.startsWith("data:") || /^[a-z][a-z0-9+.-]*:/i.test(normalized) || normalized.split("/").includes("..")) return null;
+        return normalized;
       };
       const safeUrl = (value) => {
         if (typeof value !== "string") return null;
@@ -926,16 +1001,23 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         if (path) return `<span class="mini-avatar-frame"><img class="mini-avatar" data-avatar-image src="${escapeHtml(path)}" alt=""><span class="mini-avatar mini-avatar-fallback" data-avatar-fallback aria-hidden="true" hidden>${escapeHtml(initials(person))}</span></span>`;
         return `<span class="mini-avatar" aria-hidden="true">${escapeHtml(initials(person))}</span>`;
       };
+      const searchableText = (message) => {
+        const person = participantById.get(message.author_id) || {};
+        const attachmentText = Array.isArray(message.attachments) ? message.attachments.flatMap((attachment) => [attachment?.name, attachment?.mime, attachment?.url]) : [];
+        const embedText = Array.isArray(message.embeds) ? message.embeds.flatMap((embed) => [embed?.title, embed?.description, embed?.url, embed?.image_url]) : [];
+        const reactionText = Array.isArray(message.reactions) ? message.reactions.flatMap((reaction) => [reaction?.emoji]) : [];
+        return [message.id, message.content, person.display_name, person.username, message.timestamp, ...attachmentText, ...embedText, ...reactionText].join(" ").toLowerCase();
+      };
+      const searchTextById = new Map(messages.map((message) => [message.id, searchableText(message)]));
       const visibleMessages = () => {
         const query = state.query.trim().toLowerCase();
         return messages.filter((message) => {
           if (state.author !== "all" && message.author_id !== state.author) return false;
           if (!query) return true;
-          const person = participantById.get(message.author_id) || {};
-          const haystack = [message.id, message.content, person.display_name, person.username, message.timestamp].join(" ").toLowerCase();
-          return haystack.includes(query);
+          return searchTextById.get(message.id)?.includes(query);
         });
       };
+      const localAssetLink = (path, label = "Open local file") => `<a class="attachment-link" href="${escapeHtml(path)}" target="_blank" rel="noreferrer noopener" download>${escapeHtml(label)} ↗</a>`;
       const attachmentMarkup = (attachment) => {
         if (!attachment || typeof attachment !== "object") return "";
         const path = safeAsset(attachment.path || attachment.local_path);
@@ -943,16 +1025,38 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const label = escapeHtml(attachment.name || "attachment");
         const size = escapeHtml(formatBytes(attachment.size_bytes));
         if (path && mime.startsWith("image/")) {
-          return `<figure class="attachment"><img src="${escapeHtml(path)}" alt="${label}"><figcaption class="attachment-caption"><strong>${label}</strong><span>${size}</span></figcaption></figure>`;
+          return `<figure class="attachment"><img src="${escapeHtml(path)}" alt="${label}"><figcaption class="attachment-caption"><strong>${label}</strong><span>${size}</span></figcaption><div class="attachment-actions">${localAssetLink(path)}</div></figure>`;
+        }
+        if (path && mime.startsWith("audio/")) {
+          return `<div class="attachment attachment-media"><div class="attachment-caption"><strong>${label}</strong><span>${size}</span></div><audio controls preload="metadata" src="${escapeHtml(path)}">${localAssetLink(path, "Open audio file")}</audio><div class="attachment-actions">${localAssetLink(path, "Open audio file")}</div></div>`;
+        }
+        if (path && mime.startsWith("video/")) {
+          return `<div class="attachment attachment-media"><div class="attachment-caption"><strong>${label}</strong><span>${size}</span></div><video controls preload="metadata" src="${escapeHtml(path)}">${localAssetLink(path, "Open video file")}</video><div class="attachment-actions">${localAssetLink(path, "Open video file")}</div></div>`;
+        }
+        if (path) {
+          return `<div class="attachment"><div class="attachment-caption"><strong>${label}</strong><span>${size}</span></div><div class="attachment-actions">${localAssetLink(path)}</div></div>`;
         }
         const remote = safeUrl(attachment.url);
-        const link = remote ? `<a href="${escapeHtml(remote)}" target="_blank" rel="noreferrer noopener">remote reference</a>` : "local file unavailable";
+        const link = remote ? `<a href="${escapeHtml(remote)}" target="_blank" rel="noreferrer noopener">remote reference ↗</a>` : "local file unavailable";
         return `<div class="attachment"><div class="attachment-caption"><strong>${label}</strong><span>${size}</span></div><span class="remote-attachment">${link}</span></div>`;
       };
       const embedMarkup = (embed) => {
         if (!embed || typeof embed !== "object") return "";
         const url = safeUrl(embed.url);
-        return `<div class="embed"><div class="embed-title">${escapeHtml(embed.title || "Embedded reference")}</div>${url ? `<div class="embed-url"><a href="${escapeHtml(url)}" target="_blank" rel="noreferrer noopener">${escapeHtml(url)}</a></div>` : ""}</div>`;
+        const imageReference = safeUrl(embed.image_url);
+        const imagePath = safeAsset(embed.image_path || embed.local_path);
+        const image = imagePath ? `<img class="embed-image" src="${escapeHtml(imagePath)}" alt="${escapeHtml(embed.title || "Embedded image")}"><div class="attachment-actions">${localAssetLink(imagePath, "Open embedded image")}</div>` : "";
+        const description = embed.description ? `<div class="embed-description">${safeTextWithLinks(embed.description)}</div>` : "";
+        const remoteImage = !imagePath && imageReference ? `<div class="embed-url">Remote image reference: <a href="${escapeHtml(imageReference)}" target="_blank" rel="noreferrer noopener">${escapeHtml(imageReference)} ↗</a></div>` : "";
+        return `<div class="embed"><div class="embed-title">${escapeHtml(embed.title || "Embedded reference")}</div>${description}${image}${remoteImage}${url ? `<div class="embed-url"><a href="${escapeHtml(url)}" target="_blank" rel="noreferrer noopener">${escapeHtml(url)}</a></div>` : ""}</div>`;
+      };
+      const attachmentReferenceMarkup = (attachment) => {
+        if (!attachment || typeof attachment !== "object") return "";
+        const path = safeAsset(attachment.path || attachment.local_path);
+        const remote = safeUrl(attachment.url);
+        const label = escapeHtml(attachment.name || "attachment");
+        const reference = path ? localAssetLink(path) : remote ? `<a class="attachment-link" href="${escapeHtml(remote)}" target="_blank" rel="noreferrer noopener">Remote reference ↗</a>` : "unavailable";
+        return `<li><strong>${label}</strong><span>${reference}</span></li>`;
       };
       const replyMarkup = (message) => {
         const target = messageById.get(message.reply_to);
@@ -963,28 +1067,46 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       const messageMarkup = (message) => {
         const person = participantById.get(message.author_id) || { id: message.author_id, display_name: "Unknown author" };
         const selected = state.selected === message.id ? " is-selected" : "";
+        const grouped = message.grouped === true;
+        const groupingClass = grouped ? " is-grouped" : "";
         const edited = message.edited_at ? `<span class="edited-label">edited ${escapeHtml(formatTime(message.edited_at))}</span>` : "";
         const attachments = Array.isArray(message.attachments) ? message.attachments.map(attachmentMarkup).join("") : "";
         const embeds = Array.isArray(message.embeds) ? message.embeds.map(embedMarkup).join("") : "";
         const reactions = Array.isArray(message.reactions) && message.reactions.length ? `<div class="message-footer">${message.reactions.map((reaction) => `<span class="reaction${reaction.me ? " is-mine" : ""}">${escapeHtml(reaction.emoji || "reaction")} ${escapeHtml(reaction.count ?? 1)}</span>`).join("")}</div>` : "";
         const footer = `${edited ? `<div class="message-footer">${edited}</div>` : ""}${reactions}`;
-        return `<article class="message${selected}" id="message-${escapeHtml(message.id)}" data-message-id="${escapeHtml(message.id)}" tabindex="-1"><div>${avatarMarkup(person)}</div><div class="message-main"><div class="message-header"><span class="author-name">${escapeHtml(displayName(person))}</span>${handleName(person) ? `<span class="author-handle">${escapeHtml(handleName(person))}</span>` : ""}<button class="message-timestamp" type="button" data-select="${escapeHtml(message.id)}" title="${escapeHtml(formatRawTime(message.timestamp))}">${escapeHtml(formatTime(message.timestamp))}</button></div>${replyMarkup(message)}<div class="message-content">${safeTextWithLinks(message.content || "")}</div>${attachments}${embeds}${footer}</div></article>`;
+        const avatar = grouped ? `<span class="grouped-avatar-spacer" aria-hidden="true"></span>` : avatarMarkup(person);
+        const author = grouped ? "" : `<span class="author-name">${escapeHtml(displayName(person))}</span>${handleName(person) ? `<span class="author-handle">${escapeHtml(handleName(person))}</span>` : ""}`;
+        return `<article class="message${groupingClass}${selected}" id="message-${escapeHtml(message.id)}" data-message-id="${escapeHtml(message.id)}" tabindex="-1"><div>${avatar}</div><div class="message-main"><div class="message-header">${author}<button class="message-timestamp" type="button" data-select="${escapeHtml(message.id)}" title="${escapeHtml(formatRawTime(message.timestamp))}">${escapeHtml(formatTime(message.timestamp))}</button></div>${replyMarkup(message)}<div class="message-content">${safeTextWithLinks(message.content || "")}</div>${attachments}${embeds}${footer}</div></article>`;
       };
       const renderMessages = () => {
         const list = $("#message-list");
         const visible = visibleMessages();
-        $("#search-status").textContent = `${visible.length} of ${messages.length} messages`;
         if (!visible.length) {
+          $("#search-status").textContent = `0 of ${messages.length} messages`;
           list.innerHTML = `<div class="empty-state"><strong>No messages match this view.</strong><p>Try clearing the search or choosing Everyone in the author filter.</p></div>`;
           return;
         }
+        const displaySize = state.printing ? visible.length : state.windowSize;
+        const maximumStart = Math.max(0, visible.length - displaySize);
+        let start = Math.max(0, Math.min(state.windowStart, maximumStart));
+        const selectedIndex = state.selected ? visible.findIndex((message) => message.id === state.selected) : -1;
+        if (selectedIndex >= 0 && (selectedIndex < start || selectedIndex >= start + displaySize)) {
+          start = Math.max(0, Math.min(selectedIndex - Math.floor(displaySize / 2), maximumStart));
+        }
+        const end = Math.min(visible.length, start + displaySize);
+        state.windowStart = start;
+        const windowStatus = state.printing ? `${visible.length} of ${messages.length} messages` : visible.length > state.windowSize ? `showing ${start + 1}–${end} of ${visible.length}` : `${visible.length} of ${messages.length} messages`;
+        $("#search-status").textContent = windowStatus;
         let previousDate = null;
-        list.innerHTML = visible.map((message) => {
+        const windowMessages = visible.slice(start, end);
+        const older = !state.printing && start > 0 ? `<div class="message-window-controls"><button class="message-window-button" type="button" data-action="load-older">↑ Load earlier messages</button></div>` : "";
+        const newer = !state.printing && end < visible.length ? `<div class="message-window-controls"><button class="message-window-button" type="button" data-action="load-newer">Load more messages ↓</button></div>` : "";
+        list.innerHTML = older + windowMessages.map((message) => {
           const date = formatDate(message.timestamp);
           const divider = date !== previousDate ? `<div class="date-divider"><span>${escapeHtml(date)}</span></div>` : "";
           previousDate = date;
           return divider + messageMarkup(message);
-        }).join("");
+        }).join("") + newer;
         if (state.selected) {
           const selected = document.getElementById(`message-${CSS.escape(state.selected)}`);
           selected?.scrollIntoView({ block: "nearest" });
@@ -999,25 +1121,69 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         }
         const person = participantById.get(message.author_id) || { id: message.author_id, display_name: "Unknown author" };
         const link = safeUrl(message.message_link);
-        const attachmentCount = Array.isArray(message.attachments) ? message.attachments.length : 0;
-        panel.innerHTML = `<div class="eyebrow">message detail</div><div class="detail-title">${escapeHtml(displayName(person))}</div><dl class="detail-list"><div class="detail-row"><dt>displayed</dt><dd>${escapeHtml(formatFullTime(message.timestamp))}</dd></div><div class="detail-row"><dt>raw UTC</dt><dd class="mono">${escapeHtml(formatRawTime(message.timestamp))}</dd></div><div class="detail-row"><dt>message ID</dt><dd class="mono">${escapeHtml(message.id)}</dd></div><div class="detail-row"><dt>attachments</dt><dd>${attachmentCount ? `${attachmentCount} local or referenced` : "none"}</dd></div>${message.edited_at ? `<div class="detail-row"><dt>edited</dt><dd>${escapeHtml(formatFullTime(message.edited_at))}</dd></div>` : ""}</dl>${link ? `<p><a href="${escapeHtml(link)}" target="_blank" rel="noreferrer noopener">Open source message link ↗</a></p>` : ""}<button class="copy-button" type="button" data-copy="${escapeHtml(message.id)}">Copy message ID</button>`;
+        const attachments = Array.isArray(message.attachments) ? message.attachments : [];
+        const provenance = message.provenance && typeof message.provenance === "object" ? message.provenance : {};
+        const attachmentRow = attachments.length ? `<div class="detail-row"><dt>attachments</dt><dd><ul class="detail-assets">${attachments.map(attachmentReferenceMarkup).join("")}</ul></dd></div>` : `<div class="detail-row"><dt>attachments</dt><dd>none</dd></div>`;
+        const provenanceRows = `${provenance.source_file ? `<div class="detail-row"><dt>source file</dt><dd class="mono">${escapeHtml(provenance.source_file)}</dd></div>` : ""}${Number.isInteger(provenance.record_index) ? `<div class="detail-row"><dt>source record</dt><dd class="mono">${escapeHtml(provenance.record_index)}</dd></div>` : ""}${provenance.id_generated ? `<div class="detail-row"><dt>message ID note</dt><dd>Generated locally because the source did not provide an ID.</dd></div>` : ""}`;
+        panel.innerHTML = `<div class="eyebrow">message detail</div><div class="detail-title">${escapeHtml(displayName(person))}</div><dl class="detail-list"><div class="detail-row"><dt>displayed</dt><dd>${escapeHtml(formatFullTime(message.timestamp))}</dd></div><div class="detail-row"><dt>raw UTC</dt><dd class="mono">${escapeHtml(formatRawTime(message.timestamp))}</dd></div><div class="detail-row"><dt>message ID</dt><dd class="mono">${escapeHtml(message.id)}</dd></div>${attachmentRow}${message.edited_at ? `<div class="detail-row"><dt>edited</dt><dd>${escapeHtml(formatFullTime(message.edited_at))}</dd></div>` : ""}${provenanceRows}</dl>${link ? `<p><a href="${escapeHtml(link)}" target="_blank" rel="noreferrer noopener">Open source message link ↗</a></p>` : ""}<button class="copy-button" type="button" data-copy="${escapeHtml(message.id)}">Copy message ID</button>`;
       };
       const renderMetadata = () => {
         const kind = String(metadata.kind || "conversation").replaceAll("_", " ");
         const source = metadata.source || {};
         const sorted = [...messages].sort((a, b) => String(a.timestamp).localeCompare(String(b.timestamp)));
+        const title = metadata.title || "Untitled archive";
+        const channelPerson = participants.find((person) => displayName(person) === title) || participants[0] || null;
         $("#rail-kind").textContent = kind;
-        $("#rail-title").textContent = metadata.title || "Untitled archive";
-        $("#crumb-title").textContent = metadata.title || "Untitled archive";
+        $("#rail-title").textContent = title;
+        $("#crumb-title").textContent = title;
         $("#reader-kind").textContent = `${kind} / transcript`;
-        $("#reader-title").textContent = metadata.title || "Untitled archive";
+        $("#reader-title").textContent = title;
+        const channelIcon = $("#channel-icon");
+        if (channelIcon) {
+          const iconPath = safeAsset(channelPerson?.avatar_path || channelPerson?.avatar_ref);
+          channelIcon.innerHTML = iconPath ? `<img class="channel-icon-image" src="${escapeHtml(iconPath)}" alt="">` : escapeHtml(initials(channelPerson));
+          channelIcon.setAttribute("aria-label", `${title} conversation avatar`);
+        }
+        const channelHandle = $("#reader-handle");
+        const handle = typeof metadata.channel_handle === "string" && metadata.channel_handle.trim() ? ` · @${metadata.channel_handle.trim().replace(/^@+/, "")}` : "";
+        if (channelHandle) {
+          channelHandle.textContent = handle;
+          channelHandle.hidden = !handle;
+        }
         const sourceLabel = source.label || source.type || "user-supplied source";
         $("#transcript-source").textContent = sourceLabel;
         $("#transcript-captured").textContent = metadata.captured_at ? `captured ${formatFullTime(metadata.captured_at)}` : "captured date unavailable";
         $("#rail-message-count").textContent = String(messages.length);
         $("#rail-participant-count").textContent = String(participants.length);
         $("#rail-date-range").textContent = sorted.length ? `${formatDate(sorted[0].timestamp)} → ${formatDate(sorted[sorted.length - 1].timestamp)}` : "none";
-        const notes = Array.isArray(source.notes) ? source.notes : [];
+        const notes = Array.isArray(source.notes) ? [...source.notes] : [];
+        const captureRange = metadata.capture_range && typeof metadata.capture_range === "object" ? metadata.capture_range : null;
+        const coverage = metadata.coverage && typeof metadata.coverage === "object" ? metadata.coverage : null;
+        const coverageStatus = $("#coverage-status");
+        if (coverageStatus) {
+          const status = coverage?.complete ? "verified" : coverage?.status || (captureRange ? (captureRange.at_start && captureRange.at_end ? "bounded" : "partial") : "unverified");
+          coverageStatus.textContent = !coverage && !captureRange ? "coverage not assessed" : `coverage ${status}`;
+          coverageStatus.classList.toggle("is-verified", status === "verified");
+        }
+        if (coverage) {
+          notes.unshift(`History coverage: ${coverage.complete ? "verified" : coverage.status || "unverified"} across ${Number(coverage.range_count) || 0} captured range${Number(coverage.range_count) === 1 ? "" : "s"}.`);
+          if (Array.isArray(coverage.notes)) notes.push(...coverage.notes);
+        } else if (captureRange) {
+          const boundary = captureRange.at_start && captureRange.at_end ? "both scroll boundaries observed" : `${captureRange.at_start ? "oldest" : "newest"} boundary observed`;
+          notes.unshift(`History coverage: partial visible range (${Number(captureRange.message_count) || messages.length} messages; ${boundary}). Merge overlapping ranges before treating the archive as complete.`);
+        }
+        const importSummary = source.import_summary && typeof source.import_summary === "object" ? source.import_summary : null;
+        if (importSummary && (Number(importSummary.records_skipped) > 0 || Array.isArray(importSummary.unreadable_files) && importSummary.unreadable_files.length)) {
+          const imported = Number.isFinite(Number(importSummary.records_imported)) ? Number(importSummary.records_imported) : 0;
+          const seen = Number.isFinite(Number(importSummary.records_seen)) ? Number(importSummary.records_seen) : imported;
+          const skipped = Number.isFinite(Number(importSummary.records_skipped)) ? Number(importSummary.records_skipped) : 0;
+          const unreadable = Array.isArray(importSummary.unreadable_files) ? importSummary.unreadable_files.length : 0;
+          notes.push(`Import coverage: ${imported} of ${seen} records imported; ${skipped} skipped; ${unreadable} unreadable file${unreadable === 1 ? "" : "s"}.`);
+          if (unreadable) {
+            const unreadableNames = importSummary.unreadable_files.map((path) => safeAsset(path) || "unavailable source path").join(", ");
+            notes.push(`Unreadable source files: ${unreadableNames}.`);
+          }
+        }
         $("#archive-notes").innerHTML = notes.length ? notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("") : "<li>No source notes were provided.</li>";
         const subtitle = metadata.synthetic ? "Synthetic fixture · all names and assets are fictional." : "A portable conversation record with local metadata and assets.";
         $("#reader-subtitle").textContent = subtitle;
@@ -1026,7 +1192,9 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         $("#participant-strip").innerHTML = participants.map((person) => `<span class="participant-chip">${miniAvatarMarkup(person)}<span>${escapeHtml(displayName(person))}</span></span>`).join("");
         $("#dm-avatar-stack").innerHTML = participants.slice(0, 3).map(miniAvatarMarkup).join("") || `<span class="mini-avatar" aria-hidden="true">?</span>`;
         $("#dm-item-count").textContent = `${messages.length} messages`;
-        $("#dm-item-state").textContent = metadata.synthetic ? "synthetic archive" : "local archive";
+        $("#dm-item-state").textContent = coverage?.complete ? "verified local archive" : coverage || captureRange ? "incomplete capture" : metadata.synthetic ? "synthetic archive" : "local archive";
+        renderCoverageBanner(sorted, captureRange, coverage);
+        renderCoverageLedger(captureRange, coverage);
       };
       const applyDetailsState = (open) => {
         state.detailsOpen = Boolean(open);
@@ -1050,13 +1218,82 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         renderSelection();
         document.getElementById(`message-${CSS.escape(messageId)}`)?.focus({ preventScroll: true });
       };
+      const renderCoverageBanner = (sorted, captureRange, coverage) => {
+        const banner = $("#coverage-banner");
+        if (!banner) return;
+        if (!captureRange && !coverage) {
+          banner.hidden = true;
+          banner.classList.remove("is-verified");
+          return;
+        }
+        const complete = Boolean(coverage?.complete);
+        const status = complete ? "verified" : coverage?.status || "partial";
+        const rangeCount = Number(coverage?.range_count || (captureRange ? 1 : 0));
+        const messageCount = Number(coverage?.unique_message_count || captureRange?.message_count || messages.length);
+        const firstDate = sorted[0]?.timestamp ? formatDate(sorted[0].timestamp) : "unknown start";
+        const lastDate = sorted[sorted.length - 1]?.timestamp ? formatDate(sorted[sorted.length - 1].timestamp) : "unknown end";
+        const atStart = Boolean(coverage?.start_confirmed || captureRange?.at_start);
+        const atEnd = Boolean(coverage?.end_confirmed || captureRange?.at_end);
+        const boundarySummary = atStart && atEnd ? "oldest and newest boundaries observed" : atStart ? "oldest boundary observed; newest boundary still missing" : atEnd ? "newest boundary observed; oldest boundary still missing" : "neither conversation boundary observed";
+        banner.hidden = false;
+        banner.classList.toggle("is-verified", complete);
+        $("#coverage-banner-mark").textContent = complete ? "✓" : "!";
+        $("#coverage-banner-title").textContent = complete ? "Coverage verified" : status === "unverified" ? "Archive scope is unknown" : "Archive is incomplete";
+        $("#coverage-banner-summary").textContent = complete
+          ? `${messageCount} messages across ${rangeCount} overlapping range${rangeCount === 1 ? "" : "s"} · ${firstDate} → ${lastDate}.`
+          : `${messageCount} message${messageCount === 1 ? "" : "s"} captured · ${boundarySummary}. This is not yet the whole conversation.`;
+        $("#coverage-banner-action").textContent = complete
+          ? "The observed rendered range is linked and ready to read offline."
+          : (coverage?.next_action || "Return to the open DM, capture overlapping ranges at both boundaries, then merge them before treating the archive as complete.");
+      };
+      const renderCoverageLedger = (captureRange, coverage) => {
+        const panel = $("#coverage-panel");
+        const ledger = $("#coverage-ledger");
+        const note = $("#coverage-ledger-note");
+        if (!panel || !ledger || !note) return;
+        const source = metadata.source && typeof metadata.source === "object" ? metadata.source : {};
+        const ranges = Array.isArray(coverage?.ranges) && coverage.ranges.length
+          ? coverage.ranges
+          : captureRange
+            ? [{
+                source_file: source.source_name || "visible capture",
+                message_count: captureRange.message_count || messages.length,
+                oldest_timestamp: captureRange.oldest_timestamp,
+                newest_timestamp: captureRange.newest_timestamp,
+                at_start: captureRange.at_start,
+                at_end: captureRange.at_end,
+                overlap_with_previous: 0,
+              }]
+            : [];
+        if (!ranges.length) {
+          panel.hidden = true;
+          ledger.innerHTML = "";
+          note.textContent = "";
+          return;
+        }
+        panel.hidden = false;
+        ledger.innerHTML = ranges.map((range, index) => {
+          const overlap = Number(range.overlap_with_previous || 0);
+          const continuity = index === 0 ? "first captured range" : overlap > 0 ? `${overlap} shared message${overlap === 1 ? "" : "s"}` : "gap · no shared messages";
+          const boundary = [range.at_start ? "oldest boundary" : "", range.at_end ? "newest boundary" : ""].filter(Boolean).join(" · ") || "interior range";
+          const stateClass = index > 0 && overlap === 0 ? " is-gap" : "";
+          const start = range.oldest_timestamp ? formatDate(range.oldest_timestamp) : "unknown start";
+          const end = range.newest_timestamp ? formatDate(range.newest_timestamp) : "unknown end";
+          const count = Number(range.message_count || 0);
+          return `<li class="coverage-range"><div class="coverage-range-head"><strong>Range ${index + 1}</strong><span class="coverage-range-file" title="${escapeHtml(range.source_file || "capture")}">${escapeHtml(range.source_file || "capture")}</span></div><div class="coverage-range-dates">${escapeHtml(start)} → ${escapeHtml(end)}</div><div class="coverage-range-meta"><span>${count} message${count === 1 ? "" : "s"}</span><span class="coverage-range-state${stateClass}">${escapeHtml(continuity)}</span></div><div class="coverage-range-meta"><span>${escapeHtml(boundary)}</span></div></li>`;
+        }).join("");
+        note.textContent = coverage?.complete
+          ? "Overlap chain and both conversation boundaries are verified for the rendered range."
+          : coverage?.next_action || "Capture an overlapping range at the next missing boundary before treating this archive as complete.";
+      };
       const initializeHash = () => {
         const match = window.location.hash.match(/^#message=(.+)$/);
         if (match) state.selected = decodeURIComponent(match[1]);
       };
+      const resetMessageWindow = () => { state.windowStart = 0; };
 
-      $("#message-search").addEventListener("input", (event) => { state.query = event.target.value; renderMessages(); });
-      $("#author-filter").addEventListener("change", (event) => { state.author = event.target.value; renderMessages(); });
+      $("#message-search").addEventListener("input", (event) => { state.query = event.target.value; resetMessageWindow(); renderMessages(); });
+      $("#author-filter").addEventListener("change", (event) => { state.author = event.target.value; resetMessageWindow(); renderMessages(); });
       $("#timezone-mode").addEventListener("change", (event) => { state.timezone = event.target.value; renderMetadata(); renderMessages(); renderSelection(); });
       document.addEventListener("error", (event) => {
         const image = event.target;
@@ -1067,9 +1304,17 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       }, true);
       document.addEventListener("click", (event) => {
         const action = event.target.closest("[data-action]")?.dataset.action;
-        if (action === "print") window.print();
+        if (action === "print") {
+          state.printWindowStart = state.windowStart;
+          state.printing = true;
+          renderMessages();
+          window.print();
+          return;
+        }
         if (action === "toggle-details") applyDetailsState(!state.detailsOpen);
         if (action === "focus-search") $("#message-search")?.focus();
+        if (action === "load-older") { state.windowStart = Math.max(0, state.windowStart - state.windowSize); renderMessages(); return; }
+        if (action === "load-newer") { state.windowStart = state.windowStart + state.windowSize; renderMessages(); return; }
         const selected = event.target.closest("[data-select]")?.dataset.select;
         if (selected) selectMessage(selected);
         const jump = event.target.closest("[data-jump]")?.dataset.jump;
@@ -1080,9 +1325,15 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const copy = event.target.closest("[data-copy]")?.dataset.copy;
         if (copy && navigator.clipboard) navigator.clipboard.writeText(copy).then(() => { event.target.textContent = "Copied"; setTimeout(() => { event.target.textContent = "Copy message ID"; }, 1200); });
       });
+      window.addEventListener("afterprint", () => {
+        state.printing = false;
+        if (Number.isInteger(state.printWindowStart)) state.windowStart = state.printWindowStart;
+        state.printWindowStart = null;
+        renderMessages();
+      });
       document.addEventListener("keydown", (event) => {
         if (event.key === "/" && !["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement?.tagName)) { event.preventDefault(); $("#message-search").focus(); }
-        if (event.key === "Escape" && document.activeElement === $("#message-search")) { $("#message-search").value = ""; state.query = ""; renderMessages(); }
+        if (event.key === "Escape" && document.activeElement === $("#message-search")) { $("#message-search").value = ""; state.query = ""; resetMessageWindow(); renderMessages(); }
       });
 
       initializeHash();

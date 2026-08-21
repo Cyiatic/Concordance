@@ -46,9 +46,18 @@ its provenance without leaving the reading flow.
   marks local-only state.
 - The central transcript is a dark reading surface. Date dividers establish
   chronology; message rows carry the avatar, author, timestamp, content, and
-  optional evidence below it.
+  optional evidence below it. Capture adapters may mark Discord-style grouped
+  continuations so repeated author chrome collapses while each timestamp stays
+  addressable on hover/focus.
+- DM identity keeps the visible display title and handle separate from
+  participant records. A participant can retain both a local avatar path and
+  the original remote avatar reference; the viewer uses only the local path.
+- Timestamp rendering uses the archive's captured display timezone by default,
+  with explicit local and UTC modes available beside the transcript.
 - Clicking a timestamp selects a message, updates `#message=<id>`, and fills
   the provenance rail with displayed time, raw UTC, ID, attachments, and source
   link. Search and author filtering preserve that reading model.
-- The generated viewer emits `index.html`, `app.js`, `archive.json`, and local
-  assets so strict offline/browser policies do not block the executable viewer.
+- The generated viewer emits `index.html`, `app.js`, `archive.json`, a
+  `manifest.json` integrity record, and local assets so strict offline/browser
+  policies do not block the executable viewer and copied archives can be
+  checked.
