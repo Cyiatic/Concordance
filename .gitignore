@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+dist/
+build/
+output/
+.playwright-cli/
+*.egg-info/
+
+# Never commit real conversation data or downloaded media.
+raw/
+archives/
+private-data/
+*.discord-data.zip
+*.archive.zip
+
+# Local editor and OS files.
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

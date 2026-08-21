@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "metadata": {
+    "kind": "direct_message",
+    "title": "Mara ↔ Eli",
+    "channel_id": "synthetic-dm-001",
+    "captured_at": "2026-08-20T20:00:00Z",
+    "display_timezone": "America/Phoenix",
+    "synthetic": true,
+    "source": {
+      "type": "synthetic_fixture",
+      "label": "Archive Ledger sample",
+      "notes": ["All names, content, and assets in this fixture are fictional."]
+    }
+  },
+  "participants": [
+    {
+      "id": "user-mara",
+      "username": "mara",
+      "display_name": "Mara",
+      "avatar_path": "assets/avatars/mara.svg",
+      "avatar_alt": "Synthetic avatar for Mara"
+    },
+    {
+      "id": "user-eli",
+      "username": "eli",
+      "display_name": "Eli",
+      "avatar_path": "assets/avatars/eli.svg",
+      "avatar_alt": "Synthetic avatar for Eli"
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg-20181130-0001",
+      "author_id": "user-mara",
+      "timestamp": "2018-11-30T06:50:00Z",
+      "content": "I finally found the old recording.",
+      "message_link": "https://discord.com/channels/@me/synthetic-dm-001/msg-20181130-0001",
+      "reactions": [{"emoji": "🔎", "count": 1, "me": false}],
+      "attachments": []
+    },
+    {
+      "id": "msg-20181130-0002",
+      "author_id": "user-eli",
+      "timestamp": "2018-11-30T06:52:00Z",
+      "content": "Good one",
+      "reply_to": "msg-20181130-0001",
+      "message_link": "https://discord.com/channels/@me/synthetic-dm-001/msg-20181130-0002",
+      "reactions": [{"emoji": "👍", "count": 2, "me": true}],
+      "attachments": []
+    },
+    {
+      "id": "msg-20181130-0003",
+      "author_id": "user-mara",
+      "timestamp": "2018-11-30T07:03:00Z",
+      "content": "There is a note attached with the track list.\nThe third line is the one I meant.",
+      "message_link": "https://discord.com/channels/@me/synthetic-dm-001/msg-20181130-0003",
+      "attachments": [
+        {
+          "name": "track-list-note.svg",
+          "path": "assets/attachments/note.svg",
+          "mime": "image/svg+xml",
+          "size_bytes": 1834
+        }
+      ]
+    },
+    {
+      "id": "msg-20181201-0004",
+      "author_id": "user-eli",
+      "timestamp": "2018-12-01T18:20:00Z",
+      "content": "That is the exact line. I will keep it with the archive.",
+      "edited_at": "2018-12-01T18:21:00Z",
+      "reactions": [],
+      "attachments": []
+    },
+    {
+      "id": "msg-20181201-0005",
+      "author_id": "user-mara",
+      "timestamp": "2018-12-01T18:24:00Z",
+      "content": "For later: https://example.invalid/archive-reference",
+      "embeds": [{"title": "Archive reference", "url": "https://example.invalid/archive-reference"}],
+      "reactions": [],
+      "attachments": []
+    }
+  ]
+}
