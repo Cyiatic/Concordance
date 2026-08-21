@@ -12,7 +12,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#313338">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none';">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%235865f2'/%3E%3Cpath d='M9 9h14v4h-9v3h7v4h-7v3H9z' fill='%23f2f3f5'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%235865f2'/%3E%3Cpath d='M24.1 8.3A11 11 0 1 0 24.1 23.7L20.5 20.1A6 6 0 1 1 20.5 11.9z' fill='%23f2f3f5'/%3E%3C/svg%3E">
   <title>{{ARCHIVE_TITLE}} · Archive Ledger</title>
   <style>
     :root {
@@ -50,7 +50,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       line-height: 1.5;
     }
 
-    button, input, select { font: inherit; }
+    button, input, select { font: inherit; touch-action: manipulation; -webkit-tap-highlight-color: rgba(88, 101, 242, .24); }
     button, select { color: inherit; }
     button { cursor: pointer; }
     a { color: var(--teal); }
@@ -215,7 +215,6 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .print-button { padding: 8px 11px; border: 1px solid var(--ink); border-radius: 7px; background: var(--ink); color: var(--surface); font-size: 12px; font-weight: 700; }
     .print-button:hover { background: var(--teal); }
 
-    .participant-strip { display: flex; flex-wrap: wrap; gap: 7px; max-width: 1450px; margin: 0 auto 23px; }
     .participant-chip { display: inline-flex; align-items: center; gap: 7px; padding: 5px 8px 5px 5px; border: 1px solid var(--line-strong); border-radius: 7px; background: var(--surface); color: var(--ink-soft); font-size: 12px; }
     .participant-chip img, .participant-chip .mini-avatar { width: 22px; height: 22px; }
     .mini-avatar { display: grid; place-items: center; border-radius: 6px; background: var(--panel-deep); color: var(--teal); font-family: var(--mono); font-size: 9px; font-weight: 800; }
@@ -321,7 +320,6 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       .details { position: static; margin-top: 16px; }
       .message-list { padding: 0 13px 15px; }
       .transcript-intro { padding: 13px 15px; }
-      .participant-strip { margin-bottom: 17px; }
     }
 
     @media (max-width: 480px) {
@@ -337,7 +335,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     @media print {
       :root { --paper: #fff; --surface: #fff; --ink: #111; --ink-soft: #333; --muted: #555; --line: #bbb; }
       body { background: #fff; font-size: 11pt; }
-      .archive-rail, .toolbar, .reader-controls, .details, .participant-strip, .transcript-intro .search-status { display: none !important; }
+      .archive-rail, .toolbar, .reader-controls, .details, .transcript-intro .search-status { display: none !important; }
       .app-shell { display: block; }
       .reader { padding: 0; }
       .reader-header { display: block; margin-bottom: 14px; }
@@ -493,7 +491,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .sidebar-search kbd { margin-left: auto; color: var(--subtle); font-family: var(--mono); font-size: 10px; }
     .sidebar-scroll { min-height: 0; flex: 1; overflow-y: auto; padding: 8px; }
     .dm-section-title { display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 6px; color: var(--muted); font-size: 10px; font-weight: 750; letter-spacing: .08em; }
-    .dm-section-title button { display: grid; width: 20px; height: 20px; place-items: center; border: 0; border-radius: 4px; background: transparent; color: var(--muted); font-family: var(--mono); font-size: 16px; }
+    .dm-section-title button { display: grid; width: 28px; height: 28px; place-items: center; border: 0; border-radius: 4px; background: transparent; color: var(--muted); font-family: var(--mono); font-size: 16px; }
     .dm-section-title button:hover { background: var(--hover); color: var(--ink); }
     .dm-item { display: flex; align-items: center; width: 100%; gap: 10px; padding: 7px 8px; border: 0; border-radius: 4px; background: transparent; color: var(--ink-soft); text-align: left; }
     .dm-item:hover { background: var(--hover); color: var(--ink); }
@@ -510,10 +508,25 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .sidebar-archive-card { margin: 22px 4px 0; padding: 13px 12px 14px; border: 1px solid var(--line-strong); border-radius: 6px; background: rgba(30, 31, 34, .32); }
     .record-type { margin-top: 5px; color: var(--accent-bright); font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
     .record-title { margin: 5px 0 13px; color: var(--ink); font-size: 14px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
-    .sidebar-stats { display: grid; gap: 6px; color: var(--muted); font-family: var(--mono); font-size: 9px; }
+    .record-source, .record-captured { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .record-source { margin: -5px 0 3px; color: var(--muted); font-family: var(--mono); font-size: 9px; line-height: 1.35; }
+    .record-captured { margin-bottom: 11px; color: var(--subtle); font-family: var(--mono); font-size: 9px; line-height: 1.35; font-variant-numeric: tabular-nums; }
+    .sidebar-stats { display: grid; gap: 6px; color: var(--muted); font-family: var(--mono); font-size: 9px; font-variant-numeric: tabular-nums; }
     .sidebar-stats div { display: flex; justify-content: space-between; gap: 8px; }
     .sidebar-stats strong { color: var(--ink-soft); font-weight: 700; text-align: right; }
     .sidebar-note { margin: 22px 8px 0; color: var(--subtle); font-size: 11px; line-height: 1.5; }
+    .sidebar-local-status { display: flex; align-items: center; gap: 8px; margin: 18px 8px 0; padding: 8px 9px; border: 1px solid rgba(35, 165, 89, .22); border-radius: 5px; background: rgba(35, 165, 89, .08); }
+    .sidebar-local-status.is-warning { border-color: rgba(240, 178, 50, .28); background: rgba(240, 178, 50, .08); }
+    .sidebar-local-status-mark { display: grid; width: 22px; height: 22px; place-items: center; flex: 0 0 22px; border-radius: 50%; background: rgba(35, 165, 89, .18); color: #8edcae; font-family: var(--mono); font-size: 12px; font-weight: 800; }
+    .sidebar-local-status.is-warning .sidebar-local-status-mark { background: rgba(240, 178, 50, .18); color: #f0c674; }
+    .sidebar-local-status-copy { min-width: 0; flex: 1; }
+    .sidebar-local-status-copy strong, .sidebar-local-status-copy span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sidebar-local-status-copy strong { color: #8edcae; font-size: 10px; font-weight: 750; }
+    .sidebar-local-status.is-warning .sidebar-local-status-copy strong { color: #f0c674; }
+    .sidebar-local-status-copy span { margin-top: 1px; color: var(--muted); font-family: var(--mono); font-size: 9px; line-height: 1.3; }
+    .sidebar-local-status-button { display: grid; width: 28px; height: 28px; place-items: center; flex: 0 0 28px; padding: 0; border: 1px solid rgba(142, 220, 174, .28); border-radius: 4px; background: transparent; color: #8edcae; font-family: var(--mono); font-size: 10px; font-weight: 800; }
+    .sidebar-local-status-button:hover { background: rgba(255, 255, 255, .06); color: var(--ink); }
+    .sidebar-local-status.is-warning .sidebar-local-status-button { border-color: rgba(240, 198, 116, .28); color: #f0c674; }
     .sidebar-userbar { display: flex; align-items: center; gap: 8px; min-height: 52px; padding: 8px 10px; background: var(--sidebar-deep); }
     .sidebar-user-avatar { display: grid; width: 32px; height: 32px; place-items: center; flex: 0 0 32px; border-radius: 50%; background: var(--accent); color: #fff; font-family: var(--mono); font-size: 12px; font-weight: 800; }
     .sidebar-user-copy { min-width: 0; flex: 1; }
@@ -529,7 +542,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .channel-icon-image { display: block; width: 100%; height: 100%; object-fit: cover; }
     .channel-heading { min-width: 0; }
     .channel-title-line { display: flex; min-width: 0; align-items: center; gap: 8px; }
-    .channel-title-line h1 { min-width: 0; margin: 0; overflow: hidden; color: var(--ink); font-size: 16px; font-weight: 720; text-overflow: ellipsis; white-space: nowrap; }
+    .channel-title-line h1 { min-width: 0; margin: 0; overflow: hidden; color: var(--ink); font-size: 16px; font-weight: 720; text-overflow: ellipsis; text-wrap: balance; white-space: nowrap; }
     .archive-tag { padding: 2px 5px; border: 1px solid rgba(88, 101, 242, .55); border-radius: 3px; color: var(--accent-bright); font-family: var(--mono); font-size: 8px; font-weight: 800; letter-spacing: .08em; }
     .channel-subtitle { max-width: 56ch; overflow: hidden; margin-top: 2px; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
     .channel-handle { color: var(--subtle); font-family: var(--mono); font-size: 10px; }
@@ -548,57 +561,54 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .header-icon-button:hover { background: var(--hover); color: var(--ink); }
 
     .reader { display: flex; min-height: 0; flex: 1; flex-direction: column; padding: 0; }
-    .archive-bar { display: flex; align-items: center; justify-content: space-between; min-height: 48px; gap: 18px; padding: 7px 18px; border-bottom: 1px solid var(--line); background: var(--main-raised); }
-    .archive-bar-copy { min-width: 0; }
     .eyebrow, .control-label { color: var(--muted); font-family: var(--mono); font-size: 9px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
-    .archive-bar-meta { display: flex; min-width: 0; gap: 5px; overflow: hidden; margin-top: 3px; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-    .archive-bar-meta strong { overflow: hidden; color: var(--ink-soft); font-weight: 650; text-overflow: ellipsis; }
-    .coverage-status { flex: 0 0 auto; padding: 2px 5px; border-radius: 3px; background: rgba(240, 178, 50, .12); color: #f0c674; font-family: var(--mono); font-size: 9px; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; }
-    .coverage-status.is-verified { background: rgba(35, 165, 89, .12); color: #8edcae; }
-    .coverage-banner { display: flex; align-items: flex-start; gap: 10px; padding: 10px 18px; border-bottom: 1px solid rgba(240, 178, 50, .28); background: rgba(240, 178, 50, .08); color: var(--ink-soft); }
+    .coverage-banner { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; align-items: center; gap: 8px 12px; min-height: 68px; padding: 9px 18px; border-bottom: 1px solid rgba(240, 178, 50, .28); background: rgba(240, 178, 50, .08); color: var(--ink-soft); }
     .coverage-banner[hidden] { display: none; }
-    .coverage-banner.is-verified { border-bottom-color: rgba(35, 165, 89, .28); background: rgba(35, 165, 89, .08); }
-    .coverage-banner.is-verified { align-items: center; min-height: 44px; padding-top: 6px; padding-bottom: 6px; }
-    .coverage-banner.is-verified .coverage-banner-copy { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 10px; }
-    .coverage-banner.is-verified .coverage-banner-action { display: none; }
     .coverage-banner-mark { display: grid; width: 22px; height: 22px; flex: 0 0 22px; place-items: center; border-radius: 50%; background: rgba(240, 178, 50, .18); color: #f0c674; font-family: var(--mono); font-size: 12px; font-weight: 800; }
-    .coverage-banner.is-verified .coverage-banner-mark { background: rgba(35, 165, 89, .18); color: #8edcae; }
     .coverage-banner-copy { display: grid; min-width: 0; gap: 2px; font-size: 11px; line-height: 1.4; }
-    .coverage-banner-copy strong { color: var(--ink); font-size: 12px; font-weight: 750; }
+    .coverage-banner-context { display: flex; min-width: 0; align-items: baseline; flex-wrap: wrap; gap: 3px 8px; color: var(--muted); font-size: 10px; line-height: 1.3; }
+    .coverage-banner-source { min-width: 0; max-width: 100%; overflow: hidden; color: var(--ink); font-size: 11px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+    .coverage-banner-captured { color: var(--muted); }
+    .coverage-banner-state { display: flex; min-width: 0; align-items: baseline; flex-wrap: wrap; gap: 2px 10px; color: var(--ink-soft); font-size: 11px; line-height: 1.4; }
+    .coverage-banner-state strong { color: var(--ink); font-size: 12px; font-weight: 750; text-wrap: balance; }
     .coverage-banner-action { color: var(--muted); }
-    .coverage-banner-button { margin-left: auto; flex: 0 0 auto; padding: 5px 8px; border: 1px solid var(--line-strong); border-radius: 4px; background: transparent; color: var(--ink-soft); font-family: var(--mono); font-size: 9px; font-weight: 700; white-space: nowrap; }
+    .coverage-banner-button { height: 30px; margin: 0; padding: 0 9px; border: 1px solid var(--line-strong); border-radius: 4px; background: transparent; color: var(--ink-soft); font-family: var(--mono); font-size: 9px; font-weight: 700; white-space: nowrap; }
     .coverage-banner-button:hover { background: var(--hover); color: var(--ink); }
     .coverage-ledger { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
     .coverage-range { padding: 10px 0; border-top: 1px solid var(--line); }
     .coverage-range:first-child { padding-top: 0; border-top: 0; }
     .coverage-range-head, .coverage-range-meta { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
     .coverage-range-head strong { color: var(--ink); font-size: 11px; font-weight: 750; }
-    .coverage-range-file { min-width: 0; overflow: hidden; color: var(--muted); font-family: var(--mono); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+    .coverage-range-file { min-width: 0; overflow: hidden; color: var(--muted); font-family: var(--mono); font-size: 9px; line-height: 1.3; text-overflow: ellipsis; white-space: nowrap; }
     .coverage-range-dates { margin-top: 3px; color: var(--ink-soft); font-size: 10px; line-height: 1.35; }
-    .coverage-range-meta { margin-top: 4px; color: var(--muted); font-family: var(--mono); font-size: 8px; }
+    .coverage-range-meta { margin-top: 4px; color: var(--muted); font-family: var(--mono); font-size: 9px; line-height: 1.3; font-variant-numeric: tabular-nums; }
     .coverage-range-state { color: #8edcae; }
     .coverage-range-state.is-gap { color: #f0c674; }
     .coverage-ledger-note { margin: 11px 0 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
-    .reader-controls { display: flex; align-items: center; justify-content: flex-end; gap: 7px; flex-wrap: wrap; }
+    .reader-controls { display: flex; align-items: center; justify-content: flex-end; gap: 7px; flex-wrap: wrap; font-variant-numeric: tabular-nums; }
     .select-control { height: 30px; padding: 4px 25px 4px 8px; border: 1px solid var(--line-strong); border-radius: 4px; background: var(--input); color: var(--ink-soft); font-size: 11px; }
     .select-control:hover { border-color: rgba(255, 255, 255, .24); }
     .print-button { height: 30px; padding: 0 10px; border: 0; border-radius: 4px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; }
     .print-button:hover { background: var(--accent-bright); }
-    .participant-strip { display: flex; min-height: 0; align-items: center; gap: 6px; padding: 4px 18px; overflow-x: auto; border-bottom: 1px solid var(--line); background: var(--main); }
     .participant-chip { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; padding: 2px 7px 2px 4px; border-radius: 12px; background: rgba(255, 255, 255, .05); color: var(--ink-soft); font-size: 10px; }
     .participant-chip img, .participant-chip .mini-avatar { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
-    .participant-strip .mini-avatar-frame { display: inline-flex; position: relative; width: 22px; height: 22px; flex: 0 0 22px; align-items: center; justify-content: center; }
+    .transcript-participants { display: flex; min-width: 0; align-items: center; justify-content: center; gap: 6px; overflow-x: auto; }
+    .transcript-participants .mini-avatar-frame { display: inline-flex; position: relative; width: 22px; height: 22px; flex: 0 0 22px; align-items: center; justify-content: center; }
     .mini-avatar-frame .mini-avatar { width: 100%; height: 100%; }
     .mini-avatar { display: grid; place-items: center; background: #454851; color: var(--accent-bright); font-family: var(--mono); font-size: 8px; font-weight: 800; }
 
-    .reader-layout { display: grid; min-height: 0; flex: 1; grid-template-columns: minmax(0, 1fr) 304px; align-items: stretch; }
+    .reader-layout { display: grid; width: 100%; max-width: none; min-height: 0; flex: 1; grid-template-columns: minmax(0, 1fr) 304px; grid-template-rows: auto minmax(0, 1fr); gap: 0; margin: 0; align-items: stretch; }
     .reader-layout.details-collapsed { grid-template-columns: minmax(0, 1fr); }
-    .transcript { display: flex; min-width: 0; min-height: 0; flex-direction: column; overflow: hidden; border: 0; border-radius: 0; background: var(--main); box-shadow: none; }
-    .transcript-intro { display: flex; align-items: center; justify-content: space-between; min-height: 39px; gap: 16px; padding: 8px 20px; border-bottom: 1px solid var(--line); background: var(--main); color: var(--muted); font-size: 11px; }
+    .details-toolbar { display: flex; min-width: 0; min-height: 39px; grid-column: 2; grid-row: 1; align-items: center; padding: 4px 0 4px 16px; border-bottom: 1px solid var(--line); border-left: 1px solid var(--line); background: var(--main-raised); }
+    .details-toolbar .reader-controls { width: 100%; justify-content: flex-start; }
+    .reader-layout.details-collapsed .details-toolbar { grid-column: 1 / -1; }
+    .transcript { display: flex; min-width: 0; min-height: 0; grid-column: 1; grid-row: 1 / span 2; flex-direction: column; overflow: hidden; border: 0; border-radius: 0; background: var(--main); box-shadow: none; }
+    .transcript-intro { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; min-height: 39px; gap: 8px 12px; padding: 8px 20px; border-bottom: 1px solid var(--line); background: var(--main); color: var(--muted); font-size: 11px; }
+    .transcript-intro-label { min-width: 0; }
     .transcript-intro strong { color: var(--ink-soft); font-weight: 650; }
     .transcript-intro-note { color: var(--subtle); }
-    .search-status { color: var(--muted); font-family: var(--mono); font-size: 9px; white-space: nowrap; }
-    .message-list { min-height: 0; flex: 1; overflow-y: auto; padding: 12px 16px 28px 20px; scrollbar-color: #1e1f22 transparent; }
+    .transcript-intro .search-status { justify-self: end; color: var(--muted); font-family: var(--mono); font-size: 9px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .message-list { min-height: 0; flex: 1; overflow-y: auto; padding: 12px 16px 28px 20px; scrollbar-color: #1e1f22 transparent; overscroll-behavior: contain; }
     .message-window-controls { padding: 8px 0 12px; }
     .message-window-button { border-color: var(--line-strong); border-radius: 4px; background: var(--sidebar); color: var(--link); }
     .message-window-button:hover { background: var(--hover); color: var(--ink); }
@@ -616,7 +626,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .message-header { display: flex; align-items: baseline; flex-wrap: wrap; gap: 7px; min-height: 21px; }
     .author-name { color: var(--ink); font-size: 14px; font-weight: 700; }
     .author-handle { color: var(--muted); font-family: var(--mono); font-size: 10px; }
-    .message-timestamp { margin-left: 1px; padding: 0; border: 0; background: transparent; color: var(--muted); font-family: var(--sans); font-size: 12px; line-height: 20px; }
+    .message-timestamp { margin-left: 1px; padding: 0; border: 0; background: transparent; color: var(--muted); font-family: var(--sans); font-size: 12px; line-height: 20px; font-variant-numeric: tabular-nums; white-space: nowrap; }
     .message-timestamp:hover { color: var(--ink-soft); text-decoration: underline; text-underline-offset: 3px; }
     .message-content { max-width: 78ch; margin-top: 1px; color: #dbdee1; font-size: 16px; line-height: 1.375; white-space: pre-wrap; overflow-wrap: anywhere; }
     .message-content a { overflow-wrap: anywhere; }
@@ -652,11 +662,11 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .empty-state strong { display: block; color: var(--ink-soft); font-size: 15px; }
     .empty-state p { max-width: 42ch; margin: 7px auto 0; font-size: 12px; }
 
-    .details { min-width: 0; min-height: 0; overflow-y: auto; padding: 16px; border-left: 1px solid var(--line); background: var(--sidebar); scrollbar-color: #1e1f22 transparent; }
+    .details { min-width: 0; min-height: 0; grid-column: 2; grid-row: 2; overflow-y: auto; padding: 16px 0 16px 16px; border-left: 1px solid var(--line); background: var(--sidebar); scrollbar-color: #1e1f22 transparent; overscroll-behavior: contain; }
     .details.is-collapsed { display: none; }
     .detail-panel { padding: 15px; border: 0; border-radius: 6px; background: var(--sidebar-deep); box-shadow: none; }
     .detail-panel + .detail-panel { margin-top: 12px; }
-    .detail-title { margin: 5px 0 14px; color: var(--ink); font-size: 15px; font-weight: 700; }
+    .detail-title { margin: 5px 0 14px; color: var(--ink); font-size: 15px; font-weight: 700; text-wrap: balance; }
     .detail-list { display: grid; gap: 10px; margin: 0; }
     .detail-row { display: grid; gap: 2px; }
     .detail-row dt { color: var(--muted); font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
@@ -672,12 +682,14 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .detail-notes li + li { margin-top: 8px; }
     .copy-button { margin-top: 12px; padding: 7px 9px; border: 0; border-radius: 4px; background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; }
     .copy-button:hover { background: var(--accent-bright); }
+    .skip-link { position: fixed; top: 8px; left: 8px; z-index: 10; padding: 7px 10px; border-radius: 4px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; transform: translateY(-160%); }
+    .skip-link:focus { color: #fff; transform: translateY(0); }
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
     @media (max-width: 1180px) {
       .app-shell { grid-template-columns: 64px 225px minmax(0, 1fr); }
       .reader-layout { grid-template-columns: minmax(0, 1fr) 270px; }
-      .details { padding: 12px; }
+      .details { padding: 12px 0 12px 12px; }
       .header-search { width: 170px; flex-basis: 180px; }
     }
 
@@ -711,16 +723,16 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       .status-chip { order: 2; }
       .header-icon-button { order: 3; }
       .header-icon-button { width: 36px; height: 36px; }
-      .archive-bar { align-items: flex-start; flex-direction: column; gap: 9px; padding: 10px 13px; }
-      .coverage-banner { flex-wrap: wrap; padding: 10px 13px; }
-      .coverage-banner-button { margin-left: 32px; }
-      .reader-controls { width: 100%; justify-content: flex-start; }
+      .coverage-banner { grid-template-columns: 22px minmax(0, 1fr); align-items: start; padding: 10px 13px; }
+      .coverage-banner-button { grid-column: 2; margin-left: 0; justify-self: start; }
       .select-control, .print-button { height: 36px; }
-      .participant-strip { padding-left: 13px; padding-right: 13px; }
-      .reader-layout { display: block; }
+      .reader-layout { display: flex; flex-direction: column; }
+      .details-toolbar { order: 0; min-height: 46px; padding: 5px 13px; border-left: 0; }
+      .details-toolbar .reader-controls { justify-content: flex-start; }
       .transcript { min-height: 520px; }
+      .transcript { order: 1; }
       .message-list { overflow: visible; padding: 10px 12px 25px 13px; }
-      .details { display: none; border-top: 1px solid var(--line); border-left: 0; }
+      .details { display: none; order: 2; padding: 12px 13px 16px; border-top: 1px solid var(--line); border-left: 0; }
       .details.is-open { display: block; }
       .message { grid-template-columns: 38px minmax(0, 1fr); gap: 12px; padding-right: 4px; }
       .avatar { width: 38px; height: 38px; }
@@ -734,7 +746,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       .channel-title-line h1 { max-width: 46vw; }
       .archive-tag { display: none; }
       .status-chip { display: none; }
-      .reader-controls { gap: 5px; }
+      .details-toolbar .reader-controls { gap: 5px; flex-wrap: wrap; }
       .control-label { display: none; }
       .select-control { max-width: 47%; }
       .message { grid-template-columns: 32px minmax(0, 1fr); gap: 9px; }
@@ -744,7 +756,8 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       .message.is-grouped .message-timestamp { width: 32px; }
       .message-timestamp { width: auto; margin: 0 0 0 1px; text-align: left; }
       .message-header { gap: 4px 7px; }
-      .transcript-intro { padding-left: 13px; padding-right: 13px; }
+      .transcript-intro { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto; min-height: 70px; padding: 8px 13px; }
+      .transcript-participants { grid-column: 1 / -1; grid-row: 2; justify-self: center; }
       .transcript-intro-note { display: none; }
     }
 
@@ -752,7 +765,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       :root { --main: #fff; --ink: #111; --ink-soft: #333; --muted: #555; --line: #bbb; }
       html, body { overflow: visible; background: #fff; color: #111; }
       body { font-size: 11pt; }
-      .server-rail, .dm-sidebar, .channel-header, .archive-bar, .coverage-banner, .participant-strip, .details, .transcript-intro .search-status { display: none !important; }
+      .server-rail, .dm-sidebar, .channel-header, .details-toolbar, .coverage-banner, .transcript-participants, .details, .transcript-intro .search-status { display: none !important; }
       .app-shell, .main-view, .reader, .reader-layout, .transcript { display: block; height: auto; min-height: 0; }
       .message-list { overflow: visible; padding: 0; }
       .message { break-inside: avoid; }
@@ -768,6 +781,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to transcript</a>
   <div class="app-shell">
     <aside class="server-rail" aria-label="Archive sections">
       <button class="server-button server-home" type="button" aria-current="true" data-scroll="transcript" title="Open transcript" aria-label="Open transcript"><span class="server-mark" aria-hidden="true">A</span></button>
@@ -807,6 +821,8 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
           <div class="eyebrow">open archive</div>
           <div class="record-type" id="rail-kind">direct message</div>
           <div class="record-title" id="rail-title">{{ARCHIVE_TITLE}}</div>
+          <div class="record-source" id="rail-source">Source unavailable</div>
+          <div class="record-captured" id="rail-captured">captured date unavailable</div>
           <div class="sidebar-stats">
             <div><span>messages</span><strong id="rail-message-count">—</strong></div>
             <div><span>participants</span><strong id="rail-participant-count">—</strong></div>
@@ -815,6 +831,11 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         </section>
 
         <p class="sidebar-note">Rendered from local files. This reader does not connect to Discord or fetch external assets.</p>
+        <div class="sidebar-local-status" id="sidebar-local-status" role="status" aria-live="polite" aria-label="Local-only rendering">
+          <span class="sidebar-local-status-mark" id="sidebar-local-status-mark" aria-hidden="true">✓</span>
+          <span class="sidebar-local-status-copy"><strong id="sidebar-local-status-title">Local-only render</strong><span id="sidebar-local-status-summary">no live connection</span></span>
+          <button class="sidebar-local-status-button" type="button" data-scroll="details" title="View capture notes" aria-label="View capture notes">i</button>
+        </div>
       </div>
 
       <div class="sidebar-userbar">
@@ -837,7 +858,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
           <div class="search-wrap header-search">
             <label for="message-search">Search this archive</label>
             <span class="search-glyph" aria-hidden="true">⌕</span>
-            <input id="message-search" type="search" placeholder="Search archive" autocomplete="off">
+            <input id="message-search" name="archive-search" type="search" placeholder="Search archive…" autocomplete="off" spellcheck="false">
             <span class="search-hint" aria-hidden="true">/</span>
           </div>
           <div class="status-chip"><span class="status-dot" aria-hidden="true"></span>local only</div>
@@ -846,43 +867,46 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         </div>
       </header>
 
-      <main class="reader">
-        <div class="archive-bar">
-          <div class="archive-bar-copy">
-            <div class="eyebrow">archived conversation</div>
-            <div class="archive-bar-meta"><strong id="transcript-source">Source</strong><span aria-hidden="true"> · </span><span id="transcript-captured">captured date unavailable</span><span class="coverage-status" id="coverage-status" aria-live="polite">coverage unverified</span></div>
-          </div>
-          <div class="reader-controls">
-            <label class="control-label" for="author-filter">show</label>
-            <select class="select-control" id="author-filter" aria-label="Filter by author">
-              <option value="all">Everyone</option>
-            </select>
-            <label class="control-label" for="timezone-mode">time</label>
-            <select class="select-control" id="timezone-mode" aria-label="Timestamp display timezone">
-              <option value="archive">Archive timezone</option>
-              <option value="local">Local timezone</option>
-              <option value="utc">UTC</option>
-            </select>
-            <button class="print-button" type="button" data-action="print">Save a copy</button>
-          </div>
-        </div>
-
-        <div class="coverage-banner" id="coverage-banner" role="status" aria-live="polite" hidden>
+      <main class="reader" id="main-content">
+        <section class="coverage-banner" id="coverage-banner" aria-labelledby="coverage-banner-title" hidden>
           <span class="coverage-banner-mark" id="coverage-banner-mark" aria-hidden="true">!</span>
           <div class="coverage-banner-copy">
-            <strong id="coverage-banner-title">Archive coverage needs review</strong>
-            <span id="coverage-banner-summary"></span>
+            <div class="coverage-banner-context">
+              <span class="eyebrow">archived conversation</span>
+              <span aria-hidden="true">·</span>
+              <strong class="coverage-banner-source" id="transcript-source">Source</strong>
+              <span aria-hidden="true">·</span>
+              <span class="coverage-banner-captured" id="transcript-captured">captured date unavailable</span>
+            </div>
+            <div class="coverage-banner-state" role="status" aria-live="polite">
+              <strong id="coverage-banner-title">Archive coverage needs review</strong>
+              <span id="coverage-banner-summary"></span>
+            </div>
             <span class="coverage-banner-action" id="coverage-banner-action"></span>
           </div>
           <button class="coverage-banner-button" type="button" data-scroll="details">View capture notes</button>
-        </div>
-
-        <div class="participant-strip" id="participant-strip" aria-label="Conversation participants"></div>
+        </section>
 
         <div class="reader-layout">
+          <div class="details-toolbar" role="toolbar" aria-label="Transcript controls">
+            <div class="reader-controls">
+              <label class="control-label" for="author-filter">show</label>
+              <select class="select-control" id="author-filter" aria-label="Filter by author">
+                <option value="all">Everyone</option>
+              </select>
+              <label class="control-label" for="timezone-mode">time</label>
+              <select class="select-control" id="timezone-mode" aria-label="Timestamp display timezone">
+                <option value="archive">Archive timezone</option>
+                <option value="local">Local timezone</option>
+                <option value="utc">UTC</option>
+              </select>
+              <button class="print-button" type="button" data-action="print">Save a copy</button>
+            </div>
+          </div>
           <section class="transcript" id="transcript" aria-labelledby="reader-title">
             <div class="transcript-intro">
-              <span><strong>Read-only transcript</strong><span class="transcript-intro-note"> · local message history</span></span>
+              <span class="transcript-intro-label"><strong>Read-only transcript</strong><span class="transcript-intro-note"> · local message history</span></span>
+              <div class="transcript-participants" id="participant-strip" aria-label="Conversation participants"></div>
               <span class="search-status" id="search-status" aria-live="polite">— messages</span>
             </div>
             <div class="message-list" id="message-list" role="log" aria-label="Archived messages"></div>
@@ -1016,12 +1040,12 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       const avatarMarkup = (person) => {
         const path = safeAsset(person?.avatar_path || person?.avatar_ref);
         const label = escapeHtml(person?.avatar_alt || `${displayName(person)} profile image`);
-        if (path) return `<span class="avatar-frame"><img class="avatar" data-avatar-image src="${escapeHtml(path)}" alt="${label}"><span class="avatar avatar-fallback" data-avatar-fallback role="img" aria-label="${escapeHtml(`${displayName(person)} profile image unavailable`)}" hidden>${escapeHtml(initials(person))}</span></span>`;
+        if (path) return `<span class="avatar-frame"><img class="avatar" data-avatar-image src="${escapeHtml(path)}" alt="${label}" width="40" height="40" loading="lazy" decoding="async"><span class="avatar avatar-fallback" data-avatar-fallback role="img" aria-label="${escapeHtml(`${displayName(person)} profile image unavailable`)}" hidden>${escapeHtml(initials(person))}</span></span>`;
         return `<div class="avatar avatar-fallback" role="img" aria-label="${escapeHtml(`${displayName(person)} profile image unavailable`)}">${escapeHtml(initials(person))}</div>`;
       };
       const miniAvatarMarkup = (person) => {
         const path = safeAsset(person?.avatar_path || person?.avatar_ref);
-        if (path) return `<span class="mini-avatar-frame"><img class="mini-avatar" data-avatar-image src="${escapeHtml(path)}" alt=""><span class="mini-avatar mini-avatar-fallback" data-avatar-fallback aria-hidden="true" hidden>${escapeHtml(initials(person))}</span></span>`;
+        if (path) return `<span class="mini-avatar-frame"><img class="mini-avatar" data-avatar-image src="${escapeHtml(path)}" alt="" width="22" height="22" loading="lazy" decoding="async"><span class="mini-avatar mini-avatar-fallback" data-avatar-fallback aria-hidden="true" hidden>${escapeHtml(initials(person))}</span></span>`;
         return `<span class="mini-avatar" aria-hidden="true">${escapeHtml(initials(person))}</span>`;
       };
       const searchableText = (message) => {
@@ -1048,7 +1072,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const label = escapeHtml(attachment.name || "attachment");
         const size = escapeHtml(formatBytes(attachment.size_bytes));
         if (path && mime.startsWith("image/")) {
-          return `<figure class="attachment"><img src="${escapeHtml(path)}" alt="${label}"><figcaption class="attachment-caption"><strong>${label}</strong><span>${size}</span></figcaption><div class="attachment-actions">${localAssetLink(path)}</div></figure>`;
+          return `<figure class="attachment"><img src="${escapeHtml(path)}" alt="${label}" loading="lazy" decoding="async"><figcaption class="attachment-caption"><strong>${label}</strong><span>${size}</span></figcaption><div class="attachment-actions">${localAssetLink(path)}</div></figure>`;
         }
         if (path && mime.startsWith("audio/")) {
           return `<div class="attachment attachment-media"><div class="attachment-caption"><strong>${label}</strong><span>${size}</span></div><audio controls preload="metadata" src="${escapeHtml(path)}">${localAssetLink(path, "Open audio file")}</audio><div class="attachment-actions">${localAssetLink(path, "Open audio file")}</div></div>`;
@@ -1068,7 +1092,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const url = safeUrl(embed.url);
         const imageReference = safeUrl(embed.image_url);
         const imagePath = safeAsset(embed.image_path || embed.local_path);
-        const image = imagePath ? `<img class="embed-image" src="${escapeHtml(imagePath)}" alt="${escapeHtml(embed.title || "Embedded image")}"><div class="attachment-actions">${localAssetLink(imagePath, "Open embedded image")}</div>` : "";
+        const image = imagePath ? `<img class="embed-image" src="${escapeHtml(imagePath)}" alt="${escapeHtml(embed.title || "Embedded image")}" loading="lazy" decoding="async"><div class="attachment-actions">${localAssetLink(imagePath, "Open embedded image")}</div>` : "";
         const description = embed.description ? `<div class="embed-description">${safeTextWithLinks(embed.description)}</div>` : "";
         const remoteImage = !imagePath && imageReference ? `<div class="embed-url">Remote image reference: <a href="${escapeHtml(imageReference)}" target="_blank" rel="noreferrer noopener">${escapeHtml(imageReference)} ↗</a></div>` : "";
         return `<div class="embed"><div class="embed-title">${escapeHtml(embed.title || "Embedded reference")}</div>${description}${image}${remoteImage}${url ? `<div class="embed-url"><a href="${escapeHtml(url)}" target="_blank" rel="noreferrer noopener">${escapeHtml(url)}</a></div>` : ""}</div>`;
@@ -1164,7 +1188,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const channelIcon = $("#channel-icon");
         if (channelIcon) {
           const iconPath = safeAsset(channelPerson?.avatar_path || channelPerson?.avatar_ref);
-          channelIcon.innerHTML = iconPath ? `<img class="channel-icon-image" src="${escapeHtml(iconPath)}" alt="">` : escapeHtml(initials(channelPerson));
+          channelIcon.innerHTML = iconPath ? `<img class="channel-icon-image" src="${escapeHtml(iconPath)}" alt="" width="30" height="30" fetchpriority="high" decoding="async">` : escapeHtml(initials(channelPerson));
           channelIcon.setAttribute("aria-label", `${title} conversation avatar`);
         }
         const channelHandle = $("#reader-handle");
@@ -1176,18 +1200,14 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const sourceLabel = source.label || source.type || "user-supplied source";
         $("#transcript-source").textContent = sourceLabel;
         $("#transcript-captured").textContent = metadata.captured_at ? `captured ${formatFullTime(metadata.captured_at)}` : "captured date unavailable";
+        $("#rail-source").textContent = sourceLabel;
+        $("#rail-captured").textContent = metadata.captured_at ? `captured ${formatFullTime(metadata.captured_at)}` : "captured date unavailable";
         $("#rail-message-count").textContent = String(messages.length);
         $("#rail-participant-count").textContent = String(participants.length);
         $("#rail-date-range").textContent = sorted.length ? `${displayDate(sorted[0])} → ${displayDate(sorted[sorted.length - 1])}` : "none";
         const notes = Array.isArray(source.notes) ? [...source.notes] : [];
         const captureRange = metadata.capture_range && typeof metadata.capture_range === "object" ? metadata.capture_range : null;
         const coverage = metadata.coverage && typeof metadata.coverage === "object" ? metadata.coverage : null;
-        const coverageStatus = $("#coverage-status");
-        if (coverageStatus) {
-          const status = coverage?.complete ? "verified" : coverage?.status || (captureRange ? (captureRange.at_start && captureRange.at_end ? "bounded" : "partial") : "unverified");
-          coverageStatus.textContent = !coverage && !captureRange ? "coverage not assessed" : `coverage ${status}`;
-          coverageStatus.classList.toggle("is-verified", status === "verified");
-        }
         if (coverage) {
           notes.unshift(`History coverage: ${coverage.complete ? "verified" : coverage.status || "unverified"} across ${Number(coverage.range_count) || 0} captured range${Number(coverage.range_count) === 1 ? "" : "s"}.`);
           if (Array.isArray(coverage.notes)) notes.push(...coverage.notes);
@@ -1245,13 +1265,9 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       const renderCoverageBanner = (sorted, captureRange, coverage) => {
         const banner = $("#coverage-banner");
         if (!banner) return;
-        if (!captureRange && !coverage) {
-          banner.hidden = true;
-          banner.classList.remove("is-verified");
-          return;
-        }
+        const hasCoverageMetadata = Boolean(captureRange || coverage);
         const complete = Boolean(coverage?.complete);
-        const status = complete ? "verified" : coverage?.status || "partial";
+        const status = complete ? "verified" : coverage?.status || (captureRange ? "partial" : "unverified");
         const rangeCount = Number(coverage?.range_count || (captureRange ? 1 : 0));
         const messageCount = Number(coverage?.unique_message_count || captureRange?.message_count || messages.length);
         const firstDate = sorted[0]?.timestamp ? displayDate(sorted[0]) : "unknown start";
@@ -1259,16 +1275,34 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const atStart = Boolean(coverage?.start_confirmed || captureRange?.at_start);
         const atEnd = Boolean(coverage?.end_confirmed || captureRange?.at_end);
         const boundarySummary = atStart && atEnd ? "oldest and newest boundaries observed" : atStart ? "oldest boundary observed; newest boundary still missing" : atEnd ? "newest boundary observed; oldest boundary still missing" : "neither conversation boundary observed";
+        const sidebarStatus = $("#sidebar-local-status");
+        const sidebarMark = $("#sidebar-local-status-mark");
+        const sidebarTitle = $("#sidebar-local-status-title");
+        const sidebarSummary = $("#sidebar-local-status-summary");
+        sidebarStatus?.classList.toggle("is-warning", !complete);
+        if (sidebarStatus) sidebarStatus.setAttribute("aria-label", complete ? "Coverage verified" : "Local-only rendering; coverage needs review");
+        if (sidebarMark) sidebarMark.textContent = complete ? "✓" : "!";
+        if (sidebarTitle) sidebarTitle.textContent = complete ? "Coverage verified" : "Local-only render";
+        if (sidebarSummary) sidebarSummary.textContent = complete ? `${messageCount} messages · ${rangeCount} range${rangeCount === 1 ? "" : "s"}` : !hasCoverageMetadata ? "coverage not assessed" : "coverage needs review";
+        if (complete) {
+          banner.hidden = true;
+          banner.classList.remove("is-verified");
+          return;
+        }
         banner.hidden = false;
-        banner.classList.toggle("is-verified", complete);
-        $("#coverage-banner-mark").textContent = complete ? "✓" : "!";
-        $("#coverage-banner-title").textContent = complete ? "Coverage verified" : status === "unverified" ? "Archive scope is unknown" : "Archive is incomplete";
+        banner.classList.remove("is-verified");
+        $("#coverage-banner-mark").textContent = "!";
+        $("#coverage-banner-title").textContent = !hasCoverageMetadata || status === "unverified" ? "Archive scope is unknown" : "Archive is incomplete";
         $("#coverage-banner-summary").textContent = complete
           ? `${messageCount} messages across ${rangeCount} overlapping range${rangeCount === 1 ? "" : "s"} · ${firstDate} → ${lastDate}.`
-          : `${messageCount} message${messageCount === 1 ? "" : "s"} captured · ${boundarySummary}. This is not yet the whole conversation.`;
+          : !hasCoverageMetadata
+            ? `${messageCount} message${messageCount === 1 ? "" : "s"} captured · Coverage has not been assessed for this archive.`
+            : `${messageCount} message${messageCount === 1 ? "" : "s"} captured · ${boundarySummary}. This is not yet the whole conversation.`;
         $("#coverage-banner-action").textContent = complete
           ? "The observed rendered range is linked and ready to read offline."
-          : (coverage?.next_action || "Return to the open DM, capture overlapping ranges at both boundaries, then merge them before treating the archive as complete.");
+          : !hasCoverageMetadata
+            ? "Add capture range metadata to distinguish an observed window from a complete conversation."
+            : (coverage?.next_action || "Return to the open DM, capture overlapping ranges at both boundaries, then merge them before treating the archive as complete.");
       };
       const renderCoverageLedger = (captureRange, coverage) => {
         const panel = $("#coverage-panel");
