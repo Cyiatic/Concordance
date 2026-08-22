@@ -12,8 +12,8 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#313338">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none';">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%235865f2'/%3E%3Cpath d='M24.1 8.3A11 11 0 1 0 24.1 23.7L20.5 20.1A6 6 0 1 1 20.5 11.9z' fill='%23f2f3f5'/%3E%3C/svg%3E">
-  <title>{{ARCHIVE_TITLE}} · Archive Ledger</title>
+  <link rel="icon" type="image/png" href="assets/concordance-mark.png">
+  <title>{{ARCHIVE_TITLE}} · Concordance</title>
   <style>
     :root {
       color-scheme: light;
@@ -400,7 +400,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
 
     .app-shell {
       display: grid;
-      grid-template-columns: 72px 250px minmax(0, 1fr);
+      grid-template-columns: 72px 264px minmax(0, 1fr);
       min-height: 100vh;
       height: 100vh;
       overflow: hidden;
@@ -443,8 +443,6 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .server-mark { font-size: 22px; letter-spacing: -.08em; }
     .server-divider { width: 32px; height: 1px; flex: 0 0 auto; margin: 2px 0; background: rgba(255, 255, 255, .1); }
     .server-spacer { flex: 1; min-height: 20px; }
-    .server-status { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 50%; background: var(--sidebar); }
-    .server-status .status-dot { width: 10px; height: 10px; }
 
     .dm-sidebar {
       display: flex;
@@ -461,18 +459,21 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .sidebar-header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 12px;
+      justify-content: flex-start;
       min-height: 48px;
-      padding: 0 12px 0 16px;
+      padding: 0 14px 0 16px;
       border-bottom: 1px solid rgba(0, 0, 0, .2);
       color: var(--ink);
       box-shadow: 0 1px 0 rgba(255, 255, 255, .02);
     }
-    .sidebar-header strong { display: block; font-size: 15px; font-weight: 700; }
-    .sidebar-header span { display: block; margin-top: 1px; color: var(--muted); font-family: var(--mono); font-size: 9px; letter-spacing: .04em; text-transform: uppercase; }
-    .sidebar-header-button { display: grid; width: 28px; height: 28px; place-items: center; border: 0; border-radius: 4px; background: transparent; color: var(--muted); font-family: var(--mono); font-weight: 800; }
-    .sidebar-header-button:hover { background: var(--hover); color: var(--ink); }
+    .sidebar-brand { display: flex; min-width: 0; align-items: center; gap: 10px; }
+    .sidebar-brand-mark { display: block; width: 32px; height: 32px; flex: 0 0 32px; object-fit: contain; }
+    .sidebar-brand-copy { min-width: 0; }
+    .sidebar-header strong { display: block; color: var(--ink); font-size: 17px; font-weight: 720; letter-spacing: -.02em; text-wrap: balance; }
+    .sidebar-header span { display: block; margin-top: 2px; color: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
     .sidebar-search {
+      position: relative;
       display: flex;
       align-items: center;
       gap: 7px;
@@ -485,14 +486,16 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       color: var(--muted);
       font-size: 12px;
       text-align: left;
+      cursor: text;
     }
     .sidebar-search:hover { color: var(--ink-soft); background: #1b1c1f; }
+    .sidebar-search:focus-within { box-shadow: 0 0 0 2px var(--accent); }
+    .sidebar-search input { min-width: 0; width: 100%; flex: 1; padding: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 12px; }
+    .sidebar-search input::placeholder { color: var(--muted); opacity: 1; }
     .sidebar-search-icon { color: var(--subtle); font-family: var(--mono); font-size: 15px; }
     .sidebar-search kbd { margin-left: auto; color: var(--subtle); font-family: var(--mono); font-size: 10px; }
     .sidebar-scroll { min-height: 0; flex: 1; overflow-y: auto; padding: 8px; }
-    .dm-section-title { display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 6px; color: var(--muted); font-size: 10px; font-weight: 750; letter-spacing: .08em; }
-    .dm-section-title button { display: grid; width: 28px; height: 28px; place-items: center; border: 0; border-radius: 4px; background: transparent; color: var(--muted); font-family: var(--mono); font-size: 16px; }
-    .dm-section-title button:hover { background: var(--hover); color: var(--ink); }
+    .dm-section-title { padding: 8px 8px 6px; color: var(--muted); font-size: 10px; font-weight: 750; letter-spacing: .08em; }
     .dm-item { display: flex; align-items: center; width: 100%; gap: 10px; padding: 7px 8px; border: 0; border-radius: 4px; background: transparent; color: var(--ink-soft); text-align: left; }
     .dm-item:hover { background: var(--hover); color: var(--ink); }
     .dm-item[aria-current="true"] { background: var(--active); color: var(--ink); }
@@ -505,6 +508,13 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .dm-item-copy { min-width: 0; overflow: hidden; }
     .dm-item-title { display: block; overflow: hidden; color: inherit; font-size: 13px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
     .dm-item-subtitle { display: block; overflow: hidden; margin-top: 2px; color: var(--muted); font-family: var(--mono); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+    .sidebar-participants { margin: 7px 4px 0; padding: 9px 8px 2px; border-top: 1px solid var(--line); }
+    .sidebar-section-label { color: var(--subtle); font-family: var(--mono); font-size: 9px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+    .sidebar-participant-list { display: flex; min-width: 0; flex-direction: column; gap: 5px; margin-top: 7px; }
+    .sidebar-participant-list .participant-chip { width: 100%; min-width: 0; padding: 3px 7px 3px 4px; border-radius: 8px; }
+    .sidebar-participant-list .mini-avatar-frame { display: inline-flex; position: relative; width: 28px; height: 28px; flex: 0 0 28px; align-items: center; justify-content: center; }
+    .sidebar-participant-list .participant-chip img, .sidebar-participant-list .participant-chip .mini-avatar { width: 28px; height: 28px; }
+    .sidebar-participant-list .participant-chip > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .sidebar-archive-card { margin: 22px 4px 0; padding: 13px 12px 14px; border: 1px solid var(--line-strong); border-radius: 6px; background: rgba(30, 31, 34, .32); }
     .record-type { margin-top: 5px; color: var(--accent-bright); font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
     .record-title { margin: 5px 0 13px; color: var(--ink); font-size: 14px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
@@ -515,26 +525,10 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .sidebar-stats div { display: flex; justify-content: space-between; gap: 8px; }
     .sidebar-stats strong { color: var(--ink-soft); font-weight: 700; text-align: right; }
     .sidebar-note { margin: 22px 8px 0; color: var(--subtle); font-size: 11px; line-height: 1.5; }
-    .sidebar-local-status { display: flex; align-items: center; gap: 8px; margin: 18px 8px 0; padding: 8px 9px; border: 1px solid rgba(35, 165, 89, .22); border-radius: 5px; background: rgba(35, 165, 89, .08); }
-    .sidebar-local-status.is-warning { border-color: rgba(240, 178, 50, .28); background: rgba(240, 178, 50, .08); }
-    .sidebar-local-status-mark { display: grid; width: 22px; height: 22px; place-items: center; flex: 0 0 22px; border-radius: 50%; background: rgba(35, 165, 89, .18); color: #8edcae; font-family: var(--mono); font-size: 12px; font-weight: 800; }
-    .sidebar-local-status.is-warning .sidebar-local-status-mark { background: rgba(240, 178, 50, .18); color: #f0c674; }
-    .sidebar-local-status-copy { min-width: 0; flex: 1; }
-    .sidebar-local-status-copy strong, .sidebar-local-status-copy span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .sidebar-local-status-copy strong { color: #8edcae; font-size: 10px; font-weight: 750; }
-    .sidebar-local-status.is-warning .sidebar-local-status-copy strong { color: #f0c674; }
-    .sidebar-local-status-copy span { margin-top: 1px; color: var(--muted); font-family: var(--mono); font-size: 9px; line-height: 1.3; }
-    .sidebar-local-status-button { display: grid; width: 28px; height: 28px; place-items: center; flex: 0 0 28px; padding: 0; border: 1px solid rgba(142, 220, 174, .28); border-radius: 4px; background: transparent; color: #8edcae; font-family: var(--mono); font-size: 10px; font-weight: 800; }
-    .sidebar-local-status-button:hover { background: rgba(255, 255, 255, .06); color: var(--ink); }
-    .sidebar-local-status.is-warning .sidebar-local-status-button { border-color: rgba(240, 198, 116, .28); color: #f0c674; }
-    .sidebar-userbar { display: flex; align-items: center; gap: 8px; min-height: 52px; padding: 8px 10px; background: var(--sidebar-deep); }
-    .sidebar-user-avatar { display: grid; width: 32px; height: 32px; place-items: center; flex: 0 0 32px; border-radius: 50%; background: var(--accent); color: #fff; font-family: var(--mono); font-size: 12px; font-weight: 800; }
-    .sidebar-user-copy { min-width: 0; flex: 1; }
-    .sidebar-user-copy strong, .sidebar-user-copy span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .sidebar-user-copy strong { color: var(--ink); font-size: 11px; }
-    .sidebar-user-copy span { color: var(--muted); font-family: var(--mono); font-size: 9px; }
-    .sidebar-user-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(35, 165, 89, .15); }
-
+    .sidebar-controls { display: flex; min-width: 0; flex: 0 0 auto; padding: 10px 12px 12px; border-top: 1px solid rgba(0, 0, 0, .2); background: var(--sidebar); }
+    .sidebar-controls .reader-controls { display: grid; width: 100%; gap: 7px; }
+    .sidebar-controls .control-group { display: grid; grid-template-columns: 62px minmax(0, 1fr); align-items: center; gap: 7px; }
+    .sidebar-controls .select-control, .sidebar-controls .print-button { width: 100%; }
     .main-view { display: flex; min-width: 0; min-height: 0; height: 100vh; flex-direction: column; background: var(--main); }
     .channel-header { display: flex; align-items: center; justify-content: space-between; min-height: 60px; gap: 16px; padding: 8px 16px; border-bottom: 1px solid var(--line); background: var(--main); box-shadow: 0 1px 0 rgba(0, 0, 0, .12); }
     .channel-leading { display: flex; min-width: 0; align-items: center; gap: 10px; }
@@ -586,24 +580,21 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .coverage-range-state.is-gap { color: #f0c674; }
     .coverage-ledger-note { margin: 11px 0 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
     .reader-controls { display: flex; align-items: center; justify-content: flex-end; gap: 7px; flex-wrap: wrap; font-variant-numeric: tabular-nums; }
+    .control-group { display: flex; min-width: 0; align-items: center; gap: 7px; }
     .select-control { height: 30px; padding: 4px 25px 4px 8px; border: 1px solid var(--line-strong); border-radius: 4px; background: var(--input); color: var(--ink-soft); font-size: 11px; }
     .select-control:hover { border-color: rgba(255, 255, 255, .24); }
     .print-button { height: 30px; padding: 0 10px; border: 0; border-radius: 4px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; }
     .print-button:hover { background: var(--accent-bright); }
     .participant-chip { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; padding: 2px 7px 2px 4px; border-radius: 12px; background: rgba(255, 255, 255, .05); color: var(--ink-soft); font-size: 10px; }
     .participant-chip img, .participant-chip .mini-avatar { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
-    .transcript-participants { display: flex; min-width: 0; align-items: center; justify-content: center; gap: 6px; overflow-x: auto; }
-    .transcript-participants .mini-avatar-frame { display: inline-flex; position: relative; width: 22px; height: 22px; flex: 0 0 22px; align-items: center; justify-content: center; }
     .mini-avatar-frame .mini-avatar { width: 100%; height: 100%; }
     .mini-avatar { display: grid; place-items: center; background: #454851; color: var(--accent-bright); font-family: var(--mono); font-size: 8px; font-weight: 800; }
 
-    .reader-layout { display: grid; width: 100%; max-width: none; min-height: 0; flex: 1; grid-template-columns: minmax(0, 1fr) 304px; grid-template-rows: auto minmax(0, 1fr); gap: 0; margin: 0; align-items: stretch; }
+    .reader-layout { display: grid; width: 100%; max-width: none; min-height: 0; flex: 1; grid-template-columns: minmax(0, 1fr) 304px; grid-template-rows: minmax(0, 1fr); gap: 0; margin: 0; align-items: stretch; }
     .reader-layout.details-collapsed { grid-template-columns: minmax(0, 1fr); }
-    .details-toolbar { display: flex; min-width: 0; min-height: 39px; grid-column: 2; grid-row: 1; align-items: center; padding: 4px 0 4px 16px; border-bottom: 1px solid var(--line); border-left: 1px solid var(--line); background: var(--main-raised); }
-    .details-toolbar .reader-controls { width: 100%; justify-content: flex-start; }
-    .reader-layout.details-collapsed .details-toolbar { grid-column: 1 / -1; }
-    .transcript { display: flex; min-width: 0; min-height: 0; grid-column: 1; grid-row: 1 / span 2; flex-direction: column; overflow: hidden; border: 0; border-radius: 0; background: var(--main); box-shadow: none; }
-    .transcript-intro { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; min-height: 39px; gap: 8px 12px; padding: 8px 20px; border-bottom: 1px solid var(--line); background: var(--main); color: var(--muted); font-size: 11px; }
+    .mobile-controls { display: none; }
+    .transcript { display: flex; min-width: 0; min-height: 0; grid-column: 1; grid-row: 1; flex-direction: column; overflow: hidden; border: 0; border-radius: 0; background: var(--main); box-shadow: none; }
+    .transcript-intro { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; min-height: 39px; gap: 8px 12px; padding: 8px 20px; border-bottom: 1px solid var(--line); background: var(--main); color: var(--muted); font-size: 11px; }
     .transcript-intro-label { min-width: 0; }
     .transcript-intro strong { color: var(--ink-soft); font-weight: 650; }
     .transcript-intro-note { color: var(--subtle); }
@@ -612,6 +603,13 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .message-window-controls { padding: 8px 0 12px; }
     .message-window-button { border-color: var(--line-strong); border-radius: 4px; background: var(--sidebar); color: var(--link); }
     .message-window-button:hover { background: var(--hover); color: var(--ink); }
+    .transcript-navigation { display: flex; min-height: 42px; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 16px 8px 20px; border-top: 1px solid var(--line); background: var(--main-raised); }
+    .transcript-navigation-status { min-width: 0; overflow: hidden; color: var(--muted); font-family: var(--mono); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .transcript-navigation-actions { display: flex; min-width: 0; flex: 0 0 auto; gap: 7px; flex-wrap: wrap; justify-content: flex-end; }
+    .transcript-nav-button { min-height: 28px; padding: 5px 10px; border: 1px solid var(--line-strong); border-radius: 4px; background: var(--sidebar); color: var(--ink-soft); font-size: 10px; font-weight: 700; white-space: nowrap; }
+    .transcript-nav-button:hover:not(:disabled) { border-color: var(--accent-bright); background: var(--hover); color: var(--ink); }
+    .transcript-nav-edge { border-color: rgba(88, 101, 242, .65); color: var(--ink); }
+    .transcript-nav-button:disabled { cursor: not-allowed; opacity: .45; }
     .date-divider { display: flex; align-items: center; gap: 10px; padding: 17px 0 9px; color: var(--muted); font-size: 10px; font-weight: 700; }
     .date-divider::before, .date-divider::after { height: 1px; flex: 1; background: var(--line-strong); content: ""; }
     .message { position: relative; display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 16px; padding: 4px 8px 4px 0; border: 0; border-radius: 4px; scroll-margin-top: 16px; transition: background 160ms ease, box-shadow 160ms ease; }
@@ -662,7 +660,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .empty-state strong { display: block; color: var(--ink-soft); font-size: 15px; }
     .empty-state p { max-width: 42ch; margin: 7px auto 0; font-size: 12px; }
 
-    .details { min-width: 0; min-height: 0; grid-column: 2; grid-row: 2; overflow-y: auto; padding: 16px 0 16px 16px; border-left: 1px solid var(--line); background: var(--sidebar); scrollbar-color: #1e1f22 transparent; overscroll-behavior: contain; }
+    .details { min-width: 0; min-height: 0; grid-column: 2; grid-row: 1; overflow-y: auto; padding: 16px 0 16px 16px; border-left: 1px solid var(--line); background: var(--sidebar); scrollbar-color: #1e1f22 transparent; overscroll-behavior: contain; }
     .details.is-collapsed { display: none; }
     .detail-panel { padding: 15px; border: 0; border-radius: 6px; background: var(--sidebar-deep); box-shadow: none; }
     .detail-panel + .detail-panel { margin-top: 12px; }
@@ -687,14 +685,14 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
     @media (max-width: 1180px) {
-      .app-shell { grid-template-columns: 64px 225px minmax(0, 1fr); }
+      .app-shell { grid-template-columns: 64px 232px minmax(0, 1fr); }
       .reader-layout { grid-template-columns: minmax(0, 1fr) 270px; }
       .details { padding: 12px 0 12px 12px; }
       .header-search { width: 170px; flex-basis: 180px; }
     }
 
     @media (max-width: 900px) {
-      .app-shell { grid-template-columns: 58px 205px minmax(0, 1fr); }
+      .app-shell { grid-template-columns: 58px 212px minmax(0, 1fr); }
       .server-button { width: 42px; height: 42px; }
       .channel-header { gap: 8px; padding-left: 12px; padding-right: 12px; }
       .status-chip { padding-left: 6px; padding-right: 6px; }
@@ -712,7 +710,6 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       .server-button:hover, .server-button[aria-current="true"] { border-radius: 10px; }
       .server-divider { width: 1px; height: 28px; margin: 0 3px; }
       .server-spacer { min-width: 10px; }
-      .server-status { width: 32px; height: 32px; }
       .dm-sidebar { display: none; }
       .main-view { height: auto; min-height: calc(100vh - 54px); }
       .channel-header { align-items: flex-start; flex-wrap: wrap; min-height: 64px; padding: 10px 12px; }
@@ -727,11 +724,17 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       .coverage-banner-button { grid-column: 2; margin-left: 0; justify-self: start; }
       .select-control, .print-button { height: 36px; }
       .reader-layout { display: flex; flex-direction: column; }
-      .details-toolbar { order: 0; min-height: 46px; padding: 5px 13px; border-left: 0; }
-      .details-toolbar .reader-controls { justify-content: flex-start; }
+      .mobile-controls { display: flex; order: 0; min-height: 46px; padding: 5px 13px; border-bottom: 1px solid var(--line); background: var(--main-raised); }
+      .mobile-controls .reader-controls { flex-direction: row; align-items: center; justify-content: flex-start; gap: 5px; }
+      .mobile-controls .control-group { display: flex; min-width: 0; flex: 1 1 145px; }
+      .mobile-controls .select-control { width: auto; min-width: 0; flex: 1; }
+      .mobile-controls .print-button { width: auto; flex: 0 0 auto; }
       .transcript { min-height: 520px; }
       .transcript { order: 1; }
-      .message-list { overflow: visible; padding: 10px 12px 25px 13px; }
+      .message-list { overflow: visible; padding: 10px 12px 76px 13px; }
+      .transcript-navigation { position: fixed; right: 13px; bottom: max(13px, env(safe-area-inset-bottom)); z-index: 4; min-height: 0; padding: 0; border: 0; background: transparent; pointer-events: none; }
+      .transcript-navigation-actions { pointer-events: auto; }
+      .transcript-nav-button { box-shadow: 0 6px 16px rgba(0, 0, 0, .34); }
       .details { display: none; order: 2; padding: 12px 13px 16px; border-top: 1px solid var(--line); border-left: 0; }
       .details.is-open { display: block; }
       .message { grid-template-columns: 38px minmax(0, 1fr); gap: 12px; padding-right: 4px; }
@@ -746,9 +749,12 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       .channel-title-line h1 { max-width: 46vw; }
       .archive-tag { display: none; }
       .status-chip { display: none; }
-      .details-toolbar .reader-controls { gap: 5px; flex-wrap: wrap; }
+      .mobile-controls .reader-controls { gap: 5px; flex-wrap: wrap; }
+      .mobile-controls .control-group { flex: 1 1 120px; }
       .control-label { display: none; }
-      .select-control { max-width: 47%; }
+      .mobile-controls .select-control { max-width: none; width: 100%; }
+      .transcript-navigation-status { display: none; }
+      .transcript-navigation { justify-content: flex-end; }
       .message { grid-template-columns: 32px minmax(0, 1fr); gap: 9px; }
       .avatar { width: 32px; height: 32px; border-radius: 50%; }
       .avatar-frame { width: 32px; height: 32px; }
@@ -756,8 +762,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       .message.is-grouped .message-timestamp { width: 32px; }
       .message-timestamp { width: auto; margin: 0 0 0 1px; text-align: left; }
       .message-header { gap: 4px 7px; }
-      .transcript-intro { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto; min-height: 70px; padding: 8px 13px; }
-      .transcript-participants { grid-column: 1 / -1; grid-row: 2; justify-self: center; }
+      .transcript-intro { min-height: 39px; padding: 8px 13px; }
       .transcript-intro-note { display: none; }
     }
 
@@ -765,7 +770,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       :root { --main: #fff; --ink: #111; --ink-soft: #333; --muted: #555; --line: #bbb; }
       html, body { overflow: visible; background: #fff; color: #111; }
       body { font-size: 11pt; }
-      .server-rail, .dm-sidebar, .channel-header, .details-toolbar, .coverage-banner, .transcript-participants, .details, .transcript-intro .search-status { display: none !important; }
+      .server-rail, .dm-sidebar, .channel-header, .mobile-controls, .sidebar-controls, .coverage-banner, .transcript-navigation, .details, .transcript-intro .search-status { display: none !important; }
       .app-shell, .main-view, .reader, .reader-layout, .transcript { display: block; height: auto; min-height: 0; }
       .message-list { overflow: visible; padding: 0; }
       .message { break-inside: avoid; }
@@ -784,31 +789,31 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
   <a class="skip-link" href="#main-content">Skip to transcript</a>
   <div class="app-shell">
     <aside class="server-rail" aria-label="Archive sections">
-      <button class="server-button server-home" type="button" aria-current="true" data-scroll="transcript" title="Open transcript" aria-label="Open transcript"><span class="server-mark" aria-hidden="true">A</span></button>
+      <button class="server-button server-home" type="button" aria-current="true" data-scroll="transcript" title="Open transcript" aria-label="Open transcript"><span class="server-mark" aria-hidden="true">C</span></button>
       <span class="server-divider" aria-hidden="true"></span>
-      <button class="server-button" type="button" data-scroll="details" title="Archive provenance" aria-label="Archive provenance"><span aria-hidden="true">i</span></button>
-      <button class="server-button" type="button" data-action="print" title="Print or save PDF" aria-label="Print or save PDF"><span aria-hidden="true">↥</span></button>
       <span class="server-spacer" aria-hidden="true"></span>
-      <div class="server-status" title="Offline archive" aria-label="Offline archive"><span class="status-dot" aria-hidden="true"></span></div>
     </aside>
 
     <aside class="dm-sidebar" aria-label="Direct message archive list">
       <header class="sidebar-header">
-        <div>
-          <strong>Archive Ledger</strong>
-          <span>offline workspace</span>
+        <div class="sidebar-brand">
+          <img class="sidebar-brand-mark" src="assets/concordance-mark.png" width="32" height="32" alt="" aria-hidden="true" fetchpriority="high">
+          <div class="sidebar-brand-copy">
+            <strong>Concordance</strong>
+            <span>offline workspace</span>
+          </div>
         </div>
-        <button class="sidebar-header-button" type="button" data-action="toggle-details" aria-expanded="true" aria-controls="details" title="Toggle archive details" aria-label="Toggle archive details">i</button>
       </header>
 
-      <button class="sidebar-search" type="button" data-action="focus-search">
+      <label class="sidebar-search" for="sidebar-search-input">
         <span class="sidebar-search-icon" aria-hidden="true">⌕</span>
-        <span>Find a conversation</span>
-        <kbd>/</kbd>
-      </button>
+        <span class="sr-only" id="sidebar-search-label">Find a message</span>
+        <input id="sidebar-search-input" name="conversation-search" type="search" placeholder="Find a message…" aria-label="Find a message" autocomplete="off" spellcheck="false">
+        <kbd aria-hidden="true">/</kbd>
+      </label>
 
       <div class="sidebar-scroll">
-        <div class="dm-section-title"><span>DIRECT MESSAGES</span><button type="button" data-action="focus-search" title="Find a conversation" aria-label="Find a conversation">+</button></div>
+        <div class="dm-section-title">DIRECT MESSAGES</div>
         <button class="dm-item" type="button" aria-current="true" data-scroll="transcript">
           <span class="dm-avatar-stack" id="dm-avatar-stack" aria-hidden="true"></span>
           <span class="dm-item-copy">
@@ -816,6 +821,11 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
             <span class="dm-item-subtitle"><span id="dm-item-count">— messages</span><span aria-hidden="true"> · </span><span id="dm-item-state">local archive</span></span>
           </span>
         </button>
+
+        <section class="sidebar-participants" aria-labelledby="sidebar-participants-title">
+          <div class="sidebar-section-label" id="sidebar-participants-title">participants</div>
+          <div class="sidebar-participant-list" id="participant-strip"></div>
+        </section>
 
         <section class="sidebar-archive-card" aria-label="Open archive summary">
           <div class="eyebrow">open archive</div>
@@ -831,17 +841,26 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         </section>
 
         <p class="sidebar-note">Rendered from local files. This reader does not connect to Discord or fetch external assets.</p>
-        <div class="sidebar-local-status" id="sidebar-local-status" role="status" aria-live="polite" aria-label="Local-only rendering">
-          <span class="sidebar-local-status-mark" id="sidebar-local-status-mark" aria-hidden="true">✓</span>
-          <span class="sidebar-local-status-copy"><strong id="sidebar-local-status-title">Local-only render</strong><span id="sidebar-local-status-summary">no live connection</span></span>
-          <button class="sidebar-local-status-button" type="button" data-scroll="details" title="View capture notes" aria-label="View capture notes">i</button>
-        </div>
       </div>
 
-      <div class="sidebar-userbar">
-        <span class="sidebar-user-avatar" aria-hidden="true">A</span>
-        <span class="sidebar-user-copy"><strong>Archive reader</strong><span>offline / read-only</span></span>
-        <span class="sidebar-user-dot" aria-hidden="true"></span>
+      <div class="sidebar-controls" role="toolbar" aria-label="Transcript controls">
+        <div class="reader-controls">
+          <div class="control-group">
+            <label class="control-label" for="sidebar-author-filter">Author</label>
+            <select class="select-control" id="sidebar-author-filter" data-filter-control="author" aria-label="Filter messages by author">
+              <option value="all">Everyone</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="sidebar-timezone-mode">Timezone</label>
+            <select class="select-control" id="sidebar-timezone-mode" data-filter-control="timezone" aria-label="Choose timestamp timezone">
+              <option value="archive">Archive timezone</option>
+              <option value="local">Local timezone</option>
+              <option value="utc">UTC</option>
+            </select>
+          </div>
+          <button class="print-button" type="button" data-action="print" title="Print or save this archive">Save a copy</button>
+        </div>
       </div>
     </aside>
 
@@ -863,7 +882,6 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
           </div>
           <div class="status-chip"><span class="status-dot" aria-hidden="true"></span>local only</div>
           <button class="header-icon-button" type="button" data-action="toggle-details" aria-expanded="true" aria-controls="details" title="Toggle archive details" aria-label="Toggle archive details"><span aria-hidden="true">ⓘ</span></button>
-          <button class="header-icon-button" type="button" data-action="print" title="Print or save PDF" aria-label="Print or save PDF"><span aria-hidden="true">↥</span></button>
         </div>
       </header>
 
@@ -888,28 +906,37 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         </section>
 
         <div class="reader-layout">
-          <div class="details-toolbar" role="toolbar" aria-label="Transcript controls">
+          <div class="mobile-controls" role="toolbar" aria-label="Transcript controls">
             <div class="reader-controls">
-              <label class="control-label" for="author-filter">show</label>
-              <select class="select-control" id="author-filter" aria-label="Filter by author">
-                <option value="all">Everyone</option>
-              </select>
-              <label class="control-label" for="timezone-mode">time</label>
-              <select class="select-control" id="timezone-mode" aria-label="Timestamp display timezone">
-                <option value="archive">Archive timezone</option>
-                <option value="local">Local timezone</option>
-                <option value="utc">UTC</option>
-              </select>
-              <button class="print-button" type="button" data-action="print">Save a copy</button>
+              <div class="control-group">
+                <label class="control-label" for="author-filter">Author</label>
+                <select class="select-control" id="author-filter" data-filter-control="author" aria-label="Filter messages by author">
+                  <option value="all">Everyone</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label class="control-label" for="timezone-mode">Timezone</label>
+                <select class="select-control" id="timezone-mode" data-filter-control="timezone" aria-label="Choose timestamp timezone">
+                  <option value="archive">Archive timezone</option>
+                  <option value="local">Local timezone</option>
+                  <option value="utc">UTC</option>
+                </select>
+              </div>
+              <button class="print-button" type="button" data-action="print" title="Print or save this archive">Save a copy</button>
             </div>
           </div>
           <section class="transcript" id="transcript" aria-labelledby="reader-title">
             <div class="transcript-intro">
               <span class="transcript-intro-label"><strong>Read-only transcript</strong><span class="transcript-intro-note"> · local message history</span></span>
-              <div class="transcript-participants" id="participant-strip" aria-label="Conversation participants"></div>
               <span class="search-status" id="search-status" aria-live="polite">— messages</span>
             </div>
             <div class="message-list" id="message-list" role="log" aria-label="Archived messages"></div>
+            <div class="transcript-navigation" aria-label="Transcript navigation">
+              <span class="transcript-navigation-status" id="transcript-navigation-status" role="status" aria-live="polite">At the oldest captured message</span>
+              <div class="transcript-navigation-actions">
+                <button class="transcript-nav-button transcript-nav-edge" type="button" data-action="edge" aria-label="Jump to newest captured message" title="Jump to the newest captured message">Jump to Newest</button>
+              </div>
+            </div>
           </section>
 
           <aside class="details is-open" id="details" aria-label="Archive details">
@@ -949,6 +976,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         detailsOpen: true,
         windowStart: 0,
         windowSize: 240,
+        edgeTarget: "newest",
         printing: false,
         printWindowStart: null
       };
@@ -1123,7 +1151,19 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const footer = `${edited ? `<div class="message-footer">${edited}</div>` : ""}${reactions}`;
         const avatar = grouped ? `<span class="grouped-avatar-spacer" aria-hidden="true"></span>` : avatarMarkup(person);
         const author = grouped ? "" : `<span class="author-name">${escapeHtml(displayName(person))}</span>${handleName(person) ? `<span class="author-handle">${escapeHtml(handleName(person))}</span>` : ""}`;
-        return `<article class="message${groupingClass}${selected}" id="message-${escapeHtml(message.id)}" data-message-id="${escapeHtml(message.id)}" tabindex="-1"><div>${avatar}</div><div class="message-main"><div class="message-header">${author}<button class="message-timestamp" type="button" data-select="${escapeHtml(message.id)}" title="${escapeHtml(`${displayFullTime(message)} · raw ${formatRawTime(message.timestamp)}`)}">${escapeHtml(displayTime(message))}</button></div>${replyMarkup(message)}<div class="message-content">${safeTextWithLinks(message.content || "")}</div>${attachments}${embeds}${footer}</div></article>`;
+        return `<article class="message${groupingClass}${selected}" id="message-${escapeHtml(message.id)}" data-message-id="${escapeHtml(message.id)}" data-message-select="${escapeHtml(message.id)}" tabindex="-1"><div>${avatar}</div><div class="message-main"><div class="message-header">${author}<button class="message-timestamp" type="button" data-select="${escapeHtml(message.id)}" title="${escapeHtml(`${displayFullTime(message)} · raw ${formatRawTime(message.timestamp)}`)}">${escapeHtml(displayTime(message))}</button></div>${replyMarkup(message)}<div class="message-content">${safeTextWithLinks(message.content || "")}</div>${attachments}${embeds}${footer}</div></article>`;
+      };
+      const renderTranscriptNavigation = (visible = visibleMessages()) => {
+        const button = $('[data-action="edge"]');
+        const status = $("#transcript-navigation-status");
+        if (!button || !status) return;
+        const hasMessages = visible.length > 0;
+        const jumpToNewest = state.edgeTarget === "newest";
+        button.disabled = !hasMessages;
+        button.textContent = jumpToNewest ? "Jump to Newest" : "Scroll to Top";
+        button.setAttribute("aria-label", jumpToNewest ? "Jump to newest captured message" : "Scroll to oldest captured message");
+        button.title = jumpToNewest ? "Jump to the newest captured message" : "Scroll to the oldest captured message";
+        status.textContent = !hasMessages ? "No captured messages" : jumpToNewest ? "At the oldest captured message" : "At the newest captured message";
       };
       const renderMessages = () => {
         const list = $("#message-list");
@@ -1131,6 +1171,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         if (!visible.length) {
           $("#search-status").textContent = `0 of ${messages.length} messages`;
           list.innerHTML = `<div class="empty-state"><strong>No messages match this view.</strong><p>Try clearing the search or choosing Everyone in the author filter.</p></div>`;
+          renderTranscriptNavigation(visible);
           return;
         }
         const displaySize = state.printing ? visible.length : state.windowSize;
@@ -1158,6 +1199,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
           const selected = document.getElementById(`message-${CSS.escape(state.selected)}`);
           selected?.scrollIntoView({ block: "nearest" });
         }
+        renderTranscriptNavigation(visible);
       };
       const renderSelection = () => {
         const panel = $("#selection-panel");
@@ -1174,9 +1216,15 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const provenanceRows = `${provenance.source_file ? `<div class="detail-row"><dt>source file</dt><dd class="mono">${escapeHtml(provenance.source_file)}</dd></div>` : ""}${Number.isInteger(provenance.record_index) ? `<div class="detail-row"><dt>source record</dt><dd class="mono">${escapeHtml(provenance.record_index)}</dd></div>` : ""}${provenance.id_generated ? `<div class="detail-row"><dt>message ID note</dt><dd>Generated locally because the source did not provide an ID.</dd></div>` : ""}`;
         panel.innerHTML = `<div class="eyebrow">message detail</div><div class="detail-title">${escapeHtml(displayName(person))}</div><dl class="detail-list"><div class="detail-row"><dt>displayed</dt><dd>${escapeHtml(displayFullTime(message))}</dd></div><div class="detail-row"><dt>raw UTC</dt><dd class="mono">${escapeHtml(formatRawTime(message.timestamp))}</dd></div><div class="detail-row"><dt>message ID</dt><dd class="mono">${escapeHtml(message.id)}</dd></div>${attachmentRow}${message.edited_at ? `<div class="detail-row"><dt>edited</dt><dd>${escapeHtml(formatFullTime(message.edited_at))}</dd></div>` : ""}${provenanceRows}</dl>${link ? `<p><a href="${escapeHtml(link)}" target="_blank" rel="noreferrer noopener">Open source message link ↗</a></p>` : ""}<button class="copy-button" type="button" data-copy="${escapeHtml(message.id)}">Copy message ID</button>`;
       };
+      const filterControls = (kind) => document.querySelectorAll(`[data-filter-control="${kind}"]`);
+      const syncFilterControls = (kind, value) => filterControls(kind).forEach((control) => { control.value = value; });
       const renderMetadata = () => {
         const kind = String(metadata.kind || "conversation").replaceAll("_", " ");
         const source = metadata.source || {};
+        const archiveCatalog = [metadata.archive_catalog, metadata.archives, archive.archive_catalog, archive.archives].find(Array.isArray) || [];
+        const archiveCount = Number(metadata.archive_count ?? archive.archive_count ?? 0);
+        const sidebarSearchMode = archiveCount > 1 || archiveCatalog.length > 1 ? "username" : "message";
+        const sidebarSearchLabel = `Find a ${sidebarSearchMode}`;
         const sorted = [...messages].sort((a, b) => String(a.timestamp).localeCompare(String(b.timestamp)));
         const title = metadata.title || "Untitled archive";
         const channelPerson = participants.find((person) => displayName(person) === title) || participants[0] || null;
@@ -1230,13 +1278,22 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         $("#archive-notes").innerHTML = notes.length ? notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("") : "<li>No source notes were provided.</li>";
         const subtitle = metadata.synthetic ? "Synthetic fixture · all names and assets are fictional." : "A portable conversation record with local metadata and assets.";
         $("#reader-subtitle").textContent = subtitle;
-        $("#timezone-mode option[value=\"archive\"]").textContent = messages.some((message) => sourceDisplay(message)?.label) ? "Source display" : "Archive timezone";
-        $("#author-filter").innerHTML = `<option value="all">Everyone</option>` + participants.map((person) => `<option value="${escapeHtml(person.id)}">${escapeHtml(displayName(person))}</option>`).join("");
-        $("#timezone-mode").value = state.timezone;
+        const timezoneLabel = messages.some((message) => sourceDisplay(message)?.label) ? "Source display" : "Archive timezone";
+        filterControls("timezone").forEach((control) => {
+          const archiveOption = control.querySelector('option[value="archive"]');
+          if (archiveOption) archiveOption.textContent = timezoneLabel;
+        });
+        const authorOptions = `<option value="all">Everyone</option>` + participants.map((person) => `<option value="${escapeHtml(person.id)}">${escapeHtml(displayName(person))}</option>`).join("");
+        filterControls("author").forEach((control) => { control.innerHTML = authorOptions; });
+        syncFilterControls("author", state.author);
+        syncFilterControls("timezone", state.timezone);
         $("#participant-strip").innerHTML = participants.map((person) => `<span class="participant-chip">${miniAvatarMarkup(person)}<span>${escapeHtml(displayName(person))}</span></span>`).join("");
+        $("#sidebar-search-label").textContent = sidebarSearchLabel;
+        $("#sidebar-search-input").placeholder = `${sidebarSearchLabel}…`;
+        $("#sidebar-search-input").setAttribute("aria-label", sidebarSearchLabel);
         $("#dm-avatar-stack").innerHTML = participants.slice(0, 3).map(miniAvatarMarkup).join("") || `<span class="mini-avatar" aria-hidden="true">?</span>`;
         $("#dm-item-count").textContent = `${messages.length} messages`;
-        $("#dm-item-state").textContent = coverage?.complete ? "verified local archive" : coverage || captureRange ? "incomplete capture" : metadata.synthetic ? "synthetic archive" : "local archive";
+        $("#dm-item-state").textContent = coverage && !coverage.complete || captureRange && !coverage?.complete ? "incomplete capture" : metadata.synthetic ? "synthetic archive" : "local archive";
         renderCoverageBanner(sorted, captureRange, coverage);
         renderCoverageLedger(captureRange, coverage);
       };
@@ -1262,6 +1319,46 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         renderSelection();
         document.getElementById(`message-${CSS.escape(messageId)}`)?.focus({ preventScroll: true });
       };
+      const scrollBehavior = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+      const scrollMessageListTo = (edge) => {
+        const list = $("#message-list");
+        if (!list) return;
+        list.scrollTo({ top: edge === "newest" ? list.scrollHeight : 0, behavior: scrollBehavior() });
+      };
+      const scrollToOldest = () => {
+        const visible = visibleMessages();
+        const oldest = visible[0];
+        if (!oldest) return;
+        state.windowStart = 0;
+        state.selected = oldest.id;
+        state.edgeTarget = "newest";
+        history.replaceState(null, "", `#message=${encodeURIComponent(oldest.id)}`);
+        renderMessages();
+        renderSelection();
+        requestAnimationFrame(() => scrollMessageListTo("oldest"));
+      };
+      const scrollToNewest = () => {
+        const visible = visibleMessages();
+        const newest = visible[visible.length - 1];
+        if (!newest) return;
+        state.windowStart = Math.max(0, visible.length - state.windowSize);
+        state.selected = newest.id;
+        state.edgeTarget = "oldest";
+        history.replaceState(null, "", `#message=${encodeURIComponent(newest.id)}`);
+        renderMessages();
+        renderSelection();
+        requestAnimationFrame(() => scrollMessageListTo("newest"));
+      };
+      const syncEdgeTarget = () => {
+        const list = $("#message-list");
+        if (!list || !visibleMessages().length) {
+          renderTranscriptNavigation();
+          return;
+        }
+        if (list.scrollTop <= 8) state.edgeTarget = "newest";
+        if (list.scrollTop + list.clientHeight >= list.scrollHeight - 8) state.edgeTarget = "oldest";
+        renderTranscriptNavigation();
+      };
       const renderCoverageBanner = (sorted, captureRange, coverage) => {
         const banner = $("#coverage-banner");
         if (!banner) return;
@@ -1275,15 +1372,6 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const atStart = Boolean(coverage?.start_confirmed || captureRange?.at_start);
         const atEnd = Boolean(coverage?.end_confirmed || captureRange?.at_end);
         const boundarySummary = atStart && atEnd ? "oldest and newest boundaries observed" : atStart ? "oldest boundary observed; newest boundary still missing" : atEnd ? "newest boundary observed; oldest boundary still missing" : "neither conversation boundary observed";
-        const sidebarStatus = $("#sidebar-local-status");
-        const sidebarMark = $("#sidebar-local-status-mark");
-        const sidebarTitle = $("#sidebar-local-status-title");
-        const sidebarSummary = $("#sidebar-local-status-summary");
-        sidebarStatus?.classList.toggle("is-warning", !complete);
-        if (sidebarStatus) sidebarStatus.setAttribute("aria-label", complete ? "Coverage verified" : "Local-only rendering; coverage needs review");
-        if (sidebarMark) sidebarMark.textContent = complete ? "✓" : "!";
-        if (sidebarTitle) sidebarTitle.textContent = complete ? "Coverage verified" : "Local-only render";
-        if (sidebarSummary) sidebarSummary.textContent = complete ? `${messageCount} messages · ${rangeCount} range${rangeCount === 1 ? "" : "s"}` : !hasCoverageMetadata ? "coverage not assessed" : "coverage needs review";
         if (complete) {
           banner.hidden = true;
           banner.classList.remove("is-verified");
@@ -1359,11 +1447,24 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
           // Ignore malformed user-edited deep links and keep the archive readable.
         }
       };
-      const resetMessageWindow = () => { state.windowStart = 0; };
+      const resetMessageWindow = () => { state.windowStart = 0; state.edgeTarget = "newest"; };
+      const searchInputs = () => [$("#message-search"), $("#sidebar-search-input")].filter(Boolean);
+      const updateSearch = (value, source) => {
+        state.query = value;
+        searchInputs().forEach((input) => { if (input !== source) input.value = value; });
+        resetMessageWindow();
+        renderMessages();
+      };
+      const focusSearch = (target = "primary") => {
+        const input = target === "sidebar" ? $("#sidebar-search-input") : $("#message-search");
+        (input || $("#message-search"))?.focus();
+      };
 
-      $("#message-search").addEventListener("input", (event) => { state.query = event.target.value; resetMessageWindow(); renderMessages(); });
-      $("#author-filter").addEventListener("change", (event) => { state.author = event.target.value; resetMessageWindow(); renderMessages(); });
-      $("#timezone-mode").addEventListener("change", (event) => { state.timezone = event.target.value; renderMetadata(); renderMessages(); renderSelection(); });
+      $("#message-search").addEventListener("input", (event) => updateSearch(event.target.value, event.target));
+      $("#sidebar-search-input").addEventListener("input", (event) => updateSearch(event.target.value, event.target));
+      $("#message-list").addEventListener("scroll", syncEdgeTarget, { passive: true });
+      filterControls("author").forEach((control) => control.addEventListener("change", (event) => { state.author = event.target.value; syncFilterControls("author", state.author); resetMessageWindow(); renderMessages(); }));
+      filterControls("timezone").forEach((control) => control.addEventListener("change", (event) => { state.timezone = event.target.value; syncFilterControls("timezone", state.timezone); renderMetadata(); renderMessages(); renderSelection(); }));
       document.addEventListener("error", (event) => {
         const image = event.target;
         if (!(image instanceof HTMLImageElement) || !image.matches("[data-avatar-image]")) return;
@@ -1380,10 +1481,21 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
           window.print();
           return;
         }
+        if (action === "edge") {
+          if (state.edgeTarget === "newest") scrollToNewest();
+          else scrollToOldest();
+          return;
+        }
         if (action === "toggle-details") applyDetailsState(!state.detailsOpen);
-        if (action === "focus-search") $("#message-search")?.focus();
+        if (action === "focus-search") focusSearch(event.target.closest("[data-action]")?.dataset.searchTarget);
         if (action === "load-older") { state.windowStart = Math.max(0, state.windowStart - state.windowSize); renderMessages(); return; }
         if (action === "load-newer") { state.windowStart = state.windowStart + state.windowSize; renderMessages(); return; }
+        const messageRow = event.target.closest("[data-message-select]");
+        const interactiveTarget = event.target.closest("a,button,input,select,textarea,video,audio");
+        if (messageRow && !interactiveTarget) {
+          selectMessage(messageRow.dataset.messageSelect);
+          return;
+        }
         const selected = event.target.closest("[data-select]")?.dataset.select;
         if (selected) selectMessage(selected);
         const jump = event.target.closest("[data-jump]")?.dataset.jump;
@@ -1401,8 +1513,8 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         renderMessages();
       });
       document.addEventListener("keydown", (event) => {
-        if (event.key === "/" && !["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement?.tagName)) { event.preventDefault(); $("#message-search").focus(); }
-        if (event.key === "Escape" && document.activeElement === $("#message-search")) { $("#message-search").value = ""; state.query = ""; resetMessageWindow(); renderMessages(); }
+        if (event.key === "/" && !["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement?.tagName)) { event.preventDefault(); focusSearch(); }
+        if (event.key === "Escape" && [$("#message-search"), $("#sidebar-search-input")].includes(document.activeElement)) { searchInputs().forEach((input) => { input.value = ""; }); state.query = ""; resetMessageWindow(); renderMessages(); }
       });
 
       initializeHash();

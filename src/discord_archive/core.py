@@ -1504,6 +1504,20 @@ def _copy_referenced_assets(archive: dict[str, Any], source_root: Path, output_r
     return missing
 
 
+def _copy_viewer_assets(template: Path, output_root: Path) -> list[str]:
+    assets_root = template.parent / "assets"
+    if not assets_root.is_dir():
+        return []
+    copied: list[str] = []
+    for source in sorted(path for path in assets_root.rglob("*") if path.is_file()):
+        relative = source.relative_to(assets_root)
+        destination = output_root / "assets" / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+        copied.append((Path("assets") / relative).as_posix())
+    return copied
+
+
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -1512,9 +1526,10 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _build_manifest(archive: dict[str, Any], output_dir: Path) -> dict[str, Any]:
+def _build_manifest(archive: dict[str, Any], output_dir: Path, viewer_assets: list[str] | None = None) -> dict[str, Any]:
     references = {"archive.json", "app.js", "index.html"}
     references.update(_asset_references(archive))
+    references.update(viewer_assets or [])
     files: list[dict[str, Any]] = []
     for reference in sorted(references):
         path = output_dir / reference
@@ -1658,6 +1673,7 @@ def build_archive(input_path: Path, output_dir: Path, template_path: Path | None
     template = template_path or _template_path()
     if not template.is_file():
         raise FileNotFoundError(f"Viewer template not found: {template}")
+    viewer_assets = _copy_viewer_assets(template, output_dir)
     template_text = template.read_text(encoding="utf-8")
     # Keep the viewer source in one template, but emit its executable code as
     # an external local file so strict offline/browser CSPs do not block it.
@@ -1684,5 +1700,5 @@ def build_archive(input_path: Path, output_dir: Path, template_path: Path | None
     html = template_text.replace("{{ARCHIVE_TITLE}}", title.replace("&", "&amp;").replace("<", "&lt;"))
     html = html.replace("{{ARCHIVE_JSON}}", payload)
     (output_dir / "index.html").write_text(html, encoding="utf-8", newline="\n")
-    write_json(output_dir / "manifest.json", _build_manifest(archive, output_dir))
+    write_json(output_dir / "manifest.json", _build_manifest(archive, output_dir, viewer_assets))
     return missing

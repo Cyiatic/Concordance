@@ -2,7 +2,7 @@
 
 A local-first tool for turning permitted conversation exports into searchable,
 offline-readable archives. The first milestone is a normalized JSON schema and
-an **Archive Ledger** viewer that renders message text, timestamps, avatars,
+an **Concordance** viewer that renders message text, timestamps, avatars,
 replies, reactions, embeds, attachments, provenance, and offline status without
 loading Discord or any external asset.
 

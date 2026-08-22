@@ -69,7 +69,7 @@ viewer depend on a live service, external assets, or a particular chat client.
 
 ## Brand Commitments
 
-The viewer uses the **Archive Ledger** brand: a Discord-like dark reading shell
+The viewer uses the **Concordance** brand: a Discord-like dark reading shell
 with a compact app rail, conversation sidebar, message timeline, and
 toggleable provenance drawer.
 
