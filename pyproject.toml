@@ -9,6 +9,9 @@ description = "Local-first normalized conversation archives with an offline view
 requires-python = ">=3.11"
 dependencies = []
 
+[project.optional-dependencies]
+secure = ["cryptography>=42"]
+
 [project.scripts]
 discord-archive = "discord_archive.cli:main"
 
@@ -16,5 +19,5 @@ discord-archive = "discord_archive.cli:main"
 where = ["src"]
 
 [tool.setuptools.data-files]
-"viewer" = ["viewer/template.html"]
+"viewer" = ["viewer/template.html", "viewer/catalog_template.html", "viewer/catalog_app.js", "viewer/capture_template.html", "viewer/capture_app.js"]
 "viewer/assets" = ["viewer/assets/concordance-mark.png"]

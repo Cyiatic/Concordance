@@ -9,7 +9,7 @@
     "synthetic": true,
     "source": {
       "type": "synthetic_fixture",
-      "label": "Archive Ledger sample",
+      "label": "Concordance sample",
       "notes": ["All names, content, and assets in this fixture are fictional."]
     }
   },

@@ -49,8 +49,10 @@ viewer depend on a live service, external assets, or a particular chat client.
 - All assets needed for offline viewing should be copied into the archive when
   the input provides them; external CDN URLs are provenance, not a runtime
   dependency.
-- Generated viewer directories include a local integrity manifest so a copied
-  archive can be verified without the source service or a network.
+- Generated viewer directories include a local integrity manifest and a
+  message-free evidence record so a copied archive can be verified without the
+  source service or a network; the reader exposes that record in its details
+  drawer.
 - A user-supplied transcript adapter accepts an explicitly provided JSON
   transcript and preserves per-message source filename and record index.
 - An attended browser adapter can read the currently rendered messages from one
@@ -58,7 +60,39 @@ viewer depend on a live service, external assets, or a particular chat client.
   both authors to be preserved when the archive owner controls both ends.
 - Long histories are captured as user-scrolled, overlapping ranges. The merge
   layer deduplicates message IDs and exposes an explicit coverage status instead
-  of implying that one virtualized DOM window is the entire DM.
+  of implying that one virtualized DOM window is the entire DM. Optional expected
+  date checkpoints make known history landmarks auditable and keep a session
+  incomplete until each landmark is observed.
+- A generated message-free capture dashboard turns each session into an
+  operator checklist: it shows the next action, overlap chain, oldest/newest
+  boundary attestations, expected dates, feature/media counts, and remote-host
+  warnings without copying message bodies. Capture diagnostics also record
+  skipped visible nodes and the need for separately attached DOM/screenshot
+  evidence when rendered appearance must be proven. A plan-only next-step
+  command exposes the bounded older/newer direction and settle baseline without
+  taking control of the browser.
+- A generated local catalog can index multiple normalized archives, search their
+  conversation metadata offline, expose capture coverage before opening a record,
+  and verify every linked viewer through local integrity manifests. An explicit
+  private message-index option adds cross-archive text search without changing
+  the metadata-only default.
+- A private evidence report can summarize archive provenance, coverage
+  boundaries, source diagnostics, feature counts, local-asset availability, and
+  SHA-256 hashes without copying message content; optional capture-session
+  linkage makes attended range capture auditable, including when the finalized
+  transcript is later normalized into a differently named archive file. DOM
+  snapshots and screenshots can be attached to their specific capture ranges
+  and are automatically included in the linked evidence report.
+- A safe-share redaction profile can anonymize participants, replace message
+  content, remap identifiers, strip media, and export a portable bundle.
+- Windows users have a one-command safe-share helper that redacts, builds,
+  verifies, and bundles without mutating the source archive; optional AES-GCM
+  encryption remains explicit and password-file based.
+- Portable bundles can be password-encrypted with an optional AES-GCM dependency;
+  schema migration is exposed as a versioned CLI boundary.
+- Windows users have build/verify, local launcher, and one-command bundle
+  helpers, a source-only release packager, and a read-only media audit; CI runs
+  source checks and synthetic archive verification without private data.
 - The viewer must not require Discord, a network connection, a token, or a
   background service.
 - Capture is intentionally separated from the archive engine. The project

@@ -16,7 +16,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
   <title>{{ARCHIVE_TITLE}} · Concordance</title>
   <style>
     :root {
-      color-scheme: light;
+      color-scheme: dark;
       --ink: #233236;
       --ink-soft: #4c5d61;
       --muted: #6c7a7d;
@@ -192,10 +192,9 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       border-radius: 8px;
       background: var(--surface);
       color: var(--ink);
-      outline: none;
     }
     .search-wrap input::placeholder { color: var(--muted); }
-    .search-wrap input:focus { border-color: var(--focus); box-shadow: 0 0 0 3px rgba(7, 95, 106, .12); }
+    .search-wrap input:focus-visible { border-color: var(--focus); box-shadow: 0 0 0 3px rgba(7, 95, 106, .12); }
     .search-glyph { position: absolute; top: 9px; left: 13px; color: var(--muted); font-family: var(--mono); font-size: 14px; pointer-events: none; }
     .search-hint { position: absolute; top: 8px; right: 9px; padding: 2px 5px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); font-family: var(--mono); font-size: 10px; pointer-events: none; }
 
@@ -293,6 +292,14 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .detail-empty strong { display: block; margin-bottom: 5px; color: var(--ink-soft); font-size: 13px; }
     .detail-notes { margin: 0; padding-left: 16px; color: var(--muted); font-size: 11px; }
     .detail-notes li + li { margin-top: 7px; }
+    .integrity-disclosure { margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .integrity-disclosure summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer; color: var(--ink-soft); font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .integrity-disclosure summary::marker { color: var(--muted); }
+    .integrity-disclosure summary:hover { color: var(--ink); }
+    .integrity-status { color: #2f816c; font-size: 8px; letter-spacing: .05em; }
+    .integrity-status.is-warning { color: #a96a32; }
+    .integrity-list { margin-top: 11px; }
+    .integrity-note { margin: 10px 0 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
     .copy-button { margin-top: 12px; padding: 7px 9px; border: 1px solid var(--line-strong); border-radius: 6px; background: transparent; color: var(--ink-soft); font-size: 11px; font-weight: 700; }
     .copy-button:hover { background: var(--panel); color: var(--ink); }
 
@@ -354,13 +361,13 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
   <style id="discord-archive-theme">
     :root {
       color-scheme: dark;
-      --server: #1e1f22;
-      --sidebar: #2b2d31;
+      --server: #111214;
+      --sidebar: #111214;
       --sidebar-deep: #232428;
-      --main: #313338;
+      --main: #1e1f22;
       --main-raised: #2b2d31;
       --input: #1e1f22;
-      --hover: #35373c;
+      --hover: #2b2d31;
       --active: #404249;
       --line: rgba(255, 255, 255, .06);
       --line-strong: rgba(255, 255, 255, .13);
@@ -400,7 +407,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
 
     .app-shell {
       display: grid;
-      grid-template-columns: 72px 264px minmax(0, 1fr);
+      grid-template-columns: 72px 300px minmax(0, 1fr);
       min-height: 100vh;
       height: 100vh;
       overflow: hidden;
@@ -524,13 +531,10 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .sidebar-stats { display: grid; gap: 6px; color: var(--muted); font-family: var(--mono); font-size: 9px; font-variant-numeric: tabular-nums; }
     .sidebar-stats div { display: flex; justify-content: space-between; gap: 8px; }
     .sidebar-stats strong { color: var(--ink-soft); font-weight: 700; text-align: right; }
-    .sidebar-note { margin: 22px 8px 0; color: var(--subtle); font-size: 11px; line-height: 1.5; }
-    .sidebar-controls { display: flex; min-width: 0; flex: 0 0 auto; padding: 10px 12px 12px; border-top: 1px solid rgba(0, 0, 0, .2); background: var(--sidebar); }
-    .sidebar-controls .reader-controls { display: grid; width: 100%; gap: 7px; }
-    .sidebar-controls .control-group { display: grid; grid-template-columns: 62px minmax(0, 1fr); align-items: center; gap: 7px; }
-    .sidebar-controls .select-control, .sidebar-controls .print-button { width: 100%; }
+    .sidebar-footer { display: flex; min-width: 0; flex: 0 0 auto; padding: 14px 16px 17px; border-top: 1px solid rgba(0, 0, 0, .2); background: var(--sidebar); }
+    .sidebar-note { margin: 0; color: var(--subtle); font-size: 11px; line-height: 1.5; }
     .main-view { display: flex; min-width: 0; min-height: 0; height: 100vh; flex-direction: column; background: var(--main); }
-    .channel-header { display: flex; align-items: center; justify-content: space-between; min-height: 60px; gap: 16px; padding: 8px 16px; border-bottom: 1px solid var(--line); background: var(--main); box-shadow: 0 1px 0 rgba(0, 0, 0, .12); }
+    .channel-header { display: flex; align-items: center; justify-content: space-between; min-height: 48px; gap: 16px; padding: 4px 16px; border-bottom: 1px solid var(--line); background: var(--main); box-shadow: 0 1px 0 rgba(0, 0, 0, .12); }
     .channel-leading { display: flex; min-width: 0; align-items: center; gap: 10px; }
     .channel-icon { display: grid; width: 30px; height: 30px; place-items: center; flex: 0 0 30px; overflow: hidden; border-radius: 50%; background: #454851; color: var(--ink); font-family: var(--mono); font-size: 16px; font-weight: 800; }
     .channel-icon-image { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -541,15 +545,20 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .channel-subtitle { max-width: 56ch; overflow: hidden; margin-top: 2px; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
     .channel-handle { color: var(--subtle); font-family: var(--mono); font-size: 10px; }
     .channel-actions { display: flex; min-width: 0; align-items: center; justify-content: flex-end; gap: 8px; }
-    .header-search { width: 210px; flex: 0 1 230px; max-width: 230px; margin: 0; }
+    .channel-tools { display: flex; min-width: 0; align-items: center; gap: 2px; }
+    .channel-tool { display: grid; width: 30px; height: 30px; place-items: center; border: 0; border-radius: 4px; background: transparent; color: var(--muted); }
+    .channel-tool:hover:not(:disabled) { background: var(--hover); color: var(--ink); }
+    .channel-tool:disabled { cursor: not-allowed; opacity: .56; }
+    .channel-tool svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+    .header-search { width: 200px; flex: 0 1 200px; max-width: 200px; margin: 0; }
     .search-wrap { position: relative; }
     .search-wrap label { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-    .search-wrap input { width: 100%; height: 30px; padding: 6px 26px 6px 29px; border: 0; border-radius: 4px; outline: none; background: var(--input); color: var(--ink); font-size: 12px; }
+    .search-wrap input { width: 100%; height: 30px; padding: 6px 26px 6px 29px; border: 0; border-radius: 4px; background: var(--input); color: var(--ink); font-size: 12px; }
     .search-wrap input::placeholder { color: var(--muted); }
     .search-wrap input:focus { box-shadow: 0 0 0 2px var(--accent); }
     .search-glyph { position: absolute; top: 5px; left: 10px; z-index: 1; color: var(--muted); font-family: var(--mono); font-size: 14px; pointer-events: none; }
     .search-hint { position: absolute; top: 6px; right: 8px; color: var(--subtle); font-family: var(--mono); font-size: 10px; pointer-events: none; }
-    .status-chip { display: inline-flex; align-items: center; gap: 7px; min-height: 28px; padding: 0 8px; border-radius: 4px; background: rgba(35, 165, 89, .12); color: #8edcae; font-family: var(--mono); font-size: 9px; white-space: nowrap; }
+    .status-chip { display: none; align-items: center; gap: 7px; min-height: 28px; padding: 0 8px; border-radius: 4px; background: rgba(35, 165, 89, .12); color: #8edcae; font-family: var(--mono); font-size: 9px; white-space: nowrap; }
     .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(35, 165, 89, .13); }
     .header-icon-button { display: grid; width: 30px; height: 30px; place-items: center; border: 0; border-radius: 4px; background: transparent; color: var(--muted); font-family: var(--mono); font-size: 16px; }
     .header-icon-button:hover { background: var(--hover); color: var(--ink); }
@@ -585,38 +594,48 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .select-control:hover { border-color: rgba(255, 255, 255, .24); }
     .print-button { height: 30px; padding: 0 10px; border: 0; border-radius: 4px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; }
     .print-button:hover { background: var(--accent-bright); }
+    .workspace-controls { display: flex; min-width: 0; flex: 0 0 auto; align-items: center; padding: 7px 16px; border-bottom: 1px solid var(--line); background: var(--main-raised); }
+    .workspace-controls .reader-controls { display: flex; width: 100%; align-items: center; justify-content: flex-start; gap: 8px; }
+    .workspace-controls .control-group { flex: 0 1 auto; }
+    .workspace-controls .print-button { min-width: 112px; margin-left: auto; }
     .participant-chip { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; padding: 2px 7px 2px 4px; border-radius: 12px; background: rgba(255, 255, 255, .05); color: var(--ink-soft); font-size: 10px; }
     .participant-chip img, .participant-chip .mini-avatar { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
     .mini-avatar-frame .mini-avatar { width: 100%; height: 100%; }
     .mini-avatar { display: grid; place-items: center; background: #454851; color: var(--accent-bright); font-family: var(--mono); font-size: 8px; font-weight: 800; }
 
-    .reader-layout { display: grid; width: 100%; max-width: none; min-height: 0; flex: 1; grid-template-columns: minmax(0, 1fr) 304px; grid-template-rows: minmax(0, 1fr); gap: 0; margin: 0; align-items: stretch; }
+    .reader-layout { display: grid; width: 100%; max-width: none; min-height: 0; flex: 1; grid-template-columns: minmax(0, 1fr) 310px; grid-template-rows: minmax(0, 1fr); gap: 0; margin: 0; align-items: stretch; }
     .reader-layout.details-collapsed { grid-template-columns: minmax(0, 1fr); }
-    .mobile-controls { display: none; }
-    .transcript { display: flex; min-width: 0; min-height: 0; grid-column: 1; grid-row: 1; flex-direction: column; overflow: hidden; border: 0; border-radius: 0; background: var(--main); box-shadow: none; }
+    .transcript { display: flex; position: relative; min-width: 0; min-height: 0; grid-column: 1; grid-row: 1; flex-direction: column; overflow: hidden; border: 0; border-radius: 0; background: var(--main); box-shadow: none; }
     .transcript-intro { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; min-height: 39px; gap: 8px 12px; padding: 8px 20px; border-bottom: 1px solid var(--line); background: var(--main); color: var(--muted); font-size: 11px; }
     .transcript-intro-label { min-width: 0; }
     .transcript-intro strong { color: var(--ink-soft); font-weight: 650; }
     .transcript-intro-note { color: var(--subtle); }
     .transcript-intro .search-status { justify-self: end; color: var(--muted); font-family: var(--mono); font-size: 9px; white-space: nowrap; font-variant-numeric: tabular-nums; }
-    .message-list { min-height: 0; flex: 1; overflow-y: auto; padding: 12px 16px 28px 20px; scrollbar-color: #1e1f22 transparent; overscroll-behavior: contain; }
+    .message-list { min-height: 0; flex: 1; overflow-y: auto; padding: 12px 16px 24px 20px; scrollbar-color: #1e1f22 transparent; overscroll-behavior: contain; }
     .message-window-controls { padding: 8px 0 12px; }
     .message-window-button { border-color: var(--line-strong); border-radius: 4px; background: var(--sidebar); color: var(--link); }
     .message-window-button:hover { background: var(--hover); color: var(--ink); }
-    .transcript-navigation { display: flex; min-height: 42px; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 16px 8px 20px; border-top: 1px solid var(--line); background: var(--main-raised); }
-    .transcript-navigation-status { min-width: 0; overflow: hidden; color: var(--muted); font-family: var(--mono); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .transcript-navigation { display: flex; position: absolute; right: 16px; bottom: 72px; z-index: 3; min-height: 0; align-items: center; justify-content: flex-end; gap: 12px; padding: 0; border: 0; background: transparent; pointer-events: none; }
+    .transcript-navigation-status { display: none; min-width: 0; overflow: hidden; color: var(--muted); font-family: var(--mono); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; font-variant-numeric: tabular-nums; }
     .transcript-navigation-actions { display: flex; min-width: 0; flex: 0 0 auto; gap: 7px; flex-wrap: wrap; justify-content: flex-end; }
-    .transcript-nav-button { min-height: 28px; padding: 5px 10px; border: 1px solid var(--line-strong); border-radius: 4px; background: var(--sidebar); color: var(--ink-soft); font-size: 10px; font-weight: 700; white-space: nowrap; }
+    .transcript-nav-button { min-height: 28px; padding: 5px 11px; border: 1px solid var(--line-strong); border-radius: 14px; background: var(--sidebar-deep); color: var(--ink-soft); box-shadow: 0 6px 16px rgba(0, 0, 0, .28); font-size: 10px; font-weight: 700; white-space: nowrap; pointer-events: auto; }
     .transcript-nav-button:hover:not(:disabled) { border-color: var(--accent-bright); background: var(--hover); color: var(--ink); }
     .transcript-nav-edge { border-color: rgba(88, 101, 242, .65); color: var(--ink); }
     .transcript-nav-button:disabled { cursor: not-allowed; opacity: .45; }
+    .composer-shell { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; gap: 8px; min-height: 44px; margin: 0 16px 16px 20px; padding: 5px 8px; border-radius: 8px; background: var(--input); color: var(--muted); }
+    .composer-input { min-width: 0; overflow: hidden; padding: 0 4px; color: var(--muted); font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+    .composer-button, .composer-action { display: grid; width: 28px; height: 28px; place-items: center; border: 0; border-radius: 4px; background: transparent; color: var(--muted); }
+    .composer-button:hover:not(:disabled), .composer-action:hover:not(:disabled) { background: var(--hover); color: var(--ink); }
+    .composer-button:disabled, .composer-action:disabled { cursor: not-allowed; opacity: .56; }
+    .composer-button svg, .composer-action svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+    .composer-actions { display: flex; align-items: center; gap: 1px; }
     .date-divider { display: flex; align-items: center; gap: 10px; padding: 17px 0 9px; color: var(--muted); font-size: 10px; font-weight: 700; }
     .date-divider::before, .date-divider::after { height: 1px; flex: 1; background: var(--line-strong); content: ""; }
-    .message { position: relative; display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 16px; padding: 4px 8px 4px 0; border: 0; border-radius: 4px; scroll-margin-top: 16px; transition: background 160ms ease, box-shadow 160ms ease; }
+    .message { position: relative; display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 16px; padding: 2px 8px 2px 0; border: 0; border-radius: 4px; scroll-margin-top: 16px; transition: background 160ms ease, box-shadow 160ms ease; }
     .message:hover { background: var(--hover); }
     .message.is-selected { margin-left: -8px; padding-left: 8px; background: var(--accent-soft); box-shadow: inset 2px 0 0 var(--accent); }
-    .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #454851; }
-    .avatar-frame { display: block; width: 40px; height: 40px; }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: #454851; }
+    .avatar-frame { display: block; width: 32px; height: 32px; }
     .avatar-frame .avatar { display: block; }
     .avatar-fallback { display: grid; place-items: center; color: var(--accent-bright); font-family: var(--mono); font-size: 11px; font-weight: 800; }
     .avatar-fallback[hidden], .mini-avatar-fallback[hidden] { display: none !important; }
@@ -626,13 +645,13 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .author-handle { color: var(--muted); font-family: var(--mono); font-size: 10px; }
     .message-timestamp { margin-left: 1px; padding: 0; border: 0; background: transparent; color: var(--muted); font-family: var(--sans); font-size: 12px; line-height: 20px; font-variant-numeric: tabular-nums; white-space: nowrap; }
     .message-timestamp:hover { color: var(--ink-soft); text-decoration: underline; text-underline-offset: 3px; }
-    .message-content { max-width: 78ch; margin-top: 1px; color: #dbdee1; font-size: 16px; line-height: 1.375; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .message-content { max-width: 78ch; margin-top: 1px; color: #dbdee1; font-size: 15px; line-height: 1.375; white-space: pre-wrap; overflow-wrap: anywhere; }
     .message-content a { overflow-wrap: anywhere; }
     .message.is-grouped { padding-top: 0; padding-bottom: 0; }
-    .message.is-grouped .grouped-avatar-spacer { width: 40px; height: 1px; }
+    .message.is-grouped .grouped-avatar-spacer { width: 32px; height: 1px; }
     .message.is-grouped .message-main { padding-top: 0; padding-bottom: 0; }
     .message.is-grouped .message-header { min-height: 0; }
-    .message.is-grouped .message-timestamp { position: absolute; top: 50%; left: 0; width: 40px; margin: 0; opacity: 0; pointer-events: none; text-align: right; transform: translateY(-50%); }
+    .message.is-grouped .message-timestamp { position: absolute; top: 50%; left: 0; width: 32px; margin: 0; opacity: 0; pointer-events: none; text-align: right; transform: translateY(-50%); }
     .message.is-grouped:hover .message-timestamp, .message.is-grouped:focus-within .message-timestamp { opacity: 1; pointer-events: auto; }
     .reply-context { display: flex; align-items: center; gap: 6px; max-width: 75ch; margin: 0 0 4px; color: var(--muted); font-size: 11px; }
     .reply-context::before { width: 17px; height: 10px; border-top: 1px solid var(--subtle); border-left: 1px solid var(--subtle); border-top-left-radius: 5px; content: ""; }
@@ -641,6 +660,17 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .edited-label { color: var(--muted); font-family: var(--mono); font-size: 9px; }
     .reaction { padding: 2px 6px; border: 1px solid var(--line-strong); border-radius: 4px; background: rgba(255, 255, 255, .05); color: var(--ink-soft); font-size: 11px; }
     .reaction.is-mine { border-color: rgba(88, 101, 242, .65); background: var(--accent-soft); color: #d9dcff; }
+    .message.is-call { grid-template-columns: 22px minmax(0, 1fr); gap: 10px; padding-top: 3px; padding-bottom: 3px; }
+    .message.is-call > div:first-child { padding-top: 3px; }
+    .call-rail-icon { display: grid; width: 20px; height: 20px; place-items: center; color: var(--green); }
+    .call-rail-icon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
+    .message.is-call .message-header { min-height: 0; margin-bottom: 1px; }
+    .message.is-call .message-timestamp { font-size: 11px; line-height: 16px; }
+    .call-event { display: block; max-width: min(100%, 600px); margin-top: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--ink-soft); }
+    .call-event.is-missed { background: transparent; }
+    .call-event-body { display: block; min-width: 0; }
+    .call-event-body strong { color: var(--ink-soft); font-size: 14px; font-weight: 500; overflow-wrap: anywhere; }
+    .call-event-body span { display: block; margin-top: 1px; color: var(--muted); font-size: 11px; line-height: 1.35; overflow-wrap: anywhere; }
     .attachment { display: inline-flex; flex-direction: column; gap: 6px; max-width: min(100%, 430px); margin-top: 9px; padding: 8px; border: 1px solid var(--line-strong); border-radius: 5px; background: var(--sidebar-deep); }
     .attachment img { display: block; max-width: 100%; max-height: 260px; border-radius: 3px; }
     .attachment audio, .attachment video { display: block; width: min(100%, 420px); }
@@ -651,19 +681,91 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .attachment-actions { display: flex; align-items: center; gap: 8px; color: var(--muted); font-family: var(--mono); font-size: 9px; overflow-wrap: anywhere; }
     .attachment-link { color: var(--link); }
     .remote-attachment { display: block; margin-top: 7px; color: var(--muted); font-family: var(--mono); font-size: 9px; }
+    .sticker-media { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 3px; max-width: 180px; margin: 9px 0 0; }
+    .sticker-media img { display: block; width: 160px; height: 160px; object-fit: contain; }
+    .sticker-caption { display: flex; align-items: baseline; gap: 8px; max-width: 100%; color: var(--muted); font-family: var(--mono); font-size: 9px; }
+    .sticker-caption strong { color: var(--ink-soft); font-family: var(--sans); font-size: 11px; font-weight: 650; }
     .embed { max-width: 75ch; margin-top: 9px; padding: 9px 11px; border: 1px solid var(--line-strong); border-radius: 3px; background: var(--sidebar-deep); box-shadow: inset 3px 0 0 var(--accent); }
     .embed-title { color: var(--ink); font-size: 12px; font-weight: 700; }
     .embed-description { margin-top: 4px; color: var(--ink-soft); font-size: 11px; white-space: pre-wrap; overflow-wrap: anywhere; }
     .embed-image { display: block; max-width: min(100%, 420px); max-height: 260px; margin-top: 8px; border-radius: 3px; }
     .embed-url { margin-top: 2px; color: var(--muted); font-family: var(--mono); font-size: 9px; overflow-wrap: anywhere; }
+    .embed-video { max-width: min(100%, 560px); padding: 0; overflow: hidden; box-shadow: inset 3px 0 0 var(--accent); }
+    .link-preview { display: grid; grid-template-columns: minmax(150px, 42%) minmax(0, 1fr); min-height: 112px; background: #1e1f22; }
+    .link-preview-thumb { position: relative; display: block; min-height: 112px; overflow: hidden; background: #111214; color: var(--ink); text-decoration: none; }
+    .link-preview-thumb:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: -2px; }
+    .link-preview-thumb img { display: block; width: 100%; height: 100%; min-height: 112px; object-fit: cover; }
+    .link-preview-thumb::after { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(17, 18, 20, .04), rgba(17, 18, 20, .42)); content: ""; pointer-events: none; }
+    .link-preview-play { display: grid; position: absolute; top: 50%; left: 50%; z-index: 1; width: 38px; height: 38px; place-items: center; border: 1px solid rgba(255, 255, 255, .48); border-radius: 50%; background: rgba(17, 18, 20, .78); color: var(--ink); transform: translate(-50%, -50%); }
+    .link-preview-play svg { width: 17px; height: 17px; fill: currentColor; stroke: none; transform: translateX(1px); }
+    .link-preview-thumb.is-placeholder { display: grid; min-height: 112px; place-items: center; align-content: center; gap: 6px; padding: 14px; background: linear-gradient(135deg, #1e1f22, #2b2d31); color: var(--muted); font-size: 9px; text-align: center; }
+    .link-preview-thumb.is-placeholder::after { display: none; }
+    .link-preview-thumb.is-placeholder .link-preview-play { position: static; transform: none; }
+    .link-preview-body { display: flex; min-width: 0; flex-direction: column; justify-content: center; gap: 5px; padding: 12px 13px; }
+    .link-preview-provider { color: var(--muted); font-family: var(--mono); font-size: 9px; letter-spacing: .05em; text-transform: uppercase; }
+    .link-preview-title { color: var(--ink); font-size: 13px; font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
+    .link-preview-note { color: var(--muted); font-size: 10px; line-height: 1.35; }
+    .link-preview-source { max-width: 100%; overflow: hidden; color: var(--link); font-family: var(--mono); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+    .link-preview-source a { color: inherit; }
+    @media (max-width: 560px) {
+      .link-preview { grid-template-columns: 1fr; }
+      .link-preview-thumb, .link-preview-thumb img { min-height: 150px; }
+    }
     .empty-state { padding: 55px 24px 65px; color: var(--muted); text-align: center; }
     .empty-state strong { display: block; color: var(--ink-soft); font-size: 15px; }
     .empty-state p { max-width: 42ch; margin: 7px auto 0; font-size: 12px; }
 
-    .details { min-width: 0; min-height: 0; grid-column: 2; grid-row: 1; overflow-y: auto; padding: 16px 0 16px 16px; border-left: 1px solid var(--line); background: var(--sidebar); scrollbar-color: #1e1f22 transparent; overscroll-behavior: contain; }
+    .details { min-width: 0; min-height: 0; grid-column: 2; grid-row: 1; overflow-y: auto; padding: 16px; border-left: 1px solid var(--line); background: #232428; scrollbar-color: #1e1f22 transparent; overscroll-behavior: contain; }
     .details.is-collapsed { display: none; }
     .detail-panel { padding: 15px; border: 0; border-radius: 6px; background: var(--sidebar-deep); box-shadow: none; }
     .detail-panel + .detail-panel { margin-top: 12px; }
+    .profile-panel { overflow: hidden; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--sidebar-deep); }
+    .profile-cover { position: relative; height: 84px; background: #111214; background-position: center; background-size: cover; border-bottom: 1px solid var(--line); }
+    .profile-cover.has-banner::after { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(17, 18, 20, .06), rgba(17, 18, 20, .34)); content: ""; pointer-events: none; }
+    .profile-cover-actions { display: flex; position: absolute; top: 10px; right: 10px; gap: 8px; }
+    .profile-action { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid rgba(255, 255, 255, .12); border-radius: 50%; background: rgba(0, 0, 0, .34); color: var(--ink-soft); }
+    .profile-action:hover:not(:disabled) { border-color: rgba(255, 255, 255, .25); background: rgba(0, 0, 0, .52); color: var(--ink); }
+    .profile-action:disabled { cursor: not-allowed; opacity: .62; }
+    .profile-action svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+    .profile-body { position: relative; padding: 0 15px 16px; }
+    .profile-avatar { position: relative; display: grid; width: 76px; height: 76px; margin-top: -38px; place-items: center; border: 5px solid var(--sidebar-deep); border-radius: 50%; background: #454851; }
+    .profile-avatar .avatar-frame { width: 66px; height: 66px; }
+    .profile-avatar .avatar { width: 66px; height: 66px; }
+    .profile-avatar .avatar-fallback { font-size: 17px; }
+    .profile-avatar-decoration { position: absolute; z-index: 2; inset: -8px; width: 84px; height: 84px; object-fit: contain; pointer-events: none; }
+    .profile-kicker { margin-top: 10px; color: var(--muted); font-family: var(--mono); font-size: 9px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+    .profile-title { margin: 4px 0 0; color: var(--ink); font-size: 18px; line-height: 1.2; text-wrap: balance; }
+    .profile-handle { margin: 3px 0 0; color: var(--ink-soft); font-size: 11px; overflow-wrap: anywhere; }
+    .profile-status { margin: 10px 0 0; color: var(--muted); font-size: 10px; line-height: 1.4; }
+    .profile-badges { display: flex; min-width: 0; align-items: center; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+    .profile-badge { display: inline-flex; min-width: 0; align-items: center; gap: 5px; padding: 3px 6px; border: 1px solid var(--line-strong); border-radius: 4px; background: rgba(255, 255, 255, .03); color: var(--ink-soft); font-size: 9px; }
+    .profile-badge img { width: 16px; height: 16px; border-radius: 3px; object-fit: contain; }
+    .profile-badge span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .profile-mutuals { display: flex; min-width: 0; align-items: center; gap: 7px; margin: 9px 0 0; color: var(--muted); font-size: 10px; line-height: 1.4; }
+    .profile-mutual-avatars { display: flex; flex: 0 0 auto; align-items: center; }
+    .profile-mutual-avatar { width: 16px; height: 16px; border: 2px solid var(--sidebar-deep); border-radius: 50%; object-fit: cover; }
+    .profile-mutual-avatar + .profile-mutual-avatar { margin-left: -4px; }
+    .profile-mutuals-copy { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .profile-facts { display: grid; gap: 9px; margin: 15px 0 0; padding-top: 13px; border-top: 1px solid var(--line); }
+    .profile-fact { display: grid; gap: 2px; }
+    .profile-fact dt { color: var(--ink-soft); font-size: 10px; font-weight: 700; }
+    .profile-fact dd { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.35; overflow-wrap: anywhere; }
+    .profile-footnote { margin: 14px 0 0; color: var(--subtle); font-size: 9px; line-height: 1.45; }
+    .profile-full-button { width: 100%; min-height: 36px; margin-top: 16px; border: 0; border-radius: 4px; background: var(--active); color: var(--ink); font-size: 13px; font-weight: 650; }
+    .profile-full-button:hover { background: #4a4c55; }
+    .profile-panel + .detail-panel { margin-top: 12px; }
+    .detail-disclosure { margin-top: 12px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--sidebar-deep); }
+    .detail-disclosure > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px 15px; cursor: pointer; list-style: none; color: var(--ink-soft); font-size: 12px; font-weight: 700; }
+    .detail-disclosure > summary::-webkit-details-marker { display: none; }
+    .detail-disclosure > summary::after { color: var(--muted); content: "›"; font-size: 18px; line-height: 1; transform: rotate(0deg); transition: transform 160ms ease; }
+    .detail-disclosure[open] > summary::after { transform: rotate(90deg); }
+    .detail-disclosure > summary:hover { color: var(--ink); }
+    .detail-disclosure > summary:focus-visible { outline-offset: -2px; }
+    .detail-disclosure-summary { min-width: 0; }
+    .detail-disclosure-meta { color: var(--muted); font-family: var(--mono); font-size: 9px; font-weight: 500; }
+    .detail-disclosure-body { padding: 0 15px 15px; }
+    .detail-disclosure-body .detail-panel { margin-top: 0; padding: 15px 0 0; border-top: 1px solid var(--line); border-radius: 0; background: transparent; }
+    .detail-disclosure-body .detail-panel + .detail-panel { margin-top: 15px; }
     .detail-title { margin: 5px 0 14px; color: var(--ink); font-size: 15px; font-weight: 700; text-wrap: balance; }
     .detail-list { display: grid; gap: 10px; margin: 0; }
     .detail-row { display: grid; gap: 2px; }
@@ -678,6 +780,13 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .detail-empty strong { display: block; margin-bottom: 5px; color: var(--ink-soft); font-size: 12px; }
     .detail-notes { margin: 0; padding-left: 16px; color: var(--muted); font-size: 10px; }
     .detail-notes li + li { margin-top: 8px; }
+    .integrity-disclosure { margin-top: 13px; padding-top: 11px; border-top: 1px solid var(--line); }
+    .integrity-disclosure summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; color: var(--muted); font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .integrity-disclosure summary:hover { color: var(--ink); }
+    .integrity-status { color: #8edcae; font-size: 8px; letter-spacing: .04em; }
+    .integrity-status.is-warning { color: #f0c674; }
+    .integrity-list { margin-top: 10px; }
+    .integrity-note { margin: 9px 0 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
     .copy-button { margin-top: 12px; padding: 7px 9px; border: 0; border-radius: 4px; background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; }
     .copy-button:hover { background: var(--accent-bright); }
     .skip-link { position: fixed; top: 8px; left: 8px; z-index: 10; padding: 7px 10px; border-radius: 4px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; transform: translateY(-160%); }
@@ -685,18 +794,18 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
     @media (max-width: 1180px) {
-      .app-shell { grid-template-columns: 64px 232px minmax(0, 1fr); }
-      .reader-layout { grid-template-columns: minmax(0, 1fr) 270px; }
+      .app-shell { grid-template-columns: 64px 280px minmax(0, 1fr); }
+      .reader-layout { grid-template-columns: minmax(0, 1fr) 292px; }
       .details { padding: 12px 0 12px 12px; }
       .header-search { width: 170px; flex-basis: 180px; }
     }
 
     @media (max-width: 900px) {
-      .app-shell { grid-template-columns: 58px 212px minmax(0, 1fr); }
+      .app-shell { grid-template-columns: 58px 240px minmax(0, 1fr); }
       .server-button { width: 42px; height: 42px; }
       .channel-header { gap: 8px; padding-left: 12px; padding-right: 12px; }
       .status-chip { padding-left: 6px; padding-right: 6px; }
-      .reader-layout { grid-template-columns: minmax(0, 1fr) 245px; }
+      .reader-layout { grid-template-columns: minmax(0, 1fr) 270px; }
       .header-search { width: 145px; flex-basis: 150px; }
     }
 
@@ -715,6 +824,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       .channel-header { align-items: flex-start; flex-wrap: wrap; min-height: 64px; padding: 10px 12px; }
       .channel-leading { flex: 1 1 220px; }
       .channel-actions { width: 100%; justify-content: flex-start; }
+      .channel-tools { order: 0; }
       .header-search { width: auto; max-width: none; flex: 1; order: 1; }
       .header-search input { height: 36px; }
       .status-chip { order: 2; }
@@ -724,24 +834,25 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       .coverage-banner-button { grid-column: 2; margin-left: 0; justify-self: start; }
       .select-control, .print-button { height: 36px; }
       .reader-layout { display: flex; flex-direction: column; }
-      .mobile-controls { display: flex; order: 0; min-height: 46px; padding: 5px 13px; border-bottom: 1px solid var(--line); background: var(--main-raised); }
-      .mobile-controls .reader-controls { flex-direction: row; align-items: center; justify-content: flex-start; gap: 5px; }
-      .mobile-controls .control-group { display: flex; min-width: 0; flex: 1 1 145px; }
-      .mobile-controls .select-control { width: auto; min-width: 0; flex: 1; }
-      .mobile-controls .print-button { width: auto; flex: 0 0 auto; }
+      .workspace-controls { padding: 6px 13px; }
+      .workspace-controls .reader-controls { justify-content: flex-start; gap: 5px; }
+      .workspace-controls .control-group { min-width: 0; flex: 1 1 145px; }
+      .workspace-controls .select-control { width: 100%; }
+      .workspace-controls .print-button { width: 100%; flex: 1 0 100%; margin-left: 0; }
       .transcript { min-height: 520px; }
       .transcript { order: 1; }
       .message-list { overflow: visible; padding: 10px 12px 76px 13px; }
+      .composer-shell { margin: 0 12px 12px 13px; }
       .transcript-navigation { position: fixed; right: 13px; bottom: max(13px, env(safe-area-inset-bottom)); z-index: 4; min-height: 0; padding: 0; border: 0; background: transparent; pointer-events: none; }
       .transcript-navigation-actions { pointer-events: auto; }
       .transcript-nav-button { box-shadow: 0 6px 16px rgba(0, 0, 0, .34); }
       .details { display: none; order: 2; padding: 12px 13px 16px; border-top: 1px solid var(--line); border-left: 0; }
       .details.is-open { display: block; }
-      .message { grid-template-columns: 38px minmax(0, 1fr); gap: 12px; padding-right: 4px; }
-      .avatar { width: 38px; height: 38px; }
-      .avatar-frame { width: 38px; height: 38px; }
-      .message.is-grouped .grouped-avatar-spacer { width: 38px; }
-      .message.is-grouped .message-timestamp { width: 38px; }
+      .message { grid-template-columns: 32px minmax(0, 1fr); gap: 12px; padding-right: 4px; }
+      .avatar { width: 32px; height: 32px; }
+      .avatar-frame { width: 32px; height: 32px; }
+      .message.is-grouped .grouped-avatar-spacer { width: 32px; }
+      .message.is-grouped .message-timestamp { width: 32px; }
       .message.is-selected { margin-left: -5px; padding-left: 5px; }
     }
 
@@ -749,10 +860,10 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       .channel-title-line h1 { max-width: 46vw; }
       .archive-tag { display: none; }
       .status-chip { display: none; }
-      .mobile-controls .reader-controls { gap: 5px; flex-wrap: wrap; }
-      .mobile-controls .control-group { flex: 1 1 120px; }
+      .workspace-controls .reader-controls { gap: 5px; flex-wrap: wrap; }
+      .workspace-controls .control-group { flex: 1 1 120px; }
       .control-label { display: none; }
-      .mobile-controls .select-control { max-width: none; width: 100%; }
+      .workspace-controls .select-control { max-width: none; width: 100%; }
       .transcript-navigation-status { display: none; }
       .transcript-navigation { justify-content: flex-end; }
       .message { grid-template-columns: 32px minmax(0, 1fr); gap: 9px; }
@@ -770,7 +881,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       :root { --main: #fff; --ink: #111; --ink-soft: #333; --muted: #555; --line: #bbb; }
       html, body { overflow: visible; background: #fff; color: #111; }
       body { font-size: 11pt; }
-      .server-rail, .dm-sidebar, .channel-header, .mobile-controls, .sidebar-controls, .coverage-banner, .transcript-navigation, .details, .transcript-intro .search-status { display: none !important; }
+      .server-rail, .dm-sidebar, .channel-header, .workspace-controls, .coverage-banner, .transcript-navigation, .details, .transcript-intro .search-status { display: none !important; }
       .app-shell, .main-view, .reader, .reader-layout, .transcript { display: block; height: auto; min-height: 0; }
       .message-list { overflow: visible; padding: 0; }
       .message { break-inside: avoid; }
@@ -840,27 +951,10 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
           </div>
         </section>
 
-        <p class="sidebar-note">Rendered from local files. This reader does not connect to Discord or fetch external assets.</p>
       </div>
 
-      <div class="sidebar-controls" role="toolbar" aria-label="Transcript controls">
-        <div class="reader-controls">
-          <div class="control-group">
-            <label class="control-label" for="sidebar-author-filter">Author</label>
-            <select class="select-control" id="sidebar-author-filter" data-filter-control="author" aria-label="Filter messages by author">
-              <option value="all">Everyone</option>
-            </select>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="sidebar-timezone-mode">Timezone</label>
-            <select class="select-control" id="sidebar-timezone-mode" data-filter-control="timezone" aria-label="Choose timestamp timezone">
-              <option value="archive">Archive timezone</option>
-              <option value="local">Local timezone</option>
-              <option value="utc">UTC</option>
-            </select>
-          </div>
-          <button class="print-button" type="button" data-action="print" title="Print or save this archive">Save a copy</button>
-        </div>
+      <div class="sidebar-footer">
+        <p class="sidebar-note">Rendered from local files. This reader does not connect to Discord or fetch external assets.</p>
       </div>
     </aside>
 
@@ -874,14 +968,30 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
           </div>
         </div>
         <div class="channel-actions">
+          <div class="channel-tools" aria-label="Conversation actions">
+            <button class="channel-tool" type="button" disabled title="Voice calls are unavailable in an offline archive" aria-label="Voice call unavailable in offline archive">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92z"></path></svg>
+            </button>
+            <button class="channel-tool" type="button" disabled title="Video calls are unavailable in an offline archive" aria-label="Video call unavailable in offline archive">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="6" width="13" height="12" rx="2"></rect><path d="m16 10 5-3v10l-5-3z"></path></svg>
+            </button>
+            <button class="channel-tool" type="button" disabled title="Pins are unavailable in this archive view" aria-label="Pinned messages unavailable in offline archive">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 17 0 5"></path><path d="m5 3 14 0"></path><path d="m7 3 0 5 5 5 5-5V3"></path><path d="M5 13h14"></path></svg>
+            </button>
+            <button class="channel-tool" type="button" disabled title="Adding participants is unavailable in an offline archive" aria-label="Add participant unavailable in offline archive">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><path d="M19 8v6M16 11h6"></path></svg>
+            </button>
+            <button class="channel-tool" type="button" data-action="toggle-details" aria-expanded="true" aria-controls="details" title="Hide archive profile" aria-label="Hide archive profile">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </button>
+          </div>
           <div class="search-wrap header-search">
             <label for="message-search">Search this archive</label>
             <span class="search-glyph" aria-hidden="true">⌕</span>
             <input id="message-search" name="archive-search" type="search" placeholder="Search archive…" autocomplete="off" spellcheck="false">
             <span class="search-hint" aria-hidden="true">/</span>
           </div>
-          <div class="status-chip"><span class="status-dot" aria-hidden="true"></span>local only</div>
-          <button class="header-icon-button" type="button" data-action="toggle-details" aria-expanded="true" aria-controls="details" title="Toggle archive details" aria-label="Toggle archive details"><span aria-hidden="true">ⓘ</span></button>
+          <div class="status-chip" hidden><span class="status-dot" aria-hidden="true"></span>local only</div>
         </div>
       </header>
 
@@ -905,26 +1015,27 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
           <button class="coverage-banner-button" type="button" data-scroll="details">View capture notes</button>
         </section>
 
-        <div class="reader-layout">
-          <div class="mobile-controls" role="toolbar" aria-label="Transcript controls">
-            <div class="reader-controls">
-              <div class="control-group">
-                <label class="control-label" for="author-filter">Author</label>
-                <select class="select-control" id="author-filter" data-filter-control="author" aria-label="Filter messages by author">
-                  <option value="all">Everyone</option>
-                </select>
-              </div>
-              <div class="control-group">
-                <label class="control-label" for="timezone-mode">Timezone</label>
-                <select class="select-control" id="timezone-mode" data-filter-control="timezone" aria-label="Choose timestamp timezone">
-                  <option value="archive">Archive timezone</option>
-                  <option value="local">Local timezone</option>
-                  <option value="utc">UTC</option>
-                </select>
-              </div>
-              <button class="print-button" type="button" data-action="print" title="Print or save this archive">Save a copy</button>
+        <div class="workspace-controls" role="toolbar" aria-label="Archive controls">
+          <div class="reader-controls">
+            <div class="control-group">
+              <label class="control-label" for="workspace-author-filter">Author</label>
+              <select class="select-control" id="workspace-author-filter" data-filter-control="author" aria-label="Filter messages by author">
+                <option value="all">Everyone</option>
+              </select>
             </div>
+            <div class="control-group">
+              <label class="control-label" for="workspace-timezone-mode">Timezone</label>
+              <select class="select-control" id="workspace-timezone-mode" data-filter-control="timezone" aria-label="Choose timestamp timezone">
+                <option value="archive">Archive timezone</option>
+                <option value="local">Local timezone</option>
+                <option value="utc">UTC</option>
+              </select>
+            </div>
+            <button class="print-button" type="button" data-action="print" title="Print or save this archive">Save a copy</button>
           </div>
+        </div>
+
+        <div class="reader-layout">
           <section class="transcript" id="transcript" aria-labelledby="reader-title">
             <div class="transcript-intro">
               <span class="transcript-intro-label"><strong>Read-only transcript</strong><span class="transcript-intro-note"> · local message history</span></span>
@@ -937,21 +1048,67 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
                 <button class="transcript-nav-button transcript-nav-edge" type="button" data-action="edge" aria-label="Jump to newest captured message" title="Jump to the newest captured message">Jump to Newest</button>
               </div>
             </div>
+            <div class="composer-shell" aria-label="Offline message composer">
+              <button class="composer-button" type="button" disabled title="Attachments are unavailable in an offline archive" aria-label="Attachments unavailable in offline archive">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"></path></svg>
+              </button>
+              <div class="composer-input" role="textbox" aria-disabled="true">Messages are read-only in Concordance</div>
+              <div class="composer-actions" aria-label="Unavailable message actions">
+                <button class="composer-action" type="button" disabled title="Gifts are unavailable in an offline archive" aria-label="Gifts unavailable in offline archive"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"></path><path d="M2 7h20v5H2z"></path><path d="M12 22V7"></path><path d="M12 7H7.5a2.5 2.5 0 1 1 0-5C10 2 12 7 12 7Z"></path><path d="M12 7h4.5a2.5 2.5 0 1 0 0-5C14 2 12 7 12 7Z"></path></svg></button>
+                <button class="composer-action" type="button" disabled title="GIFs are unavailable in an offline archive" aria-label="GIFs unavailable in offline archive"><span aria-hidden="true">GIF</span></button>
+                <button class="composer-action" type="button" disabled title="Stickers are unavailable in an offline archive" aria-label="Stickers unavailable in offline archive"><span aria-hidden="true">☺</span></button>
+                <button class="composer-action" type="button" disabled title="Emoji picker is unavailable in an offline archive" aria-label="Emoji picker unavailable in offline archive"><span aria-hidden="true">☺</span></button>
+              </div>
+            </div>
           </section>
 
           <aside class="details is-open" id="details" aria-label="Archive details">
+            <section class="profile-panel" aria-labelledby="profile-title">
+              <div class="profile-cover" id="profile-cover">
+                <div class="profile-cover-actions" aria-label="Archive profile actions">
+                  <button class="profile-action" type="button" disabled title="Adding participants is unavailable in an offline archive" aria-label="Add participant unavailable in offline archive">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><path d="M19 8v6M16 11h6"></path></svg>
+                  </button>
+                  <button class="profile-action" type="button" data-scroll="archive-stats" title="Open archive evidence" aria-label="Open archive evidence">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="profile-body">
+                <div class="profile-avatar" id="profile-avatar"></div>
+                <div class="profile-kicker">archived participant</div>
+                <h2 class="profile-title" id="profile-title">Select a conversation</h2>
+                <p class="profile-handle" id="profile-handle">Offline participant record</p>
+                <p class="profile-status" id="profile-status">No live presence is read from this archive.</p>
+                <div class="profile-badges" id="profile-badges" hidden></div>
+                <div class="profile-mutuals" id="profile-mutuals" hidden></div>
+                <dl class="profile-facts" id="profile-facts"></dl>
+                <p class="profile-footnote" id="profile-footnote">Profile fields are limited to what the permitted source captured. Concordance does not infer missing Discord profile data.</p>
+                <button class="profile-full-button" type="button" data-scroll="archive-stats">View Archive Profile</button>
+              </div>
+            </section>
             <section class="detail-panel" id="selection-panel" aria-live="polite"></section>
-            <section class="detail-panel" id="coverage-panel" hidden>
-              <div class="eyebrow">capture ledger</div>
-              <div class="detail-title">Coverage map</div>
-              <ol class="coverage-ledger" id="coverage-ledger"></ol>
-              <p class="coverage-ledger-note" id="coverage-ledger-note"></p>
-            </section>
-            <section class="detail-panel">
-              <div class="eyebrow">archive notes</div>
-              <div class="detail-title">What survived the source</div>
-              <ul class="detail-notes" id="archive-notes"></ul>
-            </section>
+            <details class="detail-disclosure" id="archive-stats">
+              <summary><span class="detail-disclosure-summary">Archive evidence <span class="detail-disclosure-meta" id="archive-stats-summary">local record</span></span></summary>
+              <div class="detail-disclosure-body">
+                <section class="detail-panel" id="coverage-panel" hidden>
+                  <div class="eyebrow">capture ledger</div>
+                  <div class="detail-title">Coverage map</div>
+                  <ol class="coverage-ledger" id="coverage-ledger"></ol>
+                  <p class="coverage-ledger-note" id="coverage-ledger-note"></p>
+                </section>
+                <section class="detail-panel archive-notes-panel">
+                  <div class="eyebrow">archive notes</div>
+                  <div class="detail-title">What survived the source</div>
+                  <ul class="detail-notes" id="archive-notes"></ul>
+                  <details class="integrity-disclosure" id="integrity-disclosure">
+                    <summary>Integrity record <span class="integrity-status" id="integrity-status">unavailable</span></summary>
+                    <dl class="detail-list integrity-list" id="integrity-list"></dl>
+                    <p class="integrity-note" id="integrity-note"></p>
+                  </details>
+                </section>
+              </div>
+            </details>
           </aside>
         </div>
       </main>
@@ -963,6 +1120,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       "use strict";
 
       const archive = window.__ARCHIVE_DATA__ || {};
+      const evidence = window.__ARCHIVE_EVIDENCE__ || null;
       const participants = Array.isArray(archive.participants) ? archive.participants : [];
       const messages = Array.isArray(archive.messages) ? archive.messages : [];
       const participantById = new Map(participants.map((person) => [person.id, person]));
@@ -1065,6 +1223,13 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
           return url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noreferrer noopener">${match}</a>` : match;
         });
       };
+      const iconSvg = (name) => {
+        const paths = {
+          phone: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92z" />',
+          play: '<path d="M8 5.14v13.72L19 12 8 5.14z" />',
+        };
+        return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${paths[name] || ""}</svg>`;
+      };
       const avatarMarkup = (person) => {
         const path = safeAsset(person?.avatar_path || person?.avatar_ref);
         const label = escapeHtml(person?.avatar_alt || `${displayName(person)} profile image`);
@@ -1078,10 +1243,13 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
       };
       const searchableText = (message) => {
         const person = participantById.get(message.author_id) || {};
-        const attachmentText = Array.isArray(message.attachments) ? message.attachments.flatMap((attachment) => [attachment?.name, attachment?.mime, attachment?.url]) : [];
-        const embedText = Array.isArray(message.embeds) ? message.embeds.flatMap((embed) => [embed?.title, embed?.description, embed?.url, embed?.image_url]) : [];
+        const attachmentText = Array.isArray(message.attachments) ? message.attachments.flatMap((attachment) => [attachment?.name, attachment?.mime, attachment?.url, attachment?.path]) : [];
+        const stickerText = Array.isArray(message.stickers) ? message.stickers.flatMap((sticker) => [sticker?.id, sticker?.name, sticker?.format, sticker?.url]) : [];
+        const emojiText = Array.isArray(message.custom_emojis) ? message.custom_emojis.flatMap((emoji) => [emoji?.id, emoji?.name, emoji?.url]) : [];
+        const embedText = Array.isArray(message.embeds) ? message.embeds.flatMap((embed) => Object.values(embed || {})) : [];
         const reactionText = Array.isArray(message.reactions) ? message.reactions.flatMap((reaction) => [reaction?.emoji]) : [];
-        return [message.id, message.content, person.display_name, person.username, message.timestamp, ...attachmentText, ...embedText, ...reactionText].join(" ").toLowerCase();
+        const callText = message.call && typeof message.call === "object" ? Object.values(message.call) : [];
+        return [message.id, message.content, person.display_name, person.username, message.timestamp, ...attachmentText, ...stickerText, ...emojiText, ...embedText, ...reactionText, ...callText].join(" ").toLowerCase();
       };
       const searchTextById = new Map(messages.map((message) => [message.id, searchableText(message)]));
       const visibleMessages = () => {
@@ -1093,6 +1261,36 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         });
       };
       const localAssetLink = (path, label = "Open local file") => `<a class="attachment-link" href="${escapeHtml(path)}" target="_blank" rel="noreferrer noopener" download>${escapeHtml(label)} ↗</a>`;
+      const videoLinkInfo = (value) => {
+        const url = safeUrl(value);
+        if (!url) return null;
+        try {
+          const parsed = new URL(url);
+          const host = parsed.hostname.toLowerCase().replace(/\.$/, "");
+          if (host === "youtu.be" || host === "youtube.com" || host.endsWith(".youtube.com")) return { provider: "YouTube" };
+          if (host === "vimeo.com" || host.endsWith(".vimeo.com")) return { provider: "Vimeo" };
+          if (host === "twitch.tv" || host.endsWith(".twitch.tv")) return { provider: "Twitch" };
+          if (host === "tiktok.com" || host.endsWith(".tiktok.com")) return { provider: "TikTok" };
+        } catch {
+          return null;
+        }
+        return null;
+      };
+      const linkPreviewMarkup = (embed) => {
+        if (!embed || typeof embed !== "object") return "";
+        const url = safeUrl(embed.url);
+        const info = videoLinkInfo(url);
+        if (!url || !info) return "";
+        const title = String(embed.title || `${info.provider} video`).trim();
+        const path = safeAsset(embed.thumbnail_path || embed.image_path || embed.local_path);
+        const thumbnailReference = safeUrl(embed.thumbnail_url || embed.image_url);
+        const source = embed.thumbnail_source === "derived_youtube_thumbnail" ? "Local thumbnail · derived from the video link" : path ? "Local thumbnail · captured preview" : thumbnailReference ? "Preview reference recorded · thumbnail unavailable offline" : "Link recorded · preview not captured";
+        const thumbnail = path
+          ? `<a class="link-preview-thumb" href="${escapeHtml(url)}" target="_blank" rel="noreferrer noopener" aria-label="Open ${escapeHtml(title)}"><img src="${escapeHtml(path)}" alt="${escapeHtml(`${title} thumbnail`)}" width="224" height="126" loading="lazy" decoding="async"><span class="link-preview-play">${iconSvg("play")}</span></a>`
+          : `<div class="link-preview-thumb is-placeholder" role="img" aria-label="${escapeHtml(`${title} thumbnail unavailable offline`)}"><span class="link-preview-play">${iconSvg("play")}</span><span>${escapeHtml(thumbnailReference ? "Thumbnail unavailable offline" : "Thumbnail not captured")}</span></div>`;
+        const description = embed.description ? `<div class="link-preview-note">${safeTextWithLinks(embed.description)}</div>` : `<div class="link-preview-note">${escapeHtml(source)}</div>`;
+        return `<div class="embed embed-video"><div class="link-preview">${thumbnail}<div class="link-preview-body"><div class="link-preview-provider">${escapeHtml(embed.site_name || embed.provider || info.provider)}</div><div class="link-preview-title">${escapeHtml(title)}</div>${description}<div class="link-preview-source"><a href="${escapeHtml(url)}" target="_blank" rel="noreferrer noopener">${escapeHtml(url)}</a></div></div></div></div>`;
+      };
       const attachmentMarkup = (attachment) => {
         if (!attachment || typeof attachment !== "object") return "";
         const path = safeAsset(attachment.path || attachment.local_path);
@@ -1100,7 +1298,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const label = escapeHtml(attachment.name || "attachment");
         const size = escapeHtml(formatBytes(attachment.size_bytes));
         if (path && mime.startsWith("image/")) {
-          return `<figure class="attachment"><img src="${escapeHtml(path)}" alt="${label}" loading="lazy" decoding="async"><figcaption class="attachment-caption"><strong>${label}</strong><span>${size}</span></figcaption><div class="attachment-actions">${localAssetLink(path)}</div></figure>`;
+          return `<figure class="attachment"><img src="${escapeHtml(path)}" alt="${label}" width="420" height="260" loading="lazy" decoding="async"><figcaption class="attachment-caption"><strong>${label}</strong><span>${size}</span></figcaption><div class="attachment-actions">${localAssetLink(path)}</div></figure>`;
         }
         if (path && mime.startsWith("audio/")) {
           return `<div class="attachment attachment-media"><div class="attachment-caption"><strong>${label}</strong><span>${size}</span></div><audio controls preload="metadata" src="${escapeHtml(path)}">${localAssetLink(path, "Open audio file")}</audio><div class="attachment-actions">${localAssetLink(path, "Open audio file")}</div></div>`;
@@ -1115,23 +1313,56 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const link = remote ? `<a href="${escapeHtml(remote)}" target="_blank" rel="noreferrer noopener">remote reference ↗</a>` : "local file unavailable";
         return `<div class="attachment"><div class="attachment-caption"><strong>${label}</strong><span>${size}</span></div><span class="remote-attachment">${link}</span></div>`;
       };
+      const mediaReferenceMarkup = (media, fallback) => {
+        if (!media || typeof media !== "object") return "";
+        const previewPath = safeAsset(media.preview_path);
+        const localPath = previewPath || safeAsset(media.path);
+        if (previewPath && fallback === "sticker") {
+          const label = escapeHtml(media.name || fallback);
+          return `<figure class="sticker-media"><img src="${escapeHtml(previewPath)}" alt="${label}" width="160" height="160" loading="lazy" decoding="async"><figcaption class="sticker-caption"><strong>${label}</strong>${localAssetLink(previewPath)}</figcaption></figure>`;
+        }
+        return attachmentMarkup({
+          ...media,
+          name: media.name || fallback,
+          path: localPath || media.path,
+          mime: previewPath ? "image/png" : (media.mime || "image/png"),
+        });
+      };
       const embedMarkup = (embed) => {
         if (!embed || typeof embed !== "object") return "";
         const url = safeUrl(embed.url);
+        const videoPreview = linkPreviewMarkup(embed);
+        if (videoPreview) return videoPreview;
+        const embedMedia = [
+          ["image", embed.image_path || embed.local_path, embed.image_url, "image/png"],
+          ["thumbnail", embed.thumbnail_path, embed.thumbnail_url, "image/png"],
+          ["video", embed.video_path, embed.video_url, "video/mp4"],
+          ["audio", embed.audio_path, embed.audio_url, "audio/mpeg"],
+        ];
+        const media = embedMedia.map(([name, pathValue, urlValue, mime]) => ({ name, path: safeAsset(pathValue), url: safeUrl(urlValue), mime })).filter((item) => (item.path || item.url) && !(item.name === "image" && !item.path));
+        const mediaMarkup = media.map((item) => attachmentMarkup({ ...item, name: item.name === "image" ? (embed.title || "Embedded image") : `Embedded ${item.name}` })).join("");
         const imageReference = safeUrl(embed.image_url);
         const imagePath = safeAsset(embed.image_path || embed.local_path);
-        const image = imagePath ? `<img class="embed-image" src="${escapeHtml(imagePath)}" alt="${escapeHtml(embed.title || "Embedded image")}" loading="lazy" decoding="async"><div class="attachment-actions">${localAssetLink(imagePath, "Open embedded image")}</div>` : "";
-        const description = embed.description ? `<div class="embed-description">${safeTextWithLinks(embed.description)}</div>` : "";
         const remoteImage = !imagePath && imageReference ? `<div class="embed-url">Remote image reference: <a href="${escapeHtml(imageReference)}" target="_blank" rel="noreferrer noopener">${escapeHtml(imageReference)} ↗</a></div>` : "";
-        return `<div class="embed"><div class="embed-title">${escapeHtml(embed.title || "Embedded reference")}</div>${description}${image}${remoteImage}${url ? `<div class="embed-url"><a href="${escapeHtml(url)}" target="_blank" rel="noreferrer noopener">${escapeHtml(url)}</a></div>` : ""}</div>`;
+        const description = embed.description ? `<div class="embed-description">${safeTextWithLinks(embed.description)}</div>` : "";
+        return `<div class="embed"><div class="embed-title">${escapeHtml(embed.title || "Embedded reference")}</div>${description}${mediaMarkup}${remoteImage}${url ? `<div class="embed-url"><a href="${escapeHtml(url)}" target="_blank" rel="noreferrer noopener">${escapeHtml(url)}</a></div>` : ""}</div>`;
       };
       const attachmentReferenceMarkup = (attachment) => {
         if (!attachment || typeof attachment !== "object") return "";
-        const path = safeAsset(attachment.path || attachment.local_path);
+        const path = safeAsset(attachment.preview_path) || safeAsset(attachment.path || attachment.local_path);
         const remote = safeUrl(attachment.url);
         const label = escapeHtml(attachment.name || "attachment");
         const reference = path ? localAssetLink(path) : remote ? `<a class="attachment-link" href="${escapeHtml(remote)}" target="_blank" rel="noreferrer noopener">Remote reference ↗</a>` : "unavailable";
         return `<li><strong>${label}</strong><span>${reference}</span></li>`;
+      };
+      const callMarkup = (call) => {
+        if (!call || typeof call !== "object") return "";
+        const missed = call.status === "missed";
+        const duration = escapeHtml(call.duration_label || "duration unavailable");
+        const initiator = escapeHtml(call.initiator_name || "participant");
+        const sentence = missed ? `You missed a call from ${initiator} that lasted ${duration}.` : `${initiator} started a call that lasted ${duration}.`;
+        const meta = missed ? `Missed voice call · ${duration}` : `Voice call · ${duration}`;
+        return `<div class="call-event${missed ? " is-missed" : ""}" role="group" aria-label="${escapeHtml(`${sentence} ${meta}`)}"><span class="call-event-body"><strong>${sentence}</strong><span>${meta}</span></span></div>`;
       };
       const replyMarkup = (message) => {
         const target = messageById.get(message.reply_to);
@@ -1146,12 +1377,18 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const groupingClass = grouped ? " is-grouped" : "";
         const edited = message.edited_at ? `<span class="edited-label">edited ${escapeHtml(formatTime(message.edited_at))}</span>` : "";
         const attachments = Array.isArray(message.attachments) ? message.attachments.map(attachmentMarkup).join("") : "";
+        const stickers = Array.isArray(message.stickers) ? message.stickers.map((sticker) => mediaReferenceMarkup(sticker, "sticker")).join("") : "";
+        const customEmojis = Array.isArray(message.custom_emojis) ? message.custom_emojis.map((emoji) => mediaReferenceMarkup(emoji, "custom emoji")).join("") : "";
         const embeds = Array.isArray(message.embeds) ? message.embeds.map(embedMarkup).join("") : "";
+        const directLink = String(message.content || "").trim().match(/^https?:\/\/\S+$/i)?.[0];
+        const directLinkPreview = !embeds && directLink ? linkPreviewMarkup({ url: directLink }) : "";
+        const isCall = Boolean(message.call && typeof message.call === "object");
+        const call = callMarkup(message.call);
         const reactions = Array.isArray(message.reactions) && message.reactions.length ? `<div class="message-footer">${message.reactions.map((reaction) => `<span class="reaction${reaction.me ? " is-mine" : ""}">${escapeHtml(reaction.emoji || "reaction")} ${escapeHtml(reaction.count ?? 1)}</span>`).join("")}</div>` : "";
         const footer = `${edited ? `<div class="message-footer">${edited}</div>` : ""}${reactions}`;
-        const avatar = grouped ? `<span class="grouped-avatar-spacer" aria-hidden="true"></span>` : avatarMarkup(person);
-        const author = grouped ? "" : `<span class="author-name">${escapeHtml(displayName(person))}</span>${handleName(person) ? `<span class="author-handle">${escapeHtml(handleName(person))}</span>` : ""}`;
-        return `<article class="message${groupingClass}${selected}" id="message-${escapeHtml(message.id)}" data-message-id="${escapeHtml(message.id)}" data-message-select="${escapeHtml(message.id)}" tabindex="-1"><div>${avatar}</div><div class="message-main"><div class="message-header">${author}<button class="message-timestamp" type="button" data-select="${escapeHtml(message.id)}" title="${escapeHtml(`${displayFullTime(message)} · raw ${formatRawTime(message.timestamp)}`)}">${escapeHtml(displayTime(message))}</button></div>${replyMarkup(message)}<div class="message-content">${safeTextWithLinks(message.content || "")}</div>${attachments}${embeds}${footer}</div></article>`;
+        const avatar = isCall ? `<span class="call-rail-icon" aria-hidden="true">${iconSvg("phone")}</span>` : grouped ? `<span class="grouped-avatar-spacer" aria-hidden="true"></span>` : avatarMarkup(person);
+        const author = grouped || isCall ? "" : `<span class="author-name">${escapeHtml(displayName(person))}</span>${handleName(person) ? `<span class="author-handle">${escapeHtml(handleName(person))}</span>` : ""}`;
+        return `<article class="message${groupingClass}${isCall ? " is-call" : ""}${selected}" id="message-${escapeHtml(message.id)}" data-message-id="${escapeHtml(message.id)}" data-message-select="${escapeHtml(message.id)}" tabindex="-1"><div>${avatar}</div><div class="message-main"><div class="message-header">${author}<button class="message-timestamp" type="button" data-select="${escapeHtml(message.id)}" title="${escapeHtml(`${displayFullTime(message)} · raw ${formatRawTime(message.timestamp)}`)}">${escapeHtml(displayTime(message))}</button></div>${replyMarkup(message)}${call || `<div class="message-content">${safeTextWithLinks(message.content || "")}</div>`}${attachments}${stickers}${customEmojis}${embeds}${directLinkPreview}${footer}</div></article>`;
       };
       const renderTranscriptNavigation = (visible = visibleMessages()) => {
         const button = $('[data-action="edge"]');
@@ -1211,10 +1448,64 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const person = participantById.get(message.author_id) || { id: message.author_id, display_name: "Unknown author" };
         const link = safeUrl(message.message_link);
         const attachments = Array.isArray(message.attachments) ? message.attachments : [];
+        const stickers = Array.isArray(message.stickers) ? message.stickers : [];
+        const customEmojis = Array.isArray(message.custom_emojis) ? message.custom_emojis : [];
+        const call = message.call && typeof message.call === "object" ? message.call : null;
         const provenance = message.provenance && typeof message.provenance === "object" ? message.provenance : {};
         const attachmentRow = attachments.length ? `<div class="detail-row"><dt>attachments</dt><dd><ul class="detail-assets">${attachments.map(attachmentReferenceMarkup).join("")}</ul></dd></div>` : `<div class="detail-row"><dt>attachments</dt><dd>none</dd></div>`;
+        const stickerRow = stickers.length ? `<div class="detail-row"><dt>stickers</dt><dd><ul class="detail-assets">${stickers.map((sticker) => attachmentReferenceMarkup(sticker)).join("")}</ul></dd></div>` : "";
+        const emojiRow = customEmojis.length ? `<div class="detail-row"><dt>custom emoji</dt><dd><ul class="detail-assets">${customEmojis.map((emoji) => attachmentReferenceMarkup(emoji)).join("")}</ul></dd></div>` : "";
+        const callRow = call ? `<div class="detail-row"><dt>call event</dt><dd>${escapeHtml(message.content || `${call.status === "missed" ? "Missed voice call" : "Voice call"} · ${call.duration_label || "duration unavailable"}`)}</dd></div>` : "";
         const provenanceRows = `${provenance.source_file ? `<div class="detail-row"><dt>source file</dt><dd class="mono">${escapeHtml(provenance.source_file)}</dd></div>` : ""}${Number.isInteger(provenance.record_index) ? `<div class="detail-row"><dt>source record</dt><dd class="mono">${escapeHtml(provenance.record_index)}</dd></div>` : ""}${provenance.id_generated ? `<div class="detail-row"><dt>message ID note</dt><dd>Generated locally because the source did not provide an ID.</dd></div>` : ""}`;
-        panel.innerHTML = `<div class="eyebrow">message detail</div><div class="detail-title">${escapeHtml(displayName(person))}</div><dl class="detail-list"><div class="detail-row"><dt>displayed</dt><dd>${escapeHtml(displayFullTime(message))}</dd></div><div class="detail-row"><dt>raw UTC</dt><dd class="mono">${escapeHtml(formatRawTime(message.timestamp))}</dd></div><div class="detail-row"><dt>message ID</dt><dd class="mono">${escapeHtml(message.id)}</dd></div>${attachmentRow}${message.edited_at ? `<div class="detail-row"><dt>edited</dt><dd>${escapeHtml(formatFullTime(message.edited_at))}</dd></div>` : ""}${provenanceRows}</dl>${link ? `<p><a href="${escapeHtml(link)}" target="_blank" rel="noreferrer noopener">Open source message link ↗</a></p>` : ""}<button class="copy-button" type="button" data-copy="${escapeHtml(message.id)}">Copy message ID</button>`;
+        panel.innerHTML = `<div class="eyebrow">message detail</div><div class="detail-title">${escapeHtml(displayName(person))}</div><dl class="detail-list"><div class="detail-row"><dt>displayed</dt><dd>${escapeHtml(displayFullTime(message))}</dd></div><div class="detail-row"><dt>raw UTC</dt><dd class="mono">${escapeHtml(formatRawTime(message.timestamp))}</dd></div><div class="detail-row"><dt>message ID</dt><dd class="mono">${escapeHtml(message.id)}</dd></div>${callRow}${attachmentRow}${stickerRow}${emojiRow}${message.edited_at ? `<div class="detail-row"><dt>edited</dt><dd>${escapeHtml(formatFullTime(message.edited_at))}</dd></div>` : ""}${provenanceRows}</dl>${link ? `<p><a href="${escapeHtml(link)}" target="_blank" rel="noreferrer noopener">Open source message link ↗</a></p>` : ""}<button class="copy-button" type="button" data-copy="${escapeHtml(message.id)}">Copy message ID</button>`;
+      };
+      const renderIntegrity = () => {
+        const statusNode = $("#integrity-status");
+        const list = $("#integrity-list");
+        const note = $("#integrity-note");
+        if (!statusNode || !list || !note) return;
+        const record = evidence && typeof evidence === "object" && evidence.archive && typeof evidence.archive === "object" ? evidence.archive : null;
+        if (!record) {
+          statusNode.textContent = "unavailable";
+          statusNode.classList.add("is-warning");
+          list.innerHTML = `<div class="detail-row"><dt>record</dt><dd>Not embedded in this viewer build.</dd></div>`;
+          note.textContent = "Rebuild the archive to include its offline integrity record.";
+          return;
+        }
+        const assetRecords = Array.isArray(evidence.local_assets) ? evidence.local_assets : [];
+        const missingAssets = assetRecords.filter((asset) => !asset || asset.exists !== true);
+        const coverage = evidence.coverage && typeof evidence.coverage === "object" ? evidence.coverage : {};
+        const rangeCount = Number.isFinite(Number(coverage.range_count)) ? Number(coverage.range_count) : 0;
+        const hash = typeof record.sha256 === "string" ? record.sha256 : "unavailable";
+        const shortHash = hash.length > 24 ? `${hash.slice(0, 12)}…${hash.slice(-8)}` : hash;
+        const row = (label, value, className = "") => `<div class="detail-row"><dt>${escapeHtml(label)}</dt><dd class="${className}">${value}</dd></div>`;
+        const evidenceLink = safeAsset("evidence.json") ? localAssetLink("evidence.json", "Open evidence record") : "";
+        const renderedEvidence = Array.isArray(evidence.rendered_evidence) ? evidence.rendered_evidence : [];
+        const renderedEvidenceLinks = renderedEvidence.map((item) => {
+          const path = safeAsset(item?.path);
+          return path ? localAssetLink(path, item.kind === "dom" ? "Open DOM snapshot" : "Open screenshot") : "";
+        }).filter(Boolean);
+        const session = evidence.capture_session && typeof evidence.capture_session === "object" ? evidence.capture_session : null;
+        const sessionValue = session ? `${escapeHtml(session.status || "unverified")} · ${Number(session.capture_count) || 0} range${Number(session.capture_count) === 1 ? "" : "s"}${session.archive_match === false ? " · derived archive" : ""}` : "none";
+        const mediaDiagnostics = record.media_diagnostics && typeof record.media_diagnostics === "object" ? record.media_diagnostics : {};
+        const unapprovedMedia = Number(mediaDiagnostics.unapproved_remote_media || 0);
+        const remoteHosts = mediaDiagnostics.remote_media_hosts && typeof mediaDiagnostics.remote_media_hosts === "object" ? Object.keys(mediaDiagnostics.remote_media_hosts).length : 0;
+        statusNode.textContent = missingAssets.length ? "attention" : "recorded";
+        statusNode.classList.toggle("is-warning", Boolean(missingAssets.length));
+        list.innerHTML = [
+          row("archive SHA-256", `<span title="${escapeHtml(hash)}">${escapeHtml(shortHash)}</span>`, "mono"),
+          row("local assets", `${assetRecords.length - missingAssets.length} present${missingAssets.length ? ` · ${missingAssets.length} missing` : ""}`),
+          row("rendered evidence", renderedEvidenceLinks.length ? `${renderedEvidenceLinks.length} attached · ${renderedEvidenceLinks.join(" · ")}` : "none"),
+          row("coverage", `${escapeHtml(String(coverage.status || "unverified"))} · ${rangeCount} range${rangeCount === 1 ? "" : "s"}`),
+          row("media audit", `${Number(mediaDiagnostics.local_media || 0) + Number(mediaDiagnostics.allowed_remote_media || 0)} ready · ${unapprovedMedia} unapproved remote · ${remoteHosts} host${remoteHosts === 1 ? "" : "s"}`),
+          row("capture session", sessionValue),
+          evidenceLink ? row("record", evidenceLink) : ""
+        ].join("");
+        note.textContent = missingAssets.length
+          ? `${missingAssets.length} required local asset${missingAssets.length === 1 ? " is" : "s are"} unavailable. Restore the files, then run verify-evidence.`
+          : unapprovedMedia
+            ? `${unapprovedMedia} remote media reference${unapprovedMedia === 1 ? " remains" : "s remain"} outside the approved materialization hosts; the original URL is retained as provenance.`
+            : "Hashes are recorded locally. Run verify-evidence after copying the viewer to recheck its files.";
       };
       const filterControls = (kind) => document.querySelectorAll(`[data-filter-control="${kind}"]`);
       const syncFilterControls = (kind, value) => filterControls(kind).forEach((control) => { control.value = value; });
@@ -1231,7 +1522,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         $("#rail-kind").textContent = kind;
         $("#rail-title").textContent = title;
         $("#crumb-title").textContent = title;
-        $("#reader-kind").textContent = `${kind} / transcript`;
+        $("#reader-kind").textContent = `${kind} / archive`;
         $("#reader-title").textContent = title;
         const channelIcon = $("#channel-icon");
         if (channelIcon) {
@@ -1245,6 +1536,74 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
           channelHandle.textContent = handle;
           channelHandle.hidden = !handle;
         }
+        const profilePerson = channelPerson || participants[0] || null;
+        const profileData = profilePerson?.profile && typeof profilePerson.profile === "object" ? profilePerson.profile : {};
+        const profileCover = $("#profile-cover");
+        const bannerPath = safeAsset(profileData.banner_path);
+        if (profileCover) {
+          profileCover.classList.toggle("has-banner", Boolean(bannerPath));
+          profileCover.style.backgroundImage = bannerPath
+            ? `linear-gradient(180deg, rgba(17, 18, 20, .06), rgba(17, 18, 20, .34)), url("${bannerPath}")`
+            : "";
+        }
+        const profileAvatar = $("#profile-avatar");
+        if (profileAvatar) {
+          const decorationPath = safeAsset(profileData.avatar_decoration_path);
+          profileAvatar.innerHTML = `${profilePerson ? avatarMarkup(profilePerson) : `<div class="avatar avatar-fallback" role="img" aria-label="Profile image unavailable">?</div>`}${decorationPath ? `<img class="profile-avatar-decoration" src="${escapeHtml(decorationPath)}" alt="" width="84" height="84" loading="lazy" decoding="async">` : ""}`;
+          profileAvatar.setAttribute("aria-label", profilePerson ? `${displayName(profilePerson)} archived profile image` : "Archived profile image unavailable");
+        }
+        const profileTitle = $("#profile-title");
+        if (profileTitle) profileTitle.textContent = profilePerson ? displayName(profilePerson) : title;
+        const profileHandle = $("#profile-handle");
+        const profileUsername = profilePerson?.username || metadata.channel_handle;
+        if (profileHandle) profileHandle.textContent = profileUsername ? `@${String(profileUsername).replace(/^@+/, "")}` : "direct message participant";
+        const profileStatus = $("#profile-status");
+        if (profileStatus) {
+          const presence = typeof profileData.presence === "string" && profileData.presence.trim() ? `${profileData.presence.trim()} · ` : "Offline participant · ";
+          const customStatus = typeof profileData.custom_status === "string" && profileData.custom_status.trim() ? ` · ${profileData.custom_status.trim()}` : "";
+          profileStatus.textContent = `${presence}${messages.length} captured message${messages.length === 1 ? "" : "s"}${customStatus}`;
+        }
+        const profileBadges = $("#profile-badges");
+        const badges = Array.isArray(profileData.badges) ? profileData.badges : [];
+        if (profileBadges) {
+          profileBadges.innerHTML = badges.map((badge) => {
+            const label = badge && typeof badge === "object" ? badge.label || badge.detail || "Profile badge" : "Profile badge";
+            const detail = badge && typeof badge === "object" ? badge.detail || label : label;
+            const iconPath = safeAsset(badge && typeof badge === "object" ? badge.icon_path : null);
+            return `<span class="profile-badge" title="${escapeHtml(detail)}">${iconPath ? `<img src="${escapeHtml(iconPath)}" alt="" width="16" height="16" loading="lazy" decoding="async">` : ""}<span>${escapeHtml(label)}</span></span>`;
+          }).join("");
+          profileBadges.hidden = !badges.length;
+        }
+        const profileMutuals = $("#profile-mutuals");
+        const mutualFriends = Array.isArray(profileData.mutual_friends) ? profileData.mutual_friends : [];
+        if (profileMutuals) {
+          const names = mutualFriends.map((friend) => typeof friend === "object" ? displayName(friend) : "").filter(Boolean);
+          const avatars = mutualFriends.map((friend) => {
+            const path = safeAsset(friend && typeof friend === "object" ? friend.avatar_path : null);
+            return path ? `<img class="profile-mutual-avatar" src="${escapeHtml(path)}" alt="" width="16" height="16" loading="lazy" decoding="async">` : "";
+          }).join("");
+          profileMutuals.innerHTML = mutualFriends.length
+            ? `<span class="profile-mutual-avatars" aria-hidden="true">${avatars}</span><span class="profile-mutuals-copy">${escapeHtml(`${mutualFriends.length} mutual friend${mutualFriends.length === 1 ? "" : "s"}${names.length ? ` · ${names.join(", ")}` : ""}`)}</span>`
+            : "";
+          profileMutuals.hidden = !mutualFriends.length;
+        }
+        const profileFacts = [
+          ["Messages", String(messages.length)],
+          ["Conversation span", sorted.length ? `${displayDate(sorted[0])} → ${displayDate(sorted[sorted.length - 1])}` : "not captured"],
+          ["Participants", String(participants.length)],
+        ];
+        if (typeof profileData.pronouns === "string" && profileData.pronouns.trim()) profileFacts.push(["Pronouns", profileData.pronouns.trim()]);
+        const memberSince = profileData.member_since || profilePerson?.member_since;
+        if (typeof memberSince === "string" && memberSince.trim()) profileFacts.push(["Member since", memberSince.trim()]);
+        if (typeof profileData.custom_status === "string" && profileData.custom_status.trim()) profileFacts.push(["Custom status", profileData.custom_status.trim()]);
+        const activities = Array.isArray(profileData.activities) ? profileData.activities.filter((item) => typeof item === "string" && item.trim()) : [];
+        if (activities.length) profileFacts.push(["Activity", activities.join(" · ")]);
+        $("#profile-facts").innerHTML = profileFacts.map(([label, value]) => `<div class="profile-fact"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("");
+        const profileFootnote = $("#profile-footnote");
+        if (profileFootnote) profileFootnote.textContent = profileData.source === "visible_profile_card"
+          ? "Profile details were captured from the visible Discord profile card. Fields absent from that card were not inferred."
+          : "Profile fields are limited to what the permitted source captured. Concordance does not infer missing Discord profile data.";
+        $("#archive-stats-summary").textContent = `${messages.length} message${messages.length === 1 ? "" : "s"} · ${participants.length} participant${participants.length === 1 ? "" : "s"}`;
         const sourceLabel = source.label || source.type || "user-supplied source";
         $("#transcript-source").textContent = sourceLabel;
         $("#transcript-captured").textContent = metadata.captured_at ? `captured ${formatFullTime(metadata.captured_at)}` : "captured date unavailable";
@@ -1294,6 +1653,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         $("#dm-avatar-stack").innerHTML = participants.slice(0, 3).map(miniAvatarMarkup).join("") || `<span class="mini-avatar" aria-hidden="true">?</span>`;
         $("#dm-item-count").textContent = `${messages.length} messages`;
         $("#dm-item-state").textContent = coverage && !coverage.complete || captureRange && !coverage?.complete ? "incomplete capture" : metadata.synthetic ? "synthetic archive" : "local archive";
+        renderIntegrity();
         renderCoverageBanner(sorted, captureRange, coverage);
         renderCoverageLedger(captureRange, coverage);
       };
@@ -1371,6 +1731,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const lastDate = sorted[sorted.length - 1]?.timestamp ? displayDate(sorted[sorted.length - 1]) : "unknown end";
         const atStart = Boolean(coverage?.start_confirmed || captureRange?.at_start);
         const atEnd = Boolean(coverage?.end_confirmed || captureRange?.at_end);
+        const missingCheckpoints = Array.isArray(coverage?.missing_expected_dates) ? coverage.missing_expected_dates.filter((date) => typeof date === "string" && date.trim()) : [];
         const boundarySummary = atStart && atEnd ? "oldest and newest boundaries observed" : atStart ? "oldest boundary observed; newest boundary still missing" : atEnd ? "newest boundary observed; oldest boundary still missing" : "neither conversation boundary observed";
         if (complete) {
           banner.hidden = true;
@@ -1385,7 +1746,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
           ? `${messageCount} messages across ${rangeCount} overlapping range${rangeCount === 1 ? "" : "s"} · ${firstDate} → ${lastDate}.`
           : !hasCoverageMetadata
             ? `${messageCount} message${messageCount === 1 ? "" : "s"} captured · Coverage has not been assessed for this archive.`
-            : `${messageCount} message${messageCount === 1 ? "" : "s"} captured · ${boundarySummary}. This is not yet the whole conversation.`;
+            : `${messageCount} message${messageCount === 1 ? "" : "s"} captured · ${boundarySummary}${missingCheckpoints.length ? ` · missing checkpoint${missingCheckpoints.length === 1 ? "" : "s"}: ${missingCheckpoints.join(", ")}` : ""}. This is not yet the whole conversation.`;
         $("#coverage-banner-action").textContent = complete
           ? "The observed rendered range is linked and ready to read offline."
           : !hasCoverageMetadata
@@ -1433,9 +1794,12 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
           const accessibleLabel = `Range ${index + 1}: ${start} to ${end}; ${count} message${count === 1 ? "" : "s"}; ${continuity}; ${boundary}.`;
           return `<li class="coverage-range" aria-label="${escapeHtml(accessibleLabel)}"><div class="coverage-range-head"><strong>Range ${index + 1}</strong><span class="coverage-range-file" title="${escapeHtml(range.source_file || "capture")}">${escapeHtml(range.source_file || "capture")}</span></div><div class="coverage-range-dates">${escapeHtml(start)} → ${escapeHtml(end)}</div><div class="coverage-range-meta"><span>${count} message${count === 1 ? "" : "s"}</span><span class="coverage-range-state${stateClass}">${escapeHtml(continuity)}</span></div><div class="coverage-range-meta"><span>${escapeHtml(boundary)}</span></div></li>`;
         }).join("");
+        const missingCheckpoints = Array.isArray(coverage?.missing_expected_dates) ? coverage.missing_expected_dates.filter((date) => typeof date === "string" && date.trim()) : [];
         note.textContent = coverage?.complete
           ? "Overlap chain and both conversation boundaries are verified for the rendered range."
-          : coverage?.next_action || "Capture an overlapping range at the next missing boundary before treating this archive as complete.";
+          : missingCheckpoints.length
+            ? `Expected checkpoint date${missingCheckpoints.length === 1 ? "" : "s"} not observed: ${missingCheckpoints.join(", ")}. ${coverage?.next_action || "Capture a range containing the missing date before treating this archive as complete."}`
+            : coverage?.next_action || "Capture an overlapping range at the next missing boundary before treating this archive as complete.";
       };
       const initializeHash = () => {
         const match = window.location.hash.match(/^#message=(.+)$/);
@@ -1501,7 +1865,11 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const jump = event.target.closest("[data-jump]")?.dataset.jump;
         if (jump) selectMessage(jump);
         const scrollTarget = event.target.closest("[data-scroll]")?.dataset.scroll;
-        if (scrollTarget === "details") applyDetailsState(true);
+        if (scrollTarget === "details" || scrollTarget === "archive-stats") {
+          applyDetailsState(true);
+          const archiveStats = $("#archive-stats");
+          if (archiveStats && scrollTarget === "archive-stats") archiveStats.open = true;
+        }
         if (scrollTarget) document.getElementById(scrollTarget)?.scrollIntoView({ behavior: "smooth", block: "start" });
         const copy = event.target.closest("[data-copy]")?.dataset.copy;
         if (copy && navigator.clipboard) navigator.clipboard.writeText(copy).then(() => { event.target.textContent = "Copied"; setTimeout(() => { event.target.textContent = "Copy message ID"; }, 1200); });

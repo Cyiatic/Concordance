@@ -14,6 +14,8 @@ archives/
 private-data/
 *.discord-data.zip
 *.archive.zip
+*.concordance.zip
+*.concordance.enc
 
 # Local editor and OS files.
 .DS_Store

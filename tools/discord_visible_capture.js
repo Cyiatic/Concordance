@@ -1,8 +1,57 @@
-async () => {
+async (options = {}) => {
   const clean = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
+  const callFromContent = (value) => {
+    const text = clean(value).split(/\s+—\s+/)[0].trim();
+    let match = text.match(/^You missed a call from (.+?) that lasted (.+?)\.$/i);
+    if (match) {
+      return {
+        type: "voice",
+        status: "missed",
+        initiator_name: clean(match[1]),
+        duration_label: clean(match[2]),
+      };
+    }
+    match = text.match(/^(.+?) started a call that lasted (.+?)\.$/i);
+    if (match) {
+      return {
+        type: "voice",
+        status: "completed",
+        initiator_name: clean(match[1]),
+        duration_label: clean(match[2]),
+      };
+    }
+    return null;
+  };
+  const requestedDirection = options && (options.direction === "older" || options.direction === "newer")
+    ? options.direction
+    : "none";
+  const previousScrollTop = Number.isFinite(Number(options?.previous_scroll_top))
+    ? Number(options.previous_scroll_top)
+    : null;
   const classes = (element) =>
     element && typeof element.className === "string" ? element.className : "";
   const isHttp = (value) => /^https?:\/\//i.test(String(value ?? ""));
+  const youtubeVideoId = (value) => {
+    if (!isHttp(value)) return null;
+    try {
+      const parsed = new URL(String(value), location.href);
+      const host = parsed.hostname.toLowerCase().replace(/\.$/, "");
+      let candidate = null;
+      if (host === "youtu.be" || host === "www.youtu.be") {
+        candidate = parsed.pathname.replace(/^\/+/, "").split("/", 1)[0];
+      } else if (["youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com"].includes(host)) {
+        if (parsed.pathname.toLowerCase() === "/watch") candidate = parsed.searchParams.get("v");
+        else if (/^\/(?:shorts|embed|live)\//i.test(parsed.pathname)) candidate = parsed.pathname.split("/")[2];
+      }
+      return candidate && /^[A-Za-z0-9_-]{6,20}$/.test(candidate) ? candidate : null;
+    } catch {
+      return null;
+    }
+  };
+  const youtubeThumbnailUrl = (value) => {
+    const id = youtubeVideoId(value);
+    return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null;
+  };
   const slug = (value) => clean(value).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const displayTimezone = typeof Intl !== "undefined" && Intl.DateTimeFormat
     ? Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"
@@ -16,6 +65,7 @@ async () => {
       gif: "image/gif",
       webp: "image/webp",
       svg: "image/svg+xml",
+      json: "application/json",
       mp3: "audio/mpeg",
       wav: "audio/wav",
       ogg: "audio/ogg",
@@ -35,6 +85,28 @@ async () => {
       return "attachment";
     }
   };
+  const stickerFormatInfo = (formatType, reference) => {
+    const normalizedType = String(formatType ?? "").trim();
+    if (normalizedType === "1") return { format: "png", mime: "image/png", animated: false };
+    if (normalizedType === "2") return { format: "apng", mime: "image/apng", animated: true };
+    if (normalizedType === "3") return { format: "lottie", mime: "application/json", animated: true };
+    if (normalizedType === "4") return { format: "gif", mime: "image/gif", animated: true };
+    const extension = String(reference ?? "").split(/[?#]/, 1)[0].split(".").pop().toLowerCase();
+    if (extension === "gif") return { format: "gif", mime: "image/gif", animated: true };
+    if (extension === "json") return { format: "lottie", mime: "application/json", animated: true };
+    if (extension === "apng") return { format: "apng", mime: "image/apng", animated: true };
+    return { format: extension || "png", mime: mimeFor(reference) || "image/png", animated: false };
+  };
+  const stickerReferenceUrl = (id, formatType) => {
+    const safeId = String(id ?? "").trim();
+    if (!/^[A-Za-z0-9_-]+$/.test(safeId)) return null;
+    const extension = stickerFormatInfo(formatType).format === "lottie"
+      ? "json"
+      : stickerFormatInfo(formatType).format === "gif"
+        ? "gif"
+        : "png";
+    return `https://cdn.discordapp.com/stickers/${safeId}.${extension}`;
+  };
   const messageId = (article) => {
     const content = article.querySelector('[id^="message-content-"]');
     const fromContent = content?.id?.match(/^message-content-(.+)$/)?.[1];
@@ -47,6 +119,102 @@ async () => {
     } catch {
       return null;
     }
+  };
+  const readVisibleProfile = () => {
+    const aside = Array.from(document.querySelectorAll("aside")).find((element) =>
+      Boolean(element.querySelector("h2[id^='user-profile-sidebar-heading-']")),
+    );
+    if (!aside) return null;
+
+    const avatarElement = aside.querySelector('img[src*="/avatars/"]');
+    const avatarRef = avatarElement?.getAttribute("src");
+    const participantId = isHttp(avatarRef) ? authorIdFromAvatar(avatarRef) : null;
+    const mediaReference = (element) => {
+      if (!element) return null;
+      const candidates = [
+        element.getAttribute("src"),
+        element.getAttribute("data-src"),
+        element.style?.backgroundImage,
+        getComputedStyle(element).backgroundImage,
+      ];
+      for (const candidate of candidates) {
+        const match = String(candidate || "").match(/https?:\/\/[^\s)"']+/i);
+        if (match && isHttp(match[0])) return match[0];
+      }
+      return null;
+    };
+    const bannerElement = aside.querySelector('[class*="banner"]');
+    const avatarDecorationElement = aside.querySelector('[class*="avatarDecoration"], [class*="avatar-decoration"]');
+    const bannerRef = mediaReference(bannerElement) || mediaReference(bannerElement?.querySelector("img"));
+    const avatarDecorationRef = mediaReference(avatarDecorationElement) || mediaReference(avatarDecorationElement?.querySelector("img"));
+    const displayName = clean(
+      aside.querySelector('[class*="displayNameRow"] [data-text-variant*="heading"]')?.textContent
+      || aside.querySelector('[class*="displayNameRow"]')?.textContent,
+    );
+    const username = clean(aside.querySelector('[class*="userTagUsername"]')?.textContent);
+    const pronouns = clean(
+      aside.querySelector('[class*="pronouns"] [aria-hidden="true"]')?.textContent
+      || aside.querySelector('[class*="pronouns"]')?.textContent,
+    );
+    const avatarWrapper = avatarElement?.closest('[role="img"][aria-label]');
+    const presenceLabel = clean(avatarWrapper?.getAttribute("aria-label"));
+    const presence = presenceLabel.match(/,\s*(.+)$/)?.[1]?.trim() || null;
+    const badgeContainer = aside.querySelector('[aria-label="User Badges"]');
+    const badges = Array.from(badgeContainer?.querySelectorAll('a[aria-label]') || []).map((badge) => {
+      const detailId = badge.getAttribute("aria-describedby");
+      const detail = detailId ? clean(document.getElementById(detailId)?.textContent) : "";
+      const iconRef = badge.querySelector("img[src]")?.getAttribute("src");
+      return {
+        label: clean(badge.getAttribute("aria-label")),
+        detail: detail || null,
+        icon_ref: isHttp(iconRef) ? iconRef : null,
+      };
+    }).filter((badge) => badge.label || badge.detail || badge.icon_ref);
+    const mutualSection = Array.from(aside.querySelectorAll('[class*="mutuals"]')).find((element) =>
+      /mutual friends/i.test(clean(element.textContent)),
+    );
+    const mutualFriends = Array.from(mutualSection?.querySelectorAll('[role="img"][aria-label]') || []).map((friend) => {
+      const friendAvatar = friend.querySelector('img[src*="/avatars/"]')?.getAttribute("src");
+      const friendLabel = clean(friend.getAttribute("aria-label"));
+      return {
+        id: authorIdFromAvatar(friendAvatar) || null,
+        display_name: friendLabel || null,
+        avatar_ref: isHttp(friendAvatar) ? friendAvatar : null,
+      };
+    }).filter((friend) => friend.id || friend.display_name || friend.avatar_ref);
+    const memberSection = Array.from(aside.querySelectorAll("section")).find((section) =>
+      /^Member Since\s*/i.test(clean(section.textContent)),
+    );
+    const memberText = clean(memberSection?.textContent);
+    const memberSince = memberText.replace(/^Member Since\s*/i, "").trim() || null;
+    const customStatusElement = aside.querySelector('[class*="customStatus"], [class*="custom-status"]');
+    const customStatus = clean(customStatusElement?.innerText || customStatusElement?.textContent) || null;
+    const activities = Array.from(aside.querySelectorAll('[class*="activity"]'))
+      .map((element) => clean(element.innerText || element.textContent))
+      .filter((value) => value && value !== customStatus && value.length <= 240)
+      .filter((value, index, values) => values.indexOf(value) === index)
+      .slice(0, 8);
+    const profile = {
+      presence: presence || null,
+      pronouns: pronouns || null,
+      member_since: memberSince,
+      banner_ref: isHttp(bannerRef) ? bannerRef : null,
+      avatar_decoration_ref: isHttp(avatarDecorationRef) ? avatarDecorationRef : null,
+      custom_status: customStatus,
+      activities,
+      badges,
+      mutual_friends: mutualFriends,
+      captured_at: new Date().toISOString(),
+      source: "visible_profile_card",
+    };
+    if (!profile.presence && !profile.pronouns && !profile.member_since && !profile.banner_ref && !profile.avatar_decoration_ref && !profile.custom_status && !activities.length && !badges.length && !mutualFriends.length) return null;
+    return {
+      participant_id: participantId,
+      display_name: displayName || null,
+      username: username || null,
+      avatar_ref: isHttp(avatarRef) ? avatarRef : null,
+      profile,
+    };
   };
   const channelMatch = location.pathname.match(/^\/channels\/@me\/([^/]+)/);
   if (!channelMatch) {
@@ -72,6 +240,9 @@ async () => {
     viewport_height: viewportHeight,
     at_start: !messageScroller || scrollTop <= 4,
     at_end: !messageScroller || scrollTop + viewportHeight >= scrollHeight - 4,
+    requested_direction: requestedDirection,
+    moved_pixels: previousScrollTop === null ? null : Math.round(Math.abs(scrollTop - previousScrollTop)),
+    previous_scroll_top: previousScrollTop,
   };
 
   const participants = new Map();
@@ -135,11 +306,18 @@ async () => {
       grouped: !/\bgroupStart(?:_|\b)/i.test(classes(article)),
       channel_id: channelId,
       attachments: [],
+      stickers: [],
+      custom_emojis: [],
       reactions: [],
       embeds: [],
       message_link: `${location.origin}/channels/@me/${channelId}/${id}`,
     };
     if (Object.keys(sourceDisplay).length) message.source_display = sourceDisplay;
+    const call = callFromContent(content);
+    if (call) {
+      message.call = call;
+      message.content = clean(content).split(/\s+—\s+/)[0].trim();
+    }
 
     const accessories = article.querySelector('[id^="message-accessories-"]');
     const attachments = new Map();
@@ -168,20 +346,91 @@ async () => {
     }
     message.attachments = Array.from(attachments.values());
 
+    const assetId = (url) => {
+      try {
+        return new URL(url, location.href).pathname.split("/").filter(Boolean).pop()?.split(".", 1)[0] || null;
+      } catch {
+        return null;
+      }
+    };
+    const seenStickerUrls = new Set();
+    const addSticker = (sticker) => {
+      if (!sticker || (!sticker.id && !sticker.url)) return;
+      const key = String(sticker.id || sticker.url);
+      if (seenStickerUrls.has(key)) return;
+      seenStickerUrls.add(key);
+      message.stickers.push(sticker);
+    };
+    const seenEmojiUrls = new Set();
+    for (const image of article.querySelectorAll('img[src]')) {
+      const src = image.getAttribute("src");
+      if (!isHttp(src)) continue;
+      const lower = String(src).toLowerCase();
+      const name = clean(image.getAttribute("alt") || image.getAttribute("aria-label") || fileName(src));
+      if (/\/stickers\//i.test(lower) && !seenStickerUrls.has(src)) {
+        const formatInfo = stickerFormatInfo(null, src);
+        addSticker({ name: name || "sticker", id: assetId(src), url: src, mime: formatInfo.mime, format: formatInfo.format, animated: formatInfo.animated });
+      } else if (/\/(?:emojis|emoji)\//i.test(lower) && !seenEmojiUrls.has(src)) {
+        seenEmojiUrls.add(src);
+        message.custom_emojis.push({ name: name || "custom emoji", id: assetId(src), url: src, mime: mimeFor(src) });
+      }
+    }
+
+    for (const stickerNode of article.querySelectorAll('[data-type="sticker"][data-id]')) {
+      const id = clean(stickerNode.getAttribute("data-id"));
+      const formatType = clean(stickerNode.getAttribute("data-format-type"));
+      const formatInfo = stickerFormatInfo(formatType, stickerNode.getAttribute("src"));
+      const wrapper = stickerNode.closest('[role="img"][aria-label]');
+      const label = clean(wrapper?.getAttribute("aria-label"));
+      const labelMatch = label.match(/^Sticker,\s*([^,]+?)(?:,|$)/i);
+      const name = clean(stickerNode.getAttribute("data-name") || labelMatch?.[1] || label || "sticker");
+      const source = stickerNode.getAttribute("src");
+      addSticker({
+        name,
+        id,
+        url: isHttp(source) ? source : stickerReferenceUrl(id, formatType),
+        mime: formatInfo.mime,
+        format: formatInfo.format,
+        animated: formatInfo.animated,
+      });
+    }
+
     if (accessories) {
       const embedRoots = new Set();
+      const outermostEmbedRoot = (candidate) => {
+        let root = candidate;
+        while (root?.parentElement) {
+          const ancestor = root.parentElement.closest('[class*="embed"]');
+          if (!ancestor) break;
+          root = ancestor;
+        }
+        return root;
+      };
       for (const titleElement of accessories.querySelectorAll('[class*="embedTitle"]')) {
         const root = titleElement.closest('[class*="embed"]') || titleElement.parentElement;
-        if (root) embedRoots.add(root);
+        if (root) embedRoots.add(outermostEmbedRoot(root));
+      }
+      // Discord image-only link previews do not render an embedTitle node.
+      // Promote the outermost media-bearing embed container so the rendered
+      // image is retained even when the message body only contains a URL.
+      for (const candidate of accessories.querySelectorAll('[class*="embed"]')) {
+        if (!candidate.querySelector('img[src], video[src], audio[src]')) continue;
+        const ancestorEmbed = candidate.parentElement?.closest('[class*="embed"]');
+        if (!ancestorEmbed) embedRoots.add(candidate);
       }
       for (const root of embedRoots) {
         const titleElement = root.querySelector('[class*="embedTitle"]');
         const descriptionElement = root.querySelector('[class*="embedDescription"]');
         const providerElement = root.querySelector('[class*="embedProvider"]');
         const link = titleElement?.closest('a[href]')?.href || root.querySelector('a[href]')?.href;
-        const image = Array.from(root.querySelectorAll('img[src]'))
+        const images = Array.from(root.querySelectorAll('img[src]'))
           .map((element) => element.getAttribute("src"))
-          .find((src) => isHttp(src));
+          .filter((src) => isHttp(src));
+        const linkedImages = Array.from(root.querySelectorAll('a[data-role="img"][href]'))
+          .map((element) => element.getAttribute("href"))
+          .filter((src) => isHttp(src));
+        const video = root.querySelector('video[src], video source[src]')?.getAttribute("src");
+        const audio = root.querySelector('audio[src], audio source[src]')?.getAttribute("src");
         const embed = {};
         const title = clean(titleElement?.innerText || titleElement?.textContent);
         const description = clean(descriptionElement?.innerText || descriptionElement?.textContent);
@@ -190,8 +439,38 @@ async () => {
         if (description) embed.description = description;
         if (provider) embed.site_name = provider;
         if (isHttp(link)) embed.url = link;
-        if (isHttp(image) && !/\/attachments\/\d+\/\d+/i.test(image)) embed.image_url = image;
+        const embedImages = [...new Set([...images, ...linkedImages])]
+          .filter((src) => !/\/attachments\/\d+\/\d+/i.test(src));
+        const hasThumbnailContainer = Boolean(root.querySelector('[class*="embedThumbnail"]'));
+        if (hasThumbnailContainer && isHttp(embedImages[0])) embed.thumbnail_url = embedImages[0];
+        else if (isHttp(embedImages[0])) embed.image_url = embedImages[0];
+        if (isHttp(embedImages[1])) embed.thumbnail_url = embedImages[1];
+        if (isHttp(video)) embed.video_url = video;
+        if (isHttp(audio)) embed.audio_url = audio;
+        if (!embed.image_url && !embed.thumbnail_url) {
+          const derivedThumbnail = youtubeThumbnailUrl(embed.url);
+          if (derivedThumbnail) {
+            embed.thumbnail_url = derivedThumbnail;
+            embed.thumbnail_source = "derived_youtube_thumbnail";
+            embed.type = "video";
+            embed.site_name = embed.site_name || "YouTube";
+          }
+        }
         if (Object.keys(embed).length) message.embeds.push(embed);
+      }
+    }
+
+    if (!message.embeds.length) {
+      const directLink = clean(content).match(/^https?:\/\/\S+$/i)?.[0];
+      const derivedThumbnail = youtubeThumbnailUrl(directLink);
+      if (derivedThumbnail) {
+        message.embeds.push({
+          url: directLink,
+          thumbnail_url: derivedThumbnail,
+          thumbnail_source: "derived_youtube_thumbnail",
+          type: "video",
+          site_name: "YouTube",
+        });
       }
     }
 
@@ -225,6 +504,22 @@ async () => {
   const orderedMessages = [...messages].sort((a, b) => String(a.timestamp).localeCompare(String(b.timestamp)) || String(a.id).localeCompare(String(b.id)));
   const oldestMessage = orderedMessages[0] || null;
   const newestMessage = orderedMessages[orderedMessages.length - 1] || null;
+  const visibleProfile = readVisibleProfile();
+  if (visibleProfile) {
+    const profileParticipantId = visibleProfile.participant_id
+      || Array.from(participants.values()).find((participant) =>
+        (visibleProfile.username && participant.username === visibleProfile.username)
+        || (visibleProfile.display_name && participant.display_name === visibleProfile.display_name),
+      )?.id;
+    if (profileParticipantId) {
+      const participant = participants.get(profileParticipantId) || { id: profileParticipantId };
+      if (visibleProfile.display_name) participant.display_name = visibleProfile.display_name;
+      if (visibleProfile.username) participant.username = visibleProfile.username;
+      if (visibleProfile.avatar_ref) participant.avatar_ref = visibleProfile.avatar_ref;
+      participant.profile = visibleProfile.profile;
+      participants.set(profileParticipantId, participant);
+    }
+  }
   const captureRange = {
     version: 1,
     message_count: messages.length,
@@ -241,14 +536,62 @@ async () => {
     .filter(Boolean);
   const heading = headingLines[0] || `Discord DM ${channelId}`;
   const channelHandle = headingLines[1] || null;
+  const remoteMediaHosts = {};
+  const addRemoteMediaHost = (value) => {
+    if (!isHttp(value)) return;
+    try {
+      const host = new URL(value, location.href).hostname.toLowerCase().replace(/\.$/, "");
+      if (host) remoteMediaHosts[host] = (remoteMediaHosts[host] || 0) + 1;
+    } catch {
+      // Ignore malformed references; the normalized importer will retain its source record.
+    }
+  };
+  const diagnostics = {
+    visible_message_nodes: messageNodes.length,
+    rendered_message_count: messages.length,
+    skipped_visible_nodes: Math.max(0, messageNodes.length - messages.length),
+    attachments: messages.reduce((total, message) => total + message.attachments.length, 0),
+    embeds: messages.reduce((total, message) => total + message.embeds.length, 0),
+    embed_media: messages.reduce((total, message) => total + message.embeds.reduce((count, embed) => count + ["image_url", "thumbnail_url", "video_url", "audio_url"].filter((key) => Boolean(embed[key])).length, 0), 0),
+    stickers: messages.reduce((total, message) => total + message.stickers.length, 0),
+    custom_emojis: messages.reduce((total, message) => total + message.custom_emojis.length, 0),
+    reactions: messages.reduce((total, message) => total + message.reactions.length, 0),
+    replies: messages.filter((message) => Boolean(message.reply_to)).length,
+    calls: messages.filter((message) => Boolean(message.call)).length,
+    profile_captured: Boolean(visibleProfile),
+    evidence: {
+      dom_snapshot: false,
+      screenshot: false,
+      note: "For rendered proof, evaluate tools/discord_visible_evidence.js in the same attended tab, save its html value under private-data, and attach it with capture-session attach-evidence; save a tab screenshot separately.",
+    },
+  };
+  for (const participant of participants.values()) {
+    addRemoteMediaHost(participant.avatar_ref);
+    const profile = participant.profile || {};
+    addRemoteMediaHost(profile.banner_ref);
+    addRemoteMediaHost(profile.avatar_decoration_ref);
+    for (const badge of profile.badges || []) addRemoteMediaHost(badge.icon_ref);
+    for (const friend of profile.mutual_friends || []) addRemoteMediaHost(friend.avatar_ref);
+  }
+  for (const message of messages) {
+    for (const attachment of message.attachments) addRemoteMediaHost(attachment.url);
+    for (const sticker of message.stickers) addRemoteMediaHost(sticker.url);
+    for (const emoji of message.custom_emojis) addRemoteMediaHost(emoji.url);
+    for (const embed of message.embeds) {
+      for (const key of ["image_url", "thumbnail_url", "video_url", "audio_url"]) addRemoteMediaHost(embed[key]);
+    }
+  }
+  diagnostics.remote_media_hosts = Object.fromEntries(Object.entries(remoteMediaHosts).sort(([a], [b]) => a.localeCompare(b)));
   return {
     metadata: {
       kind: "direct_message",
       title: heading || `Discord DM ${channelId}`,
       channel_handle: channelHandle,
       channel_id: channelId,
+      captured_at: new Date().toISOString(),
       display_timezone: displayTimezone,
       capture_range: captureRange,
+      capture_diagnostics: diagnostics,
       source: {
         label: "Discord visible conversation capture",
         url: location.href.split("#", 1)[0],
@@ -256,8 +599,14 @@ async () => {
           "Captured from the user-opened direct message rendered in the browser.",
           "This capture contains only the messages currently rendered by Discord; load overlapping ranges and merge them to cover a virtualized history.",
           `Capture range: ${messages.length} rendered message(s), ${scrollPosition.at_start ? "at the beginning" : "not at the beginning"}, ${scrollPosition.at_end ? "at the end" : "not at the end"}.`,
+          requestedDirection === "none"
+            ? "No scroll movement was requested for this capture step."
+            : `The browser UI was moved toward the ${requestedDirection} history boundary before this read-only capture${scrollPosition.moved_pixels === null ? "" : ` (${scrollPosition.moved_pixels} pixel(s))`}.`,
           "No login, user token, message sending, account search, or remote asset download was used.",
           "Remote media is preserved as reference-only URLs until explicitly copied into a private archive.",
+          visibleProfile
+            ? "Visible participant profile metadata was captured because the profile card was open during this attended step."
+            : "No participant profile card was open during this capture step; profile metadata was not inferred.",
         ],
       },
     },
