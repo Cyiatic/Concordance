@@ -14,7 +14,7 @@ $bundle = (Resolve-Path -LiteralPath $BundlePath -ErrorAction Stop).Path
 $output = [System.IO.Path]::GetFullPath($OutputPath)
 $env:PYTHONPATH = Join-Path $projectRoot "src"
 
-python -m discord_archive import-bundle --input $bundle --output $output
+python -m concordance import-bundle --input $bundle --output $output
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 if ($Open) {

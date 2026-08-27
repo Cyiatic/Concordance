@@ -17,8 +17,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 sys.path.insert(0, str(SRC))
 
-from discord_archive import __version__  # noqa: E402
-from discord_archive.core import (  # noqa: E402
+from concordance import __version__  # noqa: E402
+from concordance.core import (  # noqa: E402
     build_archive,
     load_json,
     validate_archive,
@@ -47,7 +47,9 @@ REQUIRED_FILES = (
     ".gitignore",
     "pyproject.toml",
     ".github/workflows/ci.yml",
-    "src/discord_archive/__init__.py",
+    "src/concordance/__init__.py",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
     "viewer/template.html",
     "viewer/catalog_template.html",
     "viewer/capture_template.html",
@@ -75,6 +77,8 @@ def _check_metadata(errors: list[str]) -> None:
         return
 
     version = project.get("version")
+    if project.get("name") != "concordance":
+        errors.append(f"project name must be concordance, got {project.get('name')!r}")
     if version != __version__:
         errors.append(f"version mismatch: pyproject={version!r}, package={__version__!r}")
     if project.get("readme") != "README.md":
@@ -82,6 +86,9 @@ def _check_metadata(errors: list[str]) -> None:
     license_value = project.get("license")
     if not isinstance(license_value, dict) or license_value.get("file") != "LICENSE":
         errors.append("project license must point to LICENSE")
+    scripts = project.get("scripts")
+    if not isinstance(scripts, dict) or scripts.get("concordance") != "concordance.cli:main":
+        errors.append("project script must expose concordance=concordance.cli:main")
 
     manifest_path = ROOT / "plugins" / "concordance" / ".codex-plugin" / "plugin.json"
     try:

@@ -24,7 +24,7 @@ def _environment() -> dict[str, str]:
 
 def _run_cli(arguments: list[str]) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [PYTHON, "-m", "discord_archive", *arguments],
+        [PYTHON, "-m", "concordance", *arguments],
         cwd=PROJECT_ROOT,
         env=_environment(),
         capture_output=True,
@@ -53,7 +53,7 @@ def _open_local(path: Path) -> None:
 def check_environment() -> int:
     required = [
         PROJECT_ROOT / "pyproject.toml",
-        PROJECT_ROOT / "src" / "discord_archive",
+        PROJECT_ROOT / "src" / "concordance",
         PROJECT_ROOT / "viewer" / "template.html",
         PROJECT_ROOT / "scripts" / "package_release.ps1",
         PROJECT_ROOT / "scripts" / "build_catalog.ps1",

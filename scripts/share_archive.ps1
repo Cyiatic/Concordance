@@ -41,7 +41,7 @@ $env:PYTHONPATH = Join-Path $projectRoot "src"
 
 function Invoke-Concordance {
     param([string[]]$Arguments)
-    & python -m discord_archive @Arguments
+    & python -m concordance @Arguments
     if ($LASTEXITCODE -ne 0) {
         throw "Concordance command failed ($LASTEXITCODE): $($Arguments -join ' ')"
     }

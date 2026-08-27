@@ -15,7 +15,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-from discord_archive.core import (  # noqa: E402
+from concordance.core import (  # noqa: E402
     add_capture_to_session,
     attach_capture_evidence,
     audit_archive_media,
@@ -47,9 +47,9 @@ from discord_archive.core import (  # noqa: E402
     verify_transcript_coverage,
     verify_build,
 )
-import discord_archive.core as core_module  # noqa: E402
-import discord_archive as package_module  # noqa: E402
-from discord_archive.cli import main as cli_main  # noqa: E402
+import concordance.core as core_module  # noqa: E402
+import concordance as package_module  # noqa: E402
+from concordance.cli import main as cli_main  # noqa: E402
 
 
 class ArchiveTests(unittest.TestCase):
@@ -84,12 +84,16 @@ class ArchiveTests(unittest.TestCase):
     def test_release_metadata_is_complete_and_aligned(self) -> None:
         project = tomllib.loads((PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
         manifest = load_json(PROJECT_ROOT / "plugins" / "concordance" / ".codex-plugin" / "plugin.json")
+        self.assertEqual(project["name"], "concordance")
+        self.assertEqual(project["scripts"]["concordance"], "concordance.cli:main")
         self.assertEqual(project["version"], package_module.__version__)
         self.assertEqual(project["version"], manifest["version"])
         self.assertEqual(project["readme"], "README.md")
         self.assertEqual(project["license"]["file"], "LICENSE")
         self.assertTrue((PROJECT_ROOT / "LICENSE").is_file())
         self.assertTrue((PROJECT_ROOT / "CHANGELOG.md").is_file())
+        self.assertTrue((PROJECT_ROOT / "CONTRIBUTING.md").is_file())
+        self.assertTrue((PROJECT_ROOT / "SECURITY.md").is_file())
 
     def test_build_copies_viewer_data_and_assets(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -851,7 +855,7 @@ class ArchiveTests(unittest.TestCase):
 
             core_module._download_remote_media = fake_download
             try:
-                from discord_archive.core import materialize_remote_media
+                from concordance.core import materialize_remote_media
 
                 summary = materialize_remote_media(source, output)
             finally:

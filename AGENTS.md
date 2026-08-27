@@ -1,4 +1,4 @@
-# Discord Archive project guidance
+# Concordance project guidance
 
 ## Scope
 
@@ -18,23 +18,23 @@ From this directory on Windows PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src"
-python -m discord_archive validate fixtures/sample/archive.json
-python -m discord_archive build fixtures/sample/archive.json --output dist/sample
-python -m discord_archive build-catalog --input private-data\conversation-a.json --input private-data\conversation-b.json --output private-data\concordance-library
-python -m discord_archive verify dist/sample
-python -m discord_archive verify-catalog private-data\concordance-library
-python -m discord_archive export-evidence --input private-data\conversation.json --output private-data\conversation-evidence.json --session private-data\capture-session.json
-python -m discord_archive verify-evidence private-data\conversation-evidence.json
-python -m discord_archive import-transcript --input C:\path\to\transcript.json --output private-data\conversation.json
-python -m discord_archive capture-session init --output private-data\capture-session.json
-python -m discord_archive capture-session add --session private-data\capture-session.json --input private-data\range-001.json
-python -m discord_archive capture-session status --session private-data\capture-session.json
-python -m discord_archive capture-session next --session private-data\capture-session.json
-python -m discord_archive capture-session attach-evidence --session private-data\capture-session.json --capture private-data\range-001.json --dom private-data\range-001.html --screenshot private-data\range-001.png
-python -m discord_archive audit-media --input private-data\conversation.json --output private-data\conversation-media-audit.json
-python -m discord_archive capture-session finalize --session private-data\capture-session.json --output private-data\merged-transcript.json
-python -m discord_archive merge-transcripts --input private-data\range-001.json --input private-data\range-002.json --output private-data\merged-transcript.json
-python -m discord_archive verify-coverage private-data\merged-transcript.json
+python -m concordance validate fixtures/sample/archive.json
+python -m concordance build fixtures/sample/archive.json --output dist/sample
+python -m concordance build-catalog --input private-data\conversation-a.json --input private-data\conversation-b.json --output private-data\concordance-library
+python -m concordance verify dist/sample
+python -m concordance verify-catalog private-data\concordance-library
+python -m concordance export-evidence --input private-data\conversation.json --output private-data\conversation-evidence.json --session private-data\capture-session.json
+python -m concordance verify-evidence private-data\conversation-evidence.json
+python -m concordance import-transcript --input C:\path\to\transcript.json --output private-data\conversation.json
+python -m concordance capture-session init --output private-data\capture-session.json
+python -m concordance capture-session add --session private-data\capture-session.json --input private-data\range-001.json
+python -m concordance capture-session status --session private-data\capture-session.json
+python -m concordance capture-session next --session private-data\capture-session.json
+python -m concordance capture-session attach-evidence --session private-data\capture-session.json --capture private-data\range-001.json --dom private-data\range-001.html --screenshot private-data\range-001.png
+python -m concordance audit-media --input private-data\conversation.json --output private-data\conversation-media-audit.json
+python -m concordance capture-session finalize --session private-data\capture-session.json --output private-data\merged-transcript.json
+python -m concordance merge-transcripts --input private-data\range-001.json --input private-data\range-002.json --output private-data\merged-transcript.json
+python -m concordance verify-coverage private-data\merged-transcript.json
 python -m unittest discover -s tests -v
 ```
 

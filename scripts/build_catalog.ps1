@@ -22,7 +22,7 @@ $env:PYTHONPATH = Join-Path $projectRoot "src"
 $candidates = @(Get-ChildItem -LiteralPath $inputDirectory -Filter "*.json" -File | Sort-Object Name)
 $archives = @()
 foreach ($candidate in $candidates) {
-    & python -m discord_archive validate $candidate.FullName *> $null
+    & python -m concordance validate $candidate.FullName *> $null
     if ($LASTEXITCODE -eq 0) {
         $archives += $candidate.FullName
     } else {
@@ -41,7 +41,7 @@ if ($IncludeMessageIndex) {
     $arguments += "--include-message-index"
 }
 
-& python -m discord_archive @arguments
+& python -m concordance @arguments
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }

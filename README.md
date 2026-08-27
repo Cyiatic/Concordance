@@ -26,6 +26,23 @@ limitation in its metadata and records import diagnostics under
 user-supplied transcript adapter accepts explicitly provided JSON, while
 acquisition remains separate from normalization and viewing.
 
+## Install Concordance
+
+Concordance requires Python 3.11 or newer. Install the wheel from a release or
+install this repository in editable mode while developing:
+
+```powershell
+python -m pip install concordance-0.1.0-py3-none-any.whl
+
+# From a source checkout:
+python -m pip install -e ".[secure]"
+concordance --help
+```
+
+The `concordance` command and `python -m concordance` entry point are equivalent.
+The optional `secure` extra adds the cryptography dependency used for encrypted
+share bundles.
+
 ## Codex plugin package
 
 This repository includes `plugins/concordance/`, a skills-only Codex plugin for
@@ -52,9 +69,9 @@ Discord restore tool.
 
 ```powershell
 $env:PYTHONPATH = "src"
-python -m discord_archive validate fixtures/sample/archive.json
-python -m discord_archive build fixtures/sample/archive.json --output dist/sample
-python -m discord_archive verify dist/sample
+python -m concordance validate fixtures/sample/archive.json
+python -m concordance build fixtures/sample/archive.json --output dist/sample
+python -m concordance verify dist/sample
 Start-Process (Resolve-Path dist/sample/index.html)
 ```
 
@@ -82,11 +99,11 @@ each generated viewer.
 
 ```powershell
 $env:PYTHONPATH = "src"
-python -m discord_archive build-catalog `
+python -m concordance build-catalog `
   --input private-data\conversation-a.json `
   --input private-data\conversation-b.json `
   --output private-data\concordance-library
-python -m discord_archive verify-catalog private-data\concordance-library
+python -m concordance verify-catalog private-data\concordance-library
 Start-Process (Resolve-Path private-data\concordance-library\index.html)
 ```
 
@@ -99,7 +116,7 @@ For cross-conversation message search, opt in explicitly; this adds a private
 `message-index.json` containing searchable message text and deep links:
 
 ```powershell
-python -m discord_archive build-catalog `
+python -m concordance build-catalog `
   --input private-data\conversation-a.json `
   --input private-data\conversation-b.json `
   --output private-data\concordance-library `
@@ -211,11 +228,11 @@ report:
 
 ```powershell
 $env:PYTHONPATH = "src"
-python -m discord_archive export-evidence `
+python -m concordance export-evidence `
   --input private-data\conversation.json `
   --output private-data\conversation-evidence.json `
   --session private-data\capture-session.json
-python -m discord_archive verify-evidence private-data\conversation-evidence.json
+python -m concordance verify-evidence private-data\conversation-evidence.json
 ```
 
 The report records archive and local-asset SHA-256 hashes, message and feature
@@ -240,7 +257,7 @@ attach it to the capture session. The files are copied into the private session
 directory, hashed, and automatically included by `export-evidence --session`:
 
 ```powershell
-python -m discord_archive capture-session attach-evidence `
+python -m concordance capture-session attach-evidence `
   --session private-data\capture-session.json `
   --capture private-data\range-001.json `
   --dom private-data\range-001-rendered.html `
@@ -260,13 +277,13 @@ message count, layout, timestamps, and coverage shape while anonymizing
 participants, replacing message text, remapping IDs, and removing links/media:
 
 ```powershell
-python -m discord_archive redact `
+python -m concordance redact `
   --input private-data\conversation.json `
   --output private-data\conversation-safe.json
-python -m discord_archive build `
+python -m concordance build `
   private-data\conversation-safe.json `
   --output private-data\conversation-safe-view
-python -m discord_archive export-bundle `
+python -m concordance export-bundle `
   --input private-data\conversation-safe-view `
   --output private-data\conversation-safe.zip
 ```
@@ -276,10 +293,10 @@ optional secure extra and use a password prompt or a private password file:
 
 ```powershell
 python -m pip install -e ".[secure]"
-python -m discord_archive encrypt-bundle `
+python -m concordance encrypt-bundle `
   --input private-data\conversation-safe-view `
   --output private-data\conversation-safe.concordance.enc
-python -m discord_archive decrypt-bundle `
+python -m concordance decrypt-bundle `
   --input private-data\conversation-safe.concordance.enc `
   --output private-data\conversation-safe-restored
 ```
@@ -293,7 +310,7 @@ Run the migration command when a future release introduces a schema change. It
 is safe to run against a current archive and writes a separate output file:
 
 ```powershell
-python -m discord_archive migrate `
+python -m concordance migrate `
   --input private-data\conversation.json `
   --output private-data\conversation-migrated.json
 ```
@@ -302,10 +319,10 @@ python -m discord_archive migrate `
 
 ```powershell
 $env:PYTHONPATH = "src"
-python -m discord_archive import-data-package `
+python -m concordance import-data-package `
   --input C:\path\to\DiscordDataPackage `
   --output private-data\discord-package.json
-python -m discord_archive build `
+python -m concordance build `
   private-data\discord-package.json `
   --output private-data\discord-package-view
 ```
@@ -327,11 +344,11 @@ approved:
 
 ```powershell
 $env:PYTHONPATH = "src"
-python -m discord_archive materialize-media `
+python -m concordance materialize-media `
   --input private-data\conversation.json `
   --output private-data\conversation.json `
   --allow-remote
-python -m discord_archive build `
+python -m concordance build `
   private-data\conversation.json `
   --output private-data\conversation-view
 ```
@@ -350,7 +367,7 @@ silently treated as downloaded.
 Audit offline readiness without downloading anything:
 
 ```powershell
-python -m discord_archive audit-media `
+python -m concordance audit-media `
   --input private-data\conversation.json `
   --output private-data\conversation-media-audit.json
 ```
@@ -372,10 +389,10 @@ transcript rather than an official account data package:
 
 ```powershell
 $env:PYTHONPATH = "src"
-python -m discord_archive import-transcript `
+python -m concordance import-transcript `
   --input C:\path\to\transcript.json `
   --output private-data\conversation.json
-python -m discord_archive build `
+python -m concordance build `
   private-data\conversation.json `
   --output private-data\conversation-view
 ```
@@ -468,7 +485,7 @@ deleted messages existed:
 
 ```powershell
 $env:PYTHONPATH = "src"
-python -m discord_archive capture-session init `
+python -m concordance capture-session init `
   --output private-data\conversation-session.json `
   --title "Conversation title" `
   --expect-date 2024-01-15 `
@@ -476,36 +493,36 @@ python -m discord_archive capture-session init `
 
 # In the already-open Discord DM, scroll to a rendered range and run the
 # read-only tools/discord_visible_capture.js adapter in that visible context.
-python -m discord_archive capture-session add `
+python -m concordance capture-session add `
   --session private-data\conversation-session.json `
   --input private-data\range-001.json
-python -m discord_archive capture-session status `
+python -m concordance capture-session status `
   --session private-data\conversation-session.json
-python -m discord_archive capture-session next `
+python -m concordance capture-session next `
   --session private-data\conversation-session.json
 
 # Build a message-free local guide with the next action, overlap ledger,
 # boundary attestations, expected dates, and media-host diagnostics.
-python -m discord_archive capture-session dashboard `
+python -m concordance capture-session dashboard `
   --session private-data\conversation-session.json `
   --output private-data\conversation-capture-guide
-python -m discord_archive capture-session verify-dashboard `
+python -m concordance capture-session verify-dashboard `
   private-data\conversation-capture-guide
 Start-Process (Resolve-Path private-data\conversation-capture-guide\index.html)
 
 # Add checkpoints later without restarting the session. Use --replace to
 # replace the existing list, or --replace with no dates to clear it.
-python -m discord_archive capture-session checkpoints `
+python -m concordance capture-session checkpoints `
   --session private-data\conversation-session.json `
   --expect-date 2024-01-15 `
   --expect-date 2024-06-30
 
-python -m discord_archive capture-session finalize `
+python -m concordance capture-session finalize `
   --session private-data\conversation-session.json `
   --output private-data\merged-transcript.json `
   --reached-start `
   --reached-end
-python -m discord_archive import-transcript `
+python -m concordance import-transcript `
   --input private-data\merged-transcript.json `
   --output private-data\conversation.json
 ```
@@ -540,7 +557,7 @@ Discord message scroller was at its oldest or newest boundary:
 
 ```powershell
 $env:PYTHONPATH = "src"
-python -m discord_archive merge-transcripts `
+python -m concordance merge-transcripts `
   --input private-data\range-001.json `
   --input private-data\range-002.json `
   --input private-data\range-003.json `
@@ -549,11 +566,11 @@ python -m discord_archive merge-transcripts `
   --reached-end `
   --expect-date 2024-01-15 `
   --expect-date 2024-07-01
-python -m discord_archive verify-coverage private-data\merged-transcript.json
-python -m discord_archive import-transcript `
+python -m concordance verify-coverage private-data\merged-transcript.json
+python -m concordance import-transcript `
   --input private-data\merged-transcript.json `
   --output private-data\conversation.json
-python -m discord_archive build private-data\conversation.json --output private-data\conversation-view
+python -m concordance build private-data\conversation.json --output private-data\conversation-view
 ```
 
 The merge deduplicates overlapping message IDs and marks coverage `verified`

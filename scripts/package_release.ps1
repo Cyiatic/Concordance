@@ -17,7 +17,7 @@ $env:PYTHONPATH = Join-Path $projectRoot "src"
 
 try {
     New-Item -ItemType Directory -Path $releaseRoot -Force | Out-Null
-    foreach ($relative in @("README.md", "CHANGELOG.md", "LICENSE", "PRODUCT.md", "AGENTS.md", "DESIGN.md", ".gitignore", "pyproject.toml")) {
+    foreach ($relative in @("README.md", "CHANGELOG.md", "LICENSE", "CONTRIBUTING.md", "SECURITY.md", "PRODUCT.md", "AGENTS.md", "DESIGN.md", ".gitignore", "pyproject.toml")) {
         Copy-Item -LiteralPath (Join-Path $projectRoot $relative) -Destination (Join-Path $releaseRoot $relative)
     }
     foreach ($relative in @(".github", "src", "viewer", "tools", "scripts", "fixtures", "plugins")) {
@@ -35,11 +35,11 @@ try {
         Where-Object { $_.Extension -in @(".pyc", ".pyo") } |
         Remove-Item -Force
 
-    & python -m discord_archive validate (Join-Path $projectRoot "fixtures\sample\archive.json")
+    & python -m concordance validate (Join-Path $projectRoot "fixtures\sample\archive.json")
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    & python -m discord_archive build (Join-Path $projectRoot "fixtures\sample\archive.json") --output $sampleOutput
+    & python -m concordance build (Join-Path $projectRoot "fixtures\sample\archive.json") --output $sampleOutput
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    & python -m discord_archive verify $sampleOutput
+    & python -m concordance verify $sampleOutput
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
     $zipParent = Split-Path -Parent $zipPath

@@ -25,6 +25,7 @@ CAPTURE_SESSION_VERSION = 1
 CAPTURE_SESSION_TYPE = "discord_visible_capture_session"
 CAPTURE_EVIDENCE_VERSION = 1
 EVIDENCE_VERSION = 1
+# Stable schema identifier retained for compatibility with version-1 evidence.
 EVIDENCE_TYPE = "discord_archive_evidence"
 _MISSING = object()
 _TIMESTAMP_OFFSET = re.compile(r"(?:Z|[+-]\d{2}:?\d{2})$", re.IGNORECASE)
@@ -1891,7 +1892,7 @@ def _capture_session_step_plan(status: dict[str, Any]) -> dict[str, Any]:
         if kind == "complete"
         else (
             f"Capture the next rendered range with options {json.dumps(adapter_options, separators=(',', ':'))}. "
-            f"Then run: python -m discord_archive capture-session add --session {session_name} --input <capture.json>"
+            f"Then run: python -m concordance capture-session add --session {session_name} --input <capture.json>"
         )
     )
     return {

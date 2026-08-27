@@ -52,18 +52,18 @@ under `private-data/`:
 
 ```powershell
 $env:PYTHONPATH = "src"
-python -m discord_archive capture-session init `
+python -m concordance capture-session init `
   --output private-data\conversation-session.json `
   --title "Conversation title"
 
 # The user opens the intended DM, manually scrolls one bounded step, waits for
 # the virtualized list to settle, and evaluates the read-only visible adapter.
-python -m discord_archive capture-session add `
+python -m concordance capture-session add `
   --session private-data\conversation-session.json `
   --input private-data\range-001.json
-python -m discord_archive capture-session status `
+python -m concordance capture-session status `
   --session private-data\conversation-session.json
-python -m discord_archive capture-session next `
+python -m concordance capture-session next `
   --session private-data\conversation-session.json
 ```
 
@@ -84,18 +84,18 @@ Finalize only after the user has reached both boundaries and the session reports
 an overlap-linked chain:
 
 ```powershell
-python -m discord_archive capture-session attach-evidence `
+python -m concordance capture-session attach-evidence `
   --session private-data\conversation-session.json `
   --capture private-data\range-001.json `
   --dom private-data\range-001-rendered.html `
   --screenshot private-data\range-001.png
-python -m discord_archive capture-session finalize `
+python -m concordance capture-session finalize `
   --session private-data\conversation-session.json `
   --output private-data\merged-transcript.json `
   --reached-start `
   --reached-end
-python -m discord_archive verify-coverage private-data\merged-transcript.json
-python -m discord_archive import-transcript `
+python -m concordance verify-coverage private-data\merged-transcript.json
+python -m concordance import-transcript `
   --input private-data\merged-transcript.json `
   --output private-data\conversation.json
 ```
@@ -109,14 +109,14 @@ conversation.
 Validate before building, then verify the generated directory after building:
 
 ```powershell
-python -m discord_archive validate private-data\conversation.json
-python -m discord_archive audit-media `
+python -m concordance validate private-data\conversation.json
+python -m concordance audit-media `
   --input private-data\conversation.json `
   --output private-data\conversation-media-audit.json
-python -m discord_archive build `
+python -m concordance build `
   private-data\conversation.json `
   --output private-data\conversation-view
-python -m discord_archive verify private-data\conversation-view
+python -m concordance verify private-data\conversation-view
 ```
 
 The viewer should preserve message IDs, canonical timestamps, visible source
@@ -132,7 +132,7 @@ downloadable-with-approval, reference-only, and metadata-only records without
 downloading anything. Materialization is a separate explicit step:
 
 ```powershell
-python -m discord_archive materialize-media `
+python -m concordance materialize-media `
   --input private-data\conversation.json `
   --output private-data\conversation-offline.json `
   --allow-remote
@@ -149,11 +149,11 @@ user.
 When several conversations exist, build a metadata-only catalog by default:
 
 ```powershell
-python -m discord_archive build-catalog `
+python -m concordance build-catalog `
   --input private-data\conversation-a.json `
   --input private-data\conversation-b.json `
   --output private-data\concordance-library
-python -m discord_archive verify-catalog private-data\concordance-library
+python -m concordance verify-catalog private-data\concordance-library
 ```
 
 Only opt into `--include-message-index` when the user understands that the
@@ -163,14 +163,14 @@ For sharing, never send the source archive directly. Redact into a new path,
 build and verify the redacted viewer, then export the bundle:
 
 ```powershell
-python -m discord_archive redact `
+python -m concordance redact `
   --input private-data\conversation.json `
   --output private-data\conversation-safe.json
-python -m discord_archive build `
+python -m concordance build `
   private-data\conversation-safe.json `
   --output private-data\conversation-safe-view
-python -m discord_archive verify private-data\conversation-safe-view
-python -m discord_archive export-bundle `
+python -m concordance verify private-data\conversation-safe-view
+python -m concordance export-bundle `
   --input private-data\conversation-safe-view `
   --output private-data\conversation-safe.concordance.zip
 ```

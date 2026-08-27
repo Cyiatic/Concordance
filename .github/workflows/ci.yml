@@ -52,10 +52,10 @@ jobs:
 
       - name: Build and verify synthetic viewer
         run: |
-          python -m discord_archive validate fixtures/sample/archive.json
-          python -m discord_archive audit-media --input fixtures/sample/archive.json
-          python -m discord_archive build fixtures/sample/archive.json --output dist/sample
-          python -m discord_archive verify dist/sample
+          python -m concordance validate fixtures/sample/archive.json
+          python -m concordance audit-media --input fixtures/sample/archive.json
+          python -m concordance build fixtures/sample/archive.json --output dist/sample
+          python -m concordance verify dist/sample
 
       - name: Build and smoke-test wheel
         run: |

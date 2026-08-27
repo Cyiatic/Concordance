@@ -12,8 +12,8 @@ $archive = (Resolve-Path -LiteralPath $ArchivePath -ErrorAction Stop).Path
 $output = [System.IO.Path]::GetFullPath($OutputPath)
 $env:PYTHONPATH = Join-Path $projectRoot "src"
 
-python -m discord_archive build $archive --output $output
+python -m concordance build $archive --output $output
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-python -m discord_archive verify $output
+python -m concordance verify $output
 exit $LASTEXITCODE

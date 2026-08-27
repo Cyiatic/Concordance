@@ -17,6 +17,8 @@ REQUIRED_ENTRIES = {
     "README.md",
     "CHANGELOG.md",
     "LICENSE",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
     "DESIGN.md",
     ".gitignore",
     ".github/workflows/ci.yml",

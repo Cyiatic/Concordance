@@ -14,11 +14,11 @@ $env:PYTHONPATH = Join-Path $projectRoot "src"
 $staging = Join-Path ([System.IO.Path]::GetTempPath()) ("concordance-export-" + [guid]::NewGuid().ToString("N"))
 
 try {
-    python -m discord_archive build $archive --output $staging
+    python -m concordance build $archive --output $staging
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    python -m discord_archive verify $staging
+    python -m concordance verify $staging
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    python -m discord_archive export-bundle --input $staging --output $bundle
+    python -m concordance export-bundle --input $staging --output $bundle
     exit $LASTEXITCODE
 } finally {
     if (Test-Path -LiteralPath $staging) {

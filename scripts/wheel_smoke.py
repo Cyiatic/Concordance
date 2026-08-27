@@ -40,15 +40,16 @@ def main() -> int:
         venv_dir = temp / "venv"
         venv.EnvBuilder(with_pip=True, clear=True).create(venv_dir)
         python = venv_dir / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
-        _run([str(python), "-m", "pip", "install", "--no-index", "--no-deps", str(wheels[0])], temp)
-
         clean_environment = os.environ.copy()
         clean_environment.pop("PYTHONPATH", None)
+        _run([str(python), "-m", "pip", "install", "--no-index", "--no-deps", str(wheels[0])], temp, clean_environment)
+
         output = temp / "viewer"
         commands = (
-            [str(python), "-m", "discord_archive", "validate", str(FIXTURE)],
-            [str(python), "-m", "discord_archive", "build", str(FIXTURE), "--output", str(output)],
-            [str(python), "-m", "discord_archive", "verify", str(output)],
+            [str(python), "-m", "concordance", "--help"],
+            [str(python), "-m", "concordance", "validate", str(FIXTURE)],
+            [str(python), "-m", "concordance", "build", str(FIXTURE), "--output", str(output)],
+            [str(python), "-m", "concordance", "verify", str(output)],
         )
         for command in commands:
             _run(command, temp, clean_environment)

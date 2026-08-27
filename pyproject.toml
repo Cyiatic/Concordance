@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "discord-archive"
+name = "concordance"
 version = "0.1.0"
-description = "Local-first normalized conversation archives with an offline viewer"
+description = "Concordance: local-first normalized conversation archives with an offline viewer"
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [{ name = "Cyiatic" }]
@@ -32,7 +32,7 @@ Issues = "https://github.com/Cyiatic/Concordance/issues"
 secure = ["cryptography>=42"]
 
 [project.scripts]
-discord-archive = "discord_archive.cli:main"
+concordance = "concordance.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

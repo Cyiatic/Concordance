@@ -4,6 +4,7 @@
 
 Initial release of Concordance's local-first archive workflow:
 
+- public Python distribution and CLI names use `concordance`;
 - normalized, versioned conversation archives with validation and migration;
 - attended visible capture sessions with overlap and boundary verification;
 - offline viewers and multi-archive catalogs with local media and provenance;

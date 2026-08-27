@@ -70,7 +70,7 @@ def _password_from_args(args: argparse.Namespace) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="discord-archive",
+        prog="concordance",
         description="Validate, import, and build offline conversation archives.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
