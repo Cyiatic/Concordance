@@ -1,4 +1,4 @@
-<h1 align="center"><img src="viewer/assets/concordance-mark.png" alt="" width="64" height="64" align="absmiddle"> Concordance</h1>
+<h1 align="left"><img src="viewer/assets/concordance-mark.png" alt="" width="64" height="64" align="absmiddle"> Concordance</h1>
 
 Concordance is a local-first tool for turning permitted conversation exports into searchable,
 offline-readable archives. The first milestone is a normalized JSON schema and
