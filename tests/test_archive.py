@@ -5,6 +5,7 @@ import io
 import json
 import sys
 import tempfile
+import tomllib
 import unittest
 from contextlib import redirect_stderr
 from copy import deepcopy
@@ -47,6 +48,7 @@ from discord_archive.core import (  # noqa: E402
     verify_build,
 )
 import discord_archive.core as core_module  # noqa: E402
+import discord_archive as package_module  # noqa: E402
 from discord_archive.cli import main as cli_main  # noqa: E402
 
 
@@ -78,6 +80,16 @@ class ArchiveTests(unittest.TestCase):
             for path in plugin_root.rglob("*")
             for part in path.relative_to(plugin_root).parts
         ))
+
+    def test_release_metadata_is_complete_and_aligned(self) -> None:
+        project = tomllib.loads((PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
+        manifest = load_json(PROJECT_ROOT / "plugins" / "concordance" / ".codex-plugin" / "plugin.json")
+        self.assertEqual(project["version"], package_module.__version__)
+        self.assertEqual(project["version"], manifest["version"])
+        self.assertEqual(project["readme"], "README.md")
+        self.assertEqual(project["license"]["file"], "LICENSE")
+        self.assertTrue((PROJECT_ROOT / "LICENSE").is_file())
+        self.assertTrue((PROJECT_ROOT / "CHANGELOG.md").is_file())
 
     def test_build_copies_viewer_data_and_assets(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -634,6 +646,29 @@ class ArchiveTests(unittest.TestCase):
         self.assertNotIn("fetch(", capture_source)
         self.assertNotIn("XMLHttpRequest", capture_source)
         self.assertNotIn("WebSocket", capture_source)
+
+    def test_visible_evidence_snapshot_is_inert_and_does_not_embed_url_secrets(self) -> None:
+        evidence_source = (PROJECT_ROOT / "tools" / "discord_visible_evidence.js").read_text(encoding="utf-8")
+        self.assertIn("escapeHtml(clean(document.title))", evidence_source)
+        self.assertIn("script-src 'none'", evidence_source)
+        self.assertIn("inertUrlAttributes", evidence_source)
+        self.assertIn("name.startsWith(\"on\")", evidence_source)
+        self.assertIn("parsedSourceUrl.search = \"\"", evidence_source)
+
+    def test_remote_media_allowlist_rejects_credentials_ports_and_redirects(self) -> None:
+        self.assertTrue(core_module._remote_media_allowed("https://cdn.discordapp.com/attachments/1/2/file.png?sig=test"))
+        self.assertFalse(core_module._remote_media_allowed("https://user:pass@cdn.discordapp.com/attachments/1/2/file.png"))
+        self.assertFalse(core_module._remote_media_allowed("https://cdn.discordapp.com:8443/attachments/1/2/file.png"))
+        handler = core_module._ApprovedRemoteMediaRedirectHandler()
+        with self.assertRaisesRegex(ValueError, "unapproved host"):
+            handler.redirect_request(
+                core_module.Request("https://cdn.discordapp.com/attachments/1/2/file.png"),
+                object(),
+                302,
+                "Found",
+                {},
+                "https://example.com/private.txt",
+            )
 
     def test_call_metadata_is_normalised_and_retained_for_offline_rendering(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.11", "3.12", "3.13"]
     steps:
       - name: Check out source
         uses: actions/checkout@v4
@@ -28,13 +28,18 @@ jobs:
           cache: pip
 
       - name: Install package
-        run: python -m pip install --upgrade pip && python -m pip install -e .
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[secure]"
 
       - name: Compile Python sources
-        run: python -m compileall -q src tests
+        run: python -m compileall -q src tests scripts
 
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
+
+      - name: Run release preflight
+        run: python scripts/release_check.py
 
       - name: Check catalog JavaScript
         run: node --check viewer/catalog_app.js
@@ -51,3 +56,43 @@ jobs:
           python -m discord_archive audit-media --input fixtures/sample/archive.json
           python -m discord_archive build fixtures/sample/archive.json --output dist/sample
           python -m discord_archive verify dist/sample
+
+      - name: Build and smoke-test wheel
+        run: |
+          python -m pip wheel . --no-deps --wheel-dir dist/wheel
+          python scripts/wheel_smoke.py --wheel-dir dist/wheel
+
+  windows-release:
+    name: Windows release smoke
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[secure]"
+
+      - name: Run release preflight and launcher check
+        run: |
+          python scripts/release_check.py
+          python scripts/concordance_launcher.py --check
+
+      - name: Build and smoke-test wheel
+        run: |
+          python -m pip wheel . --no-deps --wheel-dir dist/wheel
+          python scripts/wheel_smoke.py --wheel-dir dist/wheel
+
+      - name: Build source-only release package
+        shell: pwsh
+        run: .\scripts\package_release.ps1 -OutputPath dist\concordance-release-ci.zip
+
+      - name: Inspect extracted source-only release package
+        run: python scripts/source_release_smoke.py --archive dist/concordance-release-ci.zip

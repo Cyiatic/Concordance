@@ -17,10 +17,10 @@ $env:PYTHONPATH = Join-Path $projectRoot "src"
 
 try {
     New-Item -ItemType Directory -Path $releaseRoot -Force | Out-Null
-    foreach ($relative in @("README.md", "PRODUCT.md", "AGENTS.md", "pyproject.toml")) {
+    foreach ($relative in @("README.md", "CHANGELOG.md", "LICENSE", "PRODUCT.md", "AGENTS.md", "DESIGN.md", ".gitignore", "pyproject.toml")) {
         Copy-Item -LiteralPath (Join-Path $projectRoot $relative) -Destination (Join-Path $releaseRoot $relative)
     }
-    foreach ($relative in @("src", "viewer", "tools", "scripts", "fixtures", "plugins")) {
+    foreach ($relative in @(".github", "src", "viewer", "tools", "scripts", "fixtures", "plugins")) {
         Copy-Item -LiteralPath (Join-Path $projectRoot $relative) -Destination (Join-Path $releaseRoot $relative) -Recurse
     }
 

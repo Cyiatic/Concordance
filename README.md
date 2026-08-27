@@ -1,12 +1,8 @@
-<p align="center">
-  <img src="viewer/assets/concordance-mark.png" alt="Concordance logo" width="180">
-</p>
+<h1 align="center"><img src="viewer/assets/concordance-mark.png" alt="" width="64" height="64" align="absmiddle"> Concordance</h1>
 
-# Concordance
-
-A local-first tool for turning permitted conversation exports into searchable,
+Concordance is a local-first tool for turning permitted conversation exports into searchable,
 offline-readable archives. The first milestone is a normalized JSON schema and
-an **Concordance** viewer that renders message text, timestamps, avatars,
+a **Concordance** viewer that renders message text, timestamps, avatars,
 replies, reactions, embeds, attachments, provenance, and offline status without
 loading Discord or any external asset.
 
@@ -52,7 +48,7 @@ profile”: Concordance recreates the permitted viewing experience locally and
 preserves available profile metadata, but it is not an account clone or a
 Discord restore tool.
 
-## Build the sample archive
+## Build a sample Concordance archive
 
 ```powershell
 $env:PYTHONPATH = "src"
@@ -149,6 +145,19 @@ synthetic fixture, builds and verifies a sample viewer, and never copies
 
 ```powershell
 .\scripts\package_release.ps1 -OutputPath dist\concordance-release.zip
+python scripts\source_release_smoke.py --archive dist\concordance-release.zip
+```
+
+Before publishing a release, run the dependency-free preflight and clean-wheel
+smoke test. The preflight checks version alignment, required release files,
+tracked private/generated paths, and synthetic viewer verification. The wheel
+smoke test installs the built package into a fresh environment and confirms
+that the installed CLI can still build an offline viewer:
+
+```powershell
+python scripts\release_check.py
+python -m pip wheel . --no-deps --wheel-dir dist\wheel
+python scripts\wheel_smoke.py --wheel-dir dist\wheel
 ```
 
 To build a catalog from every valid normalized archive in a selected folder:
@@ -587,6 +596,14 @@ The canonical file has this shape:
   ]
 }
 ```
+
+## AI Assistance Disclosure
+
+This project was developed with assistance from OpenAI Codex for implementation,
+archive-schema and viewer work, capture tooling, security hardening, release
+checks, and documentation. The repository owner directed the work, reviewed and
+tested the resulting changes, and remains responsible for the project's
+security, accuracy, licensing, and final decisions.
 
 ## Privacy model
 

@@ -17,6 +17,21 @@ private-data/
 *.concordance.zip
 *.concordance.enc
 
+# Credentials, browser sessions, and private key material.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+cookies.json
+cookies-*.json
+session.json
+sessions/
+
 # Local editor and OS files.
 .DS_Store
 Thumbs.db

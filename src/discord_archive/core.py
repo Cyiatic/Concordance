@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, urlparse
-from urllib.request import Request, urlopen
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 
 SCHEMA_VERSION = 1
@@ -81,7 +81,10 @@ def _has_timestamp_timezone(value: Any) -> bool:
 def _is_http_url(value: Any) -> bool:
     if not isinstance(value, str):
         return False
-    parsed = urlparse(value.strip())
+    try:
+        parsed = urlparse(value.strip())
+    except ValueError:
+        return False
     return parsed.scheme.lower() in {"http", "https"} and bool(parsed.netloc)
 
 
@@ -121,7 +124,13 @@ def _youtube_thumbnail_url_from_text(value: Any) -> str | None:
 def _remote_media_allowed(value: Any) -> bool:
     if not _is_http_url(value):
         return False
-    hostname = (urlparse(str(value).strip()).hostname or "").lower().rstrip(".")
+    try:
+        parsed = urlparse(str(value).strip())
+        hostname = (parsed.hostname or "").lower().rstrip(".")
+        if parsed.username or parsed.password or parsed.port not in {None, 80, 443}:
+            return False
+    except ValueError:
+        return False
     return hostname in _ALLOWED_REMOTE_MEDIA_HOSTS
 
 
@@ -139,6 +148,15 @@ def _safe_media_filename(value: Any, fallback: str) -> str:
     return candidate or fallback
 
 
+class _ApprovedRemoteMediaRedirectHandler(HTTPRedirectHandler):
+    """Prevent an approved media URL from redirecting to an unapproved host."""
+
+    def redirect_request(self, request, file, code, message, headers, new_url):
+        if not _remote_media_allowed(new_url):
+            raise ValueError("Remote media redirect targets an unapproved host")
+        return super().redirect_request(request, file, code, message, headers, new_url)
+
+
 def _download_remote_media(url: str, destination: Path, max_bytes: int = _MAX_REMOTE_MEDIA_BYTES) -> int:
     if not _remote_media_allowed(url):
         raise ValueError(
@@ -147,9 +165,10 @@ def _download_remote_media(url: str, destination: Path, max_bytes: int = _MAX_RE
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_name(f".{destination.name}.part")
     request = Request(url, headers={"User-Agent": "Concordance/1.0"})
+    opener = build_opener(_ApprovedRemoteMediaRedirectHandler())
     total = 0
     try:
-        with urlopen(request, timeout=30) as response, temporary.open("wb") as handle:
+        with opener.open(request, timeout=30) as response, temporary.open("wb") as handle:
             content_length = response.headers.get("Content-Length")
             if content_length and int(content_length) > max_bytes:
                 raise ValueError(f"Remote media exceeds the {max_bytes // (1024 * 1024)} MB safety limit")

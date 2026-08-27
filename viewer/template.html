@@ -1153,6 +1153,10 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         if (!normalized || normalized.startsWith("/") || normalized.startsWith("//") || normalized.startsWith("data:") || /^[a-z][a-z0-9+.-]*:/i.test(normalized) || normalized.split("/").includes("..")) return null;
         return normalized;
       };
+      const safeCssAsset = (value) => {
+        const path = safeAsset(value);
+        return path && path.split("/").every((part) => /^[A-Za-z0-9._~+ @-]+$/.test(part)) ? path : null;
+      };
       const safeUrl = (value) => {
         if (typeof value !== "string") return null;
         const trimmed = value.trim();
@@ -1539,7 +1543,7 @@ FORM: A Discord-like read-only conversation shell with message selection as its 
         const profilePerson = channelPerson || participants[0] || null;
         const profileData = profilePerson?.profile && typeof profilePerson.profile === "object" ? profilePerson.profile : {};
         const profileCover = $("#profile-cover");
-        const bannerPath = safeAsset(profileData.banner_path);
+        const bannerPath = safeCssAsset(profileData.banner_path);
         if (profileCover) {
           profileCover.classList.toggle("has-banner", Boolean(bannerPath));
           profileCover.style.backgroundImage = bannerPath
