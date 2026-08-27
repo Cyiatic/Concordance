@@ -1,0 +1,41 @@
+{
+  "name": "concordance",
+  "version": "0.1.0",
+  "description": "Create private, offline snapshots of authorized Discord conversations.",
+  "author": {
+    "name": "Cyiatic",
+    "url": "https://github.com/Cyiatic"
+  },
+  "homepage": "https://github.com/Cyiatic/concordance",
+  "repository": "https://github.com/Cyiatic/concordance",
+  "license": "MIT",
+  "keywords": [
+    "discord",
+    "offline archive",
+    "conversation capture",
+    "privacy",
+    "provenance"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Concordance",
+    "shortDescription": "Archive authorized Discord conversations offline.",
+    "longDescription": "Turn an official export or a user-opened, authorized Discord capture into a searchable offline archive with timestamps, profile metadata, media, replies, reactions, provenance, and coverage checks. Concordance never extracts tokens, runs self-bots, crawls unattended, or writes back to Discord.",
+    "developerName": "Cyiatic",
+    "category": "Productivity",
+    "capabilities": [
+      "Local files",
+      "Attended browser capture",
+      "Offline viewer"
+    ],
+    "defaultPrompt": [
+      "Archive the Discord conversation I have open.",
+      "Build and verify an offline archive from these files.",
+      "Prepare a redacted copy for safe sharing."
+    ],
+    "brandColor": "#5865F2",
+    "composerIcon": "./assets/concordance-mark.png",
+    "logo": "./assets/concordance-mark.png",
+    "logoDark": "./assets/concordance-mark.png"
+  }
+}

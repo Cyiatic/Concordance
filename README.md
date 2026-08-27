@@ -26,6 +26,28 @@ limitation in its metadata and records import diagnostics under
 user-supplied transcript adapter accepts explicitly provided JSON, while
 acquisition remains separate from normalization and viewing.
 
+## Codex plugin package
+
+This repository includes `plugins/concordance/`, a skills-only Codex plugin for
+the authorized capture, offline archive, coverage verification, media audit,
+and safe-sharing workflow. It is designed to be packaged or installed through
+Codex without bundling any conversation data. The plugin does not extract
+Discord tokens, run self-bots, crawl unattended, collect credentials, or write
+back to Discord.
+
+Its workflow is named `concordance-archive`; invoke `$concordance-archive` after
+the plugin is installed in Codex.
+
+Suggested positioning:
+
+> Your Discord memories, readable offline—captured with permission, preserved
+> locally.
+
+Use “offline snapshot” or “portable archive,” not “rebuild your Discord
+profile”: Concordance recreates the permitted viewing experience locally and
+preserves available profile metadata, but it is not an account clone or a
+Discord restore tool.
+
 ## Build the sample archive
 
 ```powershell

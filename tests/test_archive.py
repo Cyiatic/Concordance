@@ -59,6 +59,23 @@ class ArchiveTests(unittest.TestCase):
         self.assertEqual(validate_archive(self.archive), [])
         self.assertEqual(len(self.archive["messages"]), 5)
 
+    def test_codex_plugin_package_is_source_only(self) -> None:
+        plugin_root = PROJECT_ROOT / "plugins" / "concordance"
+        manifest_path = plugin_root / ".codex-plugin" / "plugin.json"
+        manifest = load_json(manifest_path)
+        self.assertEqual(manifest["name"], "concordance")
+        self.assertRegex(manifest["version"], r"^\d+\.\d+\.\d+$")
+        self.assertEqual(manifest["skills"], "./skills/")
+        self.assertEqual(manifest["interface"]["displayName"], "Concordance")
+        self.assertEqual(len(manifest["interface"]["defaultPrompt"]), 3)
+        self.assertTrue((plugin_root / "skills" / "concordance-archive" / "SKILL.md").is_file())
+        self.assertTrue((plugin_root / "assets" / "concordance-mark.png").is_file())
+        self.assertFalse(any(
+            part in {"private-data", "raw", "archives", "dist", "output"}
+            for path in plugin_root.rglob("*")
+            for part in path.relative_to(plugin_root).parts
+        ))
+
     def test_build_copies_viewer_data_and_assets(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             output = Path(temporary) / "sample"
