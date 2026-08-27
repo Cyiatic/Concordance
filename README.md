@@ -1,4 +1,8 @@
-# Discord Archive
+<p align="center">
+  <img src="viewer/assets/concordance-mark.png" alt="Concordance logo" width="180">
+</p>
+
+# Concordance
 
 A local-first tool for turning permitted conversation exports into searchable,
 offline-readable archives. The first milestone is a normalized JSON schema and

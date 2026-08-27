@@ -69,6 +69,9 @@ class ArchiveTests(unittest.TestCase):
         self.assertEqual(manifest["interface"]["displayName"], "Concordance")
         self.assertEqual(len(manifest["interface"]["defaultPrompt"]), 3)
         self.assertTrue((plugin_root / "skills" / "concordance-archive" / "SKILL.md").is_file())
+        self.assertEqual(manifest["interface"]["composerIcon"], "./assets/concordance-mark.png")
+        self.assertEqual(manifest["interface"]["logo"], "./assets/concordance-mark.png")
+        self.assertEqual(manifest["interface"]["logoDark"], "./assets/concordance-mark.png")
         self.assertTrue((plugin_root / "assets" / "concordance-mark.png").is_file())
         self.assertFalse(any(
             part in {"private-data", "raw", "archives", "dist", "output"}
