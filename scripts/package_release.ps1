@@ -20,7 +20,7 @@ try {
     foreach ($relative in @("README.md", "CHANGELOG.md", "LICENSE", "CONTRIBUTING.md", "SECURITY.md", "PRODUCT.md", "AGENTS.md", "DESIGN.md", ".gitignore", "pyproject.toml")) {
         Copy-Item -LiteralPath (Join-Path $projectRoot $relative) -Destination (Join-Path $releaseRoot $relative)
     }
-    foreach ($relative in @(".github", "src", "viewer", "tools", "scripts", "fixtures", "plugins")) {
+    foreach ($relative in @(".github", "docs", "src", "viewer", "tools", "scripts", "fixtures", "plugins")) {
         Copy-Item -LiteralPath (Join-Path $projectRoot $relative) -Destination (Join-Path $releaseRoot $relative) -Recurse
     }
 
